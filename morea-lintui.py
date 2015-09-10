@@ -1,3 +1,4 @@
+import copy
 import unittest
 from MOREA.MoreaContent import MoreaContent
 import shlex
@@ -6,7 +7,7 @@ from Testing.CustomTestRunner import CustomTestRunner
 from Toolbox.toolbox import *
 import argparse
 import os
-import TUI.tui
+import TUI.TUI
 
 
 __author__ = 'casanova'
@@ -59,7 +60,8 @@ def pre_validate_site(morea_root):
     return
 
 
-
+""" This function prints a "splash" screen
+"""
 
 def print_welcome_screen():
     print(chr(27) + "[2J")
@@ -89,6 +91,7 @@ def print_welcome_screen():
     print(chr(27) + "[2J")
 
 
+######################################################################################
 ######################################################################################
 
 # Parse command-line arguments
@@ -179,5 +182,6 @@ print(chr(27) + "[2J")
 
 # Launch the ncurses UI
 if args.tui:
-    updated_morea_content = TUI.tui.launch(morea_content)
-    morea_content.save()
+    tui = TUI(copy.deepcopy(morea_content))
+    updated_morea_content = tui.run()
+    updated_morea_content.save()

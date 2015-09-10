@@ -6,10 +6,6 @@ import urwid
 urwid.Button.button_right = urwid.Text("")
 urwid.Button.button_left = urwid.Text("")
 
-class MoreaTypeList(urwid.Pile):
-    def __init__(self, morea_content, morea_type):
-
-
 
 class MainFrame(urwid.Columns):
     def __init__(self, string, num):
