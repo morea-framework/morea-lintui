@@ -24,11 +24,10 @@ class MoreaFile(object):
             err_msg += offset_string(str(e), 4)
             raise CustomException(err_msg)
 
-
         # Get the content below the YAML
         self.non_yaml_contents = get_non_yaml_contents(path)
 
-        #print "RAW YAML PARSING:"
+        # print "RAW YAML PARSING:"
         # print yaml.load(get_raw_front_matter(path))
 
         # Modify the YAML in a comment-preserving way
@@ -39,7 +38,7 @@ class MoreaFile(object):
             err_msg += offset_string(str(e), 4)
             raise CustomException(err_msg)
 
-        #print "COMENTIFIED_YAML = ", commentified_front_matter
+        # print "COMENTIFIED_YAML = ", commentified_front_matter
 
         # Check for duplicate properties
         try:
@@ -63,7 +62,6 @@ class MoreaFile(object):
         if type(parsed_front_matter) != dict:
             raise CustomException("  Error: non-dictionary-like YAML front matter in file " + self.path + "\n")
 
-
         # Convert every string to unicode
         parsed_front_matter = convert_to_unicode(parsed_front_matter)
 
@@ -74,10 +72,9 @@ class MoreaFile(object):
             err_msg += offset_string(unicode(e), 4)
             raise CustomException(err_msg)
 
-
         # OUTPUT FOR SHOW
-        #print "Parsed content for file " + path + ":"
-        #for p in self.property_list:
+        # print "Parsed content for file " + path + ":"
+        # for p in self.property_list:
         #    self.property_list[p].display()
 
         return
@@ -113,14 +110,32 @@ class MoreaFile(object):
         try:
             prop = self.property_list[name]
             for version in prop.versions:
-                if not version.commentedout:
-                    if type(version.values) == tuple:
-                        if not version.values[0]:
-                            return version.values[1]
+                if not version.commented_out:
+                    if type(version.values) != list:
+                        if not version.values.commented_out:
+                            return version.values.value
                     else:
                         for val in version.values:
-                            if not val[0]:
-                                return val[1]
+                            if not val.commented_out:
+                                return val.value
+        except Exception as e:
+            raise CustomException(str(e))
+        raise CustomException("  Value for property " + name + " not found!")
+
+    def set_value_of_scalar_required_property(self, name, value):
+        try:
+            prop = self.property_list[name]
+            for version in prop.versions:
+                if not version.commented_out:
+                    if type(version.values) != list:
+                        if not version.values.commented_out:
+                            version.values.value = value
+                        return
+                    else:
+                        for val in version.values:
+                            if not val.commented_out:
+                                val.val = value
+                        return
         except Exception as e:
             raise CustomException(str(e))
         raise CustomException("  Value for property " + name + " not found!")
@@ -131,19 +146,34 @@ class MoreaFile(object):
             if pname not in MoreaGrammar.morea_references:
                 continue
             for version in self.property_list[pname].versions:
-                if version.commentedout:
+                if version.commented_out:
                     continue
-                if type(version.values) == tuple:
+                if type(version.values) != list:
                     value_list = [version.values]
                 else:
                     value_list = version.values
                 for val in value_list:
-                    if val[0] is False:
-                        reference_list.append([pname, val[1]])
+                    if val.commented_out is False:
+                        reference_list.append([pname, val.value])
         return reference_list
 
+    def save(self):
+        string = "---\n"
+        for pname in MoreaGrammar.property_output_order:
+            if pname in self.property_list:
+                prop = self.property_list[pname]
+                for version in prop.versions:
+                    string += version.to_string()
+        string += "---\n"
+        string += self.non_yaml_contents
 
-# HELPER FUNCTIONS BELOW #
+        print "NEWFILECONTENT=", string
+        print "-----------------\n"
+
+
+################################################################
+###############     HELPER FUNCTIONS BELOW                     #
+################################################################
 
 
 def build_property_list(parsed_front_matter):
@@ -154,10 +184,10 @@ def build_property_list(parsed_front_matter):
     for name in parsed_front_matter:
 
         # print "NAME=", name
-        # get the uncommentified name and commentedout status
-        (decommentified_name, commentedout) = decommentify(name)
+        # get the uncommentified name and commented_out status
+        (decommentified_name, commented_out) = decommentify(name)
 
-        # print "DECOMMENTIFIED NAME--> ", decommentified_name, ",",  commentedout
+        # print "DECOMMENTIFIED NAME--> ", decommentified_name, ",",  commented_out
 
         # get the value
         value = parsed_front_matter[name]
@@ -171,7 +201,7 @@ def build_property_list(parsed_front_matter):
         # Add the version
         # print "ADDING A VERSION"
         try:
-            property_list[decommentified_name].add_version(commentedout, value)
+            property_list[decommentified_name].add_version(commented_out, value)
         except CustomException as e:
             # print "FAILED!!!"
             raise e
@@ -207,6 +237,3 @@ def recursive_unicodify(value):
         return newlist
     else:
         return value
-
-
-

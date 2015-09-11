@@ -128,7 +128,6 @@ def remove_leading_and_trailing_spaces(string):
     return new
 
 
-
 def remove_all_end_of_line_comments(string):
     eol_comment_found = False
     new = ""
@@ -145,7 +144,6 @@ def remove_all_end_of_line_comments(string):
     return new, eol_comment_found
 
 
-
 def make_all_comments_one_liners(string):
     previous_line_is_a_comment = False
     previous_line_dangling_quote = False
@@ -153,8 +151,7 @@ def make_all_comments_one_liners(string):
     new = ""
     for l in string.splitlines():
 
-
-        #print "--> l=", l
+        # print "--> l=", l
 
         # Determine pattern of string
         commented_out_declaration = False
@@ -186,7 +183,7 @@ def make_all_comments_one_liners(string):
             if previous_line_dangling_quote and not previous_line_is_a_comment:
                 (afterdash, count) = re.subn('^\s*(?P<content>#.*)', r'\g<content>', l)
                 new += " " + afterdash
-                previous_line_dangling_quote   # Keep the dangling quote
+                previous_line_dangling_quote  # Keep the dangling quote
                 continue
             if previous_line_is_a_comment:
                 (afterdash, count) = re.subn('^\s*#(?P<spaces>\s*)(?P<content>.*)', r'\g<content>', l)
@@ -202,7 +199,6 @@ def make_all_comments_one_liners(string):
             new += "\n" + l
         previous_line_is_a_comment = False
         previous_line_dangling_quote = (seen_quotes % 2) == 1
-
 
     new += "\n"
 

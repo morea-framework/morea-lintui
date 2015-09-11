@@ -25,7 +25,8 @@ class MoreaContent(object):
             for f in files:
                 if re.match(".*.md$", f) is not None:
                     try:
-                        self.files.append(MoreaFile(path + "/" + f, warnings=True, parse_comments=parse_comments))
+                        f = MoreaFile(path + "/" + f, warnings=True, parse_comments=parse_comments)
+                        self.files.append(f)
                     except CustomException as e:
                         err_msg += str(e)
                         err = True
@@ -128,7 +129,14 @@ class MoreaContent(object):
                 return f
         raise CustomException("")
 
+    def get_filelist_for_type(self, type_string):
+        filelist = []
+        for f in self.files:
+            if f.get_value_of_scalar_required_property("morea_type") == type_string:
+                filelist.append(f)
+        return filelist
+
     def save(self):
-        # TODO
-        print "SAVE: not implemented"
+        for f in self.files:
+            f.save()
         return

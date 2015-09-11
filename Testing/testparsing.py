@@ -3,6 +3,7 @@ __author__ = 'casanova'
 
 import unittest
 import shutil
+from MOREA.MoreaProperty import PropertyScalarValue
 from MOREA.MoreaFile import MoreaFile, flattened_property_list
 from Toolbox.toolbox import *
 from MOREA.MoreaProperty import *

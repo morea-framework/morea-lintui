@@ -1,4 +1,5 @@
-from Toolbox.toolbox import CustomException
+from MOREA import MoreaGrammar
+from Toolbox.toolbox import CustomException, add_quotes
 from YamlParsingTools import decommentify
 
 __author__ = 'casanova'
@@ -13,10 +14,10 @@ class Property(object):
 
         return
 
-    def add_version(self, commentedout, value):
-        # print "IN ADD_VERSION: ", self.name, commentedout, value
+    def add_version(self, commented_out, value):
+        # print "IN ADD_VERSION: ", self.name, commented_out, value
         try:
-            version = PropertyVersion(self.name, commentedout, value)
+            version = PropertyVersion(self.name, commented_out, value)
         except CustomException as e:
             raise e
 
@@ -24,7 +25,7 @@ class Property(object):
 
     def has_uncommented_versions(self):
         for version in self.versions:
-            if not version.commentedout:
+            if not version.commented_out:
                 return True
         return False
 
@@ -43,43 +44,87 @@ class Property(object):
 
 class PropertyVersion(object):
     """A class that descibes a version of a morea property
-        Values are tuples
-        If the property is a tuple, then it's a single value thing ("a: b")
-        otherwise it's a multuple value thing ("a:\n -d\n -r\n")"""
+        Values are PropertyScalarValue
+        If the property is an atom, then it's a single value thing ("a: b")
+        otherwise it's a list  thing ("a:\n -d\n -r\n")"""
 
-    def __init__(self, name, commentedout, value):
+    def __init__(self, name, commented_out, value):
         self.name = name
-        self.commentedout = commentedout
+        self.commented_out = commented_out
         self.values = []
 
-        # print "IN PROPERTY VERSION CONS:", name, commentedout, value
+        # print "IN PROPERTY VERSION CONS:", name, commented_out, value
 
         if type(value) != list:
-            self.values = (commentedout, value)  # Tag the single value with the commented
+            self.values = PropertyScalarValue(commented_out, value)  # Tag the single value with the commented
             # out status of the version
         else:
             self.values = []
             for val in value:
                 if val is not None:
-                    #print "IN PROPERTYVERSION ECOMMENTIFYING: ", val
-                    (decommentified_value, value_commentedout) = decommentify(val)
-                    # print "    ---> ", decommentified_value, value_commentedout
-                    if self.commentedout is True and value_commentedout is False:
+                    # print "IN PROPERTYVERSION ECOMMENTIFYING: ", val
+                    (decommentified_value, value_commented_out) = decommentify(val)
+                    # print "    ---> ", decommentified_value, value_commented_out
+                    if self.commented_out is True and value_commented_out is False:
                         raise CustomException("  Fishy commenting for (commented out) " +
                                               name + " field" + "\n" + "\n")
-                    self.values.append((value_commentedout, decommentified_value))
+                    self.values.append(PropertyScalarValue(value_commented_out, decommentified_value))
 
         return
 
     def display(self):
-        print self.name + "(" + "commentedout: "+str(self.commentedout) + ")"
-        print "\t"+str(self.values)
+        print self.name + "(" + "commented_out: " + str(self.commented_out) + ")"
+        print "\t" + str(self.values)
+
+    def to_string(self):
+        string = ""
+        if self.commented_out:
+            string += "#" + self.name + ": "
+        else:
+            string += "" + self.name + ": "
+
+        if self.values is None or self.values is [[]]:
+            string += "\n"
+            return string
+
+        quoted = MoreaGrammar.MoreaGrammar.property_syntaxes[self.name].quoted
+
+        if not MoreaGrammar.MoreaGrammar.property_syntaxes[self.name].multiple_values:
+            string += add_quotes(quoted, str(self.values.value)) + "\n"
+            return string
+
+        string += "\n"
+        if type(self.values) != list:
+            value_list = [self.values]
+        else:
+            value_list = self.values
+        for v in value_list:
+            if self.commented_out or v.commented_out:
+                string += "#  - " + add_quotes(quoted, str(v.value)) + "\n"
+            else:
+                string += "  - " + add_quotes(quoted, str(v.value)) + "\n"
+        return string
 
     def num_of_uncommented_values(self):
         if type(self.values) != list:
-            return self.values[0]
+            return self.commented_out
         else:
-            return len([x for x in self.values if x[0] is False])
+            return len([x for x in self.values if x.commented_out is False])
 
     def flatten(self):
-        return [self.commentedout, self.values]
+
+        if type(self.values) != list:
+            flattened_value = (self.values.commented_out, self.values.value)
+        else:
+            flattened_value = []
+            for val in self.values:
+                flattened_value.append((val.commented_out, val.value))
+        return [self.commented_out, flattened_value]
+
+
+class PropertyScalarValue(object):
+    """ A simple class for better software engineering """
+
+    def __init__(self, commented_out, value):
+        self.commented_out = commented_out
+        self.value = value

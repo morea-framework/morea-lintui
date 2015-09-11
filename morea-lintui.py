@@ -1,6 +1,7 @@
 import copy
 import unittest
 from MOREA.MoreaContent import MoreaContent
+from TUI.TUI import *
 import shlex
 import subprocess
 from Testing.CustomTestRunner import CustomTestRunner
@@ -182,6 +183,7 @@ print(chr(27) + "[2J")
 
 # Launch the ncurses UI
 if args.tui:
-    tui = TUI(copy.deepcopy(morea_content))
-    updated_morea_content = tui.run()
+    content_copy = copy.deepcopy(morea_content)
+    tui = TUI.TUI.TUI(content_copy)
+    updated_morea_content = tui.launch()
     updated_morea_content.save()

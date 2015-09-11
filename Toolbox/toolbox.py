@@ -66,3 +66,13 @@ def offset_string(s, offset):
 
 class CustomException(Exception):
     pass
+
+
+def add_quotes(do_it, string):
+    if not do_it:
+        return string
+    if '"' in string:
+        return "'" + string + "'"
+    else:
+        return '"' + string + '"'
+

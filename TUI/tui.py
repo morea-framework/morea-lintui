@@ -1,15 +1,48 @@
-import copy
-import urwid
-
 __author__ = 'casanova'
-import curses
 
 import urwid
+
+
+class TopLevelFrameRow(urwid.Columns):
+    def __init__(self, button, list_of_checkboxes):
+        self.button = button
+        self.list_of_checkboxes = list_of_checkboxes
+
+        widget_list = [button] + list_of_checkboxes
+
+        urwid.Columns.__init__(self, widget_list)
 
 
 class TopLevelFrame(urwid.Pile):
-    def __init__(self, _tui):
+    def __init__(self, _tui, morea_type_key, list_of_check_box_property_keys):
         self.tui = _tui
+
+        list_of_rows = []
+        filelist = self.tui.content.get_filelist_for_type(morea_type_key)
+
+        # Create a top row
+        list_of_rows.append(TopLevelFrameRow(urwid.Text("  " + morea_type_key),
+                                             [urwid.Text(s) for s in list_of_check_box_property_keys]))
+        list_of_rows.append(TopLevelFrameRow(urwid.Text(""), []))
+
+        # TODO sort the file list by sort order
+        for f in filelist:
+            # Create button
+            button = urwid.Button(f.get_value_of_scalar_required_property("morea_id") +
+                                  " (" + f.get_value_of_scalar_required_property("title") + ")",
+                                  on_press=self.tui.handle_button_press,
+                                  user_data=["edit", f])
+            # Create list_of_checkboxes
+            list_of_checkboxes = []
+            for k in list_of_check_box_property_keys:
+                list_of_checkboxes.append(urwid.CheckBox("",
+                                                         state=f.get_value_of_scalar_required_property(k),
+                                                         on_state_change=self.tui.handle_toplevelframe_checkbox_state_change,
+                                                         user_data=(f, k)))
+
+            list_of_rows.append(TopLevelFrameRow(button, list_of_checkboxes))
+
+        urwid.Pile.__init__(self, list_of_rows)
 
 
 class TUI:
@@ -48,10 +81,11 @@ class TUI:
 
         # Create all top-level frames
         self.top_level_frame_dict = {}
-        self.top_level_frame_dict["modules"] = TopLevelFrame()
-        self.top_level_frame_dict["readings"] = TopLevelFrame()
-        self.top_level_frame_dict["experiences"] = TopLevelFrame()
-        self.top_level_frame_dict["assessments"] = TopLevelFrame()
+        self.top_level_frame_dict["modules"] = TopLevelFrame(self, "module", ["published"])
+        self.top_level_frame_dict["outcomes"] = TopLevelFrame(self, "outcome", [])
+        self.top_level_frame_dict["readings"] = TopLevelFrame(self, "reading", [])
+        self.top_level_frame_dict["experiences"] = TopLevelFrame(self, "experience", [])
+        self.top_level_frame_dict["assessments"] = TopLevelFrame(self, "assessment", [])
 
         # Set up the main view
         self.frame_holder = urwid.Filler(self.top_level_frame_dict["modules"], valign='top', top=1, bottom=1)
@@ -59,7 +93,7 @@ class TUI:
         line_box = urwid.LineBox(v_padding)
         # Assemble the widgets into the widget layout
         overall_layout = urwid.Frame(header=menu_top, body=line_box, footer=menu_bottom)
-        self.main_loop = urwid.MainLoop(overall_layout, self.palette, unhandled_input=self.handle_key_strokes)
+        self.main_loop = urwid.MainLoop(overall_layout, self.palette, unhandled_input=self.handle_key_stroke)
         return
 
     def handle_key_stroke(self, key):
@@ -67,7 +101,7 @@ class TUI:
             self.frame_holder.set_body(self.top_level_frame_dict["modules"])
             self.main_loop.draw_screen()
         elif key == 'O' or key == 'o':
-            self.frame_holder.set_body(self.top_level_frame_dict["j"])
+            self.frame_holder.set_body(self.top_level_frame_dict["outcomes"])
             self.main_loop.draw_screen()
         elif key == 'R' or key == 'r':
             self.frame_holder.set_body(self.top_level_frame_dict["readings"])
@@ -83,7 +117,16 @@ class TUI:
         elif key == 'Q' or key == 'q':
             raise urwid.ExitMainLoop()
 
+    def handle_button_press(self, button, user_data):
+        return
+
+    def handle_toplevelframe_checkbox_state_change(self, cb, state, user_data):
+        # print "STATE = ", state
+        (f, property_key) = user_data
+        f.set_value_of_scalar_required_property(property_key, state)
+        return
 
     def launch(self):
         self.main_loop.run()
+        return self.content
         # TODO: do something?

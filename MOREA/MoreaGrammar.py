@@ -6,12 +6,13 @@ __author__ = 'casanova'
 class PropertySyntax(object):
     """A class that describes the nature of what's allowed for a morea property"""
 
-    def __init__(self, name, multiple_values, data_type, allowed_values, required):
+    def __init__(self, name, multiple_values, data_type, allowed_values, required, quoted):
         self.name = name  # string
         self.multiple_values = multiple_values  # boolean
         self.data_type = data_type  # type
         self.allowed_values = allowed_values  # list
         self.required = required  # boolean
+        self.quoted = quoted  # boolean
         return
 
 
@@ -24,75 +25,102 @@ class MoreaGrammar(object):
 
     morea_references = ["morea_outcomes", "morea_readings", "morea_experiences", "morea_assessments"]
 
+    property_output_order = ["morea_id",
+                             "morea_type",
+                             "title",
+                             "published",
+                             "morea_coming_soon",
+                             "morea_highlight",
+                             "morea_start_date",
+                             "morea_end_date",
+                             "morea_summary",
+                             "morea_outcomes",
+                             "morea_readings",
+                             "morea_experiments",
+                             "morea_assessments",
+                             "morea_sort_order",
+                             "morea_url",
+                             "morea_icon_url",
+                             "morea_prerequisites",
+                             "morea_outcomes_assessed",
+                             "morea_labels",
+                             "morea_chartjs_caption",
+                             "morea_chartjs_labels",
+                             "morea_chartjs_data"
+                             ]
+
     property_syntaxes = {"morea_type": PropertySyntax(name="morea_type", multiple_values=False, data_type=unicode,
                                                       allowed_values=morea_types,
-                                                      required=True),
+                                                      required=True, quoted=False),
                          "title": PropertySyntax(name="title", multiple_values=False, data_type=unicode,
-                                                 allowed_values=None,
-                                                 required=True),
+                                                 allowed_values=None, required=True, quoted=True),
                          "published": PropertySyntax(name="published", multiple_values=False, data_type=bool,
-                                                     allowed_values=[True, False], required=False),
+                                                     allowed_values=[True, False], required=True, quoted=False),
                          "morea_highlight": PropertySyntax(name="morea_highlight", multiple_values=False,
                                                            data_type=bool,
-                                                           allowed_values=[True, False], required=False),
+                                                           allowed_values=[True, False], required=False, quoted=False),
                          "morea_coming_soon": PropertySyntax(name="morea_coming_soon", multiple_values=False,
                                                              data_type=bool,
-                                                             allowed_values=[True, False], required=False),
+                                                             allowed_values=[True, False], required=False,
+                                                             quoted=False),
                          "morea_id": PropertySyntax(name="morea_id", multiple_values=False, data_type=unicode,
                                                     allowed_values=None,
-                                                    required=True),
-                         "morea_outcomes": PropertySyntax(name="morea_outcomes", multiple_values=True, data_type=unicode,
+                                                    required=True, quoted=False),
+                         "morea_outcomes": PropertySyntax(name="morea_outcomes", multiple_values=True,
+                                                          data_type=unicode,
                                                           allowed_values=None,
-                                                          required=False),
+                                                          required=False, quoted=False),
                          "morea_experiences": PropertySyntax(name="morea_experiences", multiple_values=True,
                                                              data_type=unicode, allowed_values=None,
-                                                             required=False),
+                                                             required=False, quoted=False),
                          "morea_assessments": PropertySyntax(name="morea_assessments", multiple_values=True,
                                                              data_type=unicode, allowed_values=None,
-                                                             required=False),
-                         "morea_readings": PropertySyntax(name="morea_readings", multiple_values=True, data_type=unicode,
+                                                             required=False, quoted=False),
+                         "morea_readings": PropertySyntax(name="morea_readings", multiple_values=True,
+                                                          data_type=unicode,
                                                           allowed_values=None,
-                                                          required=False),
-                         "morea_icon_url": PropertySyntax(name="morea_icon_url", multiple_values=False, data_type=unicode,
+                                                          required=False, quoted=False),
+                         "morea_icon_url": PropertySyntax(name="morea_icon_url", multiple_values=False,
+                                                          data_type=unicode,
                                                           allowed_values=None,
-                                                          required=False),
+                                                          required=False, quoted=False),
                          "morea_url": PropertySyntax(name="morea_url", multiple_values=False, data_type=unicode,
                                                      allowed_values=None,
-                                                     required=False),
+                                                     required=False, quoted=False),
                          "morea_sort_order": PropertySyntax(name="morea_sort_order", multiple_values=False,
                                                             data_type=int, allowed_values=None,
-                                                            required=False),
+                                                            required=False, quoted=False),
                          "morea_prerequisites": PropertySyntax(name="morea_prerequisites", multiple_values=True,
                                                                data_type=unicode, allowed_values=None,
-                                                               required=False),
+                                                               required=False, quoted=False),
                          "morea_summary": PropertySyntax(name="morea_summary", multiple_values=False, data_type=unicode,
                                                          allowed_values=None,
-                                                         required=False),
+                                                         required=False, quoted=True),
                          "morea_labels": PropertySyntax(name="morea_labels", multiple_values=True, data_type=unicode,
                                                         allowed_values=None,
-                                                        required=False),
+                                                        required=False, quoted=True),
                          "morea_outcomes_assessed": PropertySyntax(name="morea_outcomes_assessed", multiple_values=True,
                                                                    data_type=unicode,
                                                                    allowed_values=None,
-                                                                   required=False),
-
+                                                                   required=False, quoted=False),
                          "morea_start_date": PropertySyntax(name="morea_start_date", multiple_values=False,
                                                             data_type=unicode, allowed_values=None,
-                                                            required=False),
-                         "morea_end_date": PropertySyntax(name="morea_end_date", multiple_values=False, data_type=unicode,
+                                                            required=False, quoted=True),
+                         "morea_end_date": PropertySyntax(name="morea_end_date", multiple_values=False,
+                                                          data_type=unicode,
                                                           allowed_values=None,
-                                                          required=False),
+                                                          required=False, quoted=True),
                          "morea_chartjs_caption": PropertySyntax(name="morea_chartjs_caption", multiple_values=False,
                                                                  data_type=unicode,
                                                                  allowed_values=None,
-                                                                 required=False),
+                                                                 required=False, quoted=True),
                          "morea_chartjs_labels": PropertySyntax(name="morea_chartjs_labels", multiple_values=False,
                                                                 data_type=unicode,
                                                                 allowed_values=None,
-                                                                required=False),
+                                                                required=False, quoted=True),
                          "morea_chartjs_data": PropertySyntax(name="morea_chartjs_data", multiple_values=False,
                                                               data_type=unicode, allowed_values=None,
-                                                              required=False)
+                                                              required=False, quoted=True)
                          }
 
     required_properties = [x for x in property_syntaxes.keys() if property_syntaxes[x].required is True]
@@ -136,8 +164,8 @@ class MoreaGrammar(object):
         if version.num_of_uncommented_values() > 1 and not syntax.multiple_values:
             err_msg += "  Error: property " + syntax.name + " can have only one value" + "\n"
 
-        # list-ify typle values, temporarliyt
-        if type(version.values) == tuple:
+        # list-if a single values, temporarily
+        if type(version.values) != list:
             value_list = [version.values]
         else:
             value_list = version.values
@@ -146,23 +174,24 @@ class MoreaGrammar(object):
         if syntax.required:
             provided = False
             for v in value_list:
-                if v[0] is False and v[1] is not None:
+                if v.commented_out is False and v.value is not None:
                     provided = True
             if not provided:
                 err_msg += "  Error: no value provided for required property " + syntax.name + "\n"
 
         # Check for value types
         for v in value_list:
-            if v[1] is not None and type(v[1]) != syntax.data_type:
-                err_msg += "  Error: value '" + my_str(v[1]) + "' has invalid type for property " + syntax.name + "\n"
+            if v.value is not None and type(v.value) != syntax.data_type:
+                err_msg += "  Error: value '" + my_str(
+                    v.value) + "' has invalid type for property " + syntax.name + "\n"
 
 
         # Check for allowed values
         if syntax.allowed_values is not None:
             for v in value_list:
-                if v[1] is not None:
-                    if v[1] not in syntax.allowed_values:
-                        err_msg += "  Error: disallowed value '" + str(v[1]) + "' for property " + \
+                if v.value is not None:
+                    if v.value not in syntax.allowed_values:
+                        err_msg += "  Error: disallowed value '" + str(v.value) + "' for property " + \
                                    syntax.name + "\n" + "         (allowed values: " + \
                                    str(syntax.allowed_values) + ")"
 
