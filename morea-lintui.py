@@ -114,7 +114,7 @@ if args.test:
     print green("Running test suite:")
     dirname, filename = os.path.split(os.path.abspath(__file__))
     suite = unittest.TestLoader().discover(dirname)
-    if (suite.countTestCases() == 0):
+    if suite.countTestCases() == 0:
         print "  Not detecting any unit tests... aborting\n"
         exit(1)
     else:

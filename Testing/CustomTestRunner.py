@@ -34,7 +34,7 @@ class CustomTestRunner:
                 red(str(len(result.errors) + len(result.failures)) + " tests failed (out of " + str(
                     test.countTestCases()) + ")\n"))
             print 70 * "-"
-            a = raw_input("Press Enter to see the error report...")
+            raw_input("Press Enter to see the error report...")
             result.printErrors()
         else:
             self.writeUpdate(green("All " + str(test.countTestCases()) + " tests passed \n\n"))

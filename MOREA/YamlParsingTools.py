@@ -217,12 +217,12 @@ def get_commentified_front_matter(path, warnings, parse_comments):
 
         debug = False
 
-        if (debug):
+        if debug:
             print "\n*********  RAW  ****************\n"
             print sanitized_front_matter
             print "**********************************\n"
 
-        if (parse_comments):
+        if parse_comments:
 
             # DO A PASS TO REMOVE ALL LEADING SPACES
             sanitized_front_matter = remove_leading_and_trailing_spaces(sanitized_front_matter)
@@ -290,7 +290,7 @@ def get_commentified_front_matter(path, warnings, parse_comments):
             commentified_line = commentified_line.decode("utf-8")
             commentified_front_matter += commentified_line + "\n"
 
-    if (parse_comments):
+    if parse_comments:
         # DO A FINAL PASS TO "UNSANITIZE" THE HASHES
         commentified_front_matter = re.sub(r'__GENUINEHASH__', r'#', commentified_front_matter)
 

@@ -105,7 +105,6 @@ class MoreaContent(object):
             reference_list = f.get_reference_list()
             for [label, idstring] in reference_list:
                 if idstring is not None:
-                    referenced_list = None
                     try:
                         referenced_file = self.get_file(idstring)
                     except CustomException:

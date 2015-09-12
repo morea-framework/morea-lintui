@@ -48,7 +48,7 @@ class MoreaTestAcceptingValidFiles(MoreaParsingTestCase):
 
     def runMoreaTest(self, content):
         try:
-            f = MoreaFile(write_string_to_testfile("test.md", content), warnings=False, parse_comments=True)
+            MoreaFile(write_string_to_testfile("test.md", content), warnings=False, parse_comments=True)
         except CustomException as e:
             self.fail(
                 "  Cannot acquire content due to the following error:\n" +
