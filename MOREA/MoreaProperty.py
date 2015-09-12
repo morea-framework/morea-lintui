@@ -11,13 +11,13 @@ class Property(object):
     def __init__(self, name):
         self.name = name
         self.versions = []
-
+        self.grammar = MoreaGrammar.MoreaGrammar.property_syntaxes[self.name]
         return
 
     def add_version(self, commented_out, value):
         # print "IN ADD_VERSION: ", self.name, commented_out, value
         try:
-            version = PropertyVersion(self.name, commented_out, value)
+            version = PropertyVersion(self.name, self.grammar, commented_out, value)
         except CustomException as e:
             raise e
 
@@ -48,16 +48,17 @@ class PropertyVersion(object):
         If the property is an atom, then it's a single value thing ("a: b")
         otherwise it's a list  thing ("a:\n -d\n -r\n")"""
 
-    def __init__(self, name, commented_out, value):
+    def __init__(self, name, grammar, commented_out, value):
         self.name = name
+        self.grammar = grammar
         self.commented_out = commented_out
         self.values = []
 
         # print "IN PROPERTY VERSION CONS:", name, commented_out, value
 
+
         if type(value) != list:
-            self.values = PropertyScalarValue(commented_out, value)  # Tag the single value with the commented
-            # out status of the version
+            self.values = PropertyScalarValue(commented_out, value)  #
         else:
             self.values = []
             for val in value:
@@ -83,14 +84,17 @@ class PropertyVersion(object):
         else:
             string += "" + self.name + ": "
 
-        if self.values is None or self.values is [[]]:
+        if self.values is None or self.values is []:
             string += "\n"
             return string
 
-        quoted = MoreaGrammar.MoreaGrammar.property_syntaxes[self.name].quoted
-
-        if not MoreaGrammar.MoreaGrammar.property_syntaxes[self.name].multiple_values:
-            string += add_quotes(quoted, str(self.values.value)) + "\n"
+        if not self.grammar.multiple_values:
+            # Then it's a single value
+            if type(self.values) == list:
+                value = self.values[0].value
+            else:
+                value = self.values.value
+            string += add_quotes(self.grammar.quoted, str(value)) + "\n"
             return string
 
         string += "\n"
@@ -99,10 +103,13 @@ class PropertyVersion(object):
         else:
             value_list = self.values
         for v in value_list:
+            if v.value is None:
+                print "\n"
+                continue
             if self.commented_out or v.commented_out:
-                string += "#  - " + add_quotes(quoted, str(v.value)) + "\n"
+                string += "#  - " + add_quotes(self.grammar.quoted, str(v.value)) + "\n"
             else:
-                string += "  - " + add_quotes(quoted, str(v.value)) + "\n"
+                string += "  - " + add_quotes(self.grammar.quoted, str(v.value)) + "\n"
         return string
 
     def num_of_uncommented_values(self):

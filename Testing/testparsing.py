@@ -3,7 +3,6 @@ __author__ = 'casanova'
 
 import unittest
 import shutil
-from MOREA.MoreaProperty import PropertyScalarValue
 from MOREA.MoreaFile import MoreaFile, flattened_property_list
 from Toolbox.toolbox import *
 from MOREA.MoreaProperty import *
@@ -72,7 +71,7 @@ class MoreaTestAcceptingValidFilesWithNoComments_Test_1(MoreaTestAcceptingValidF
 
     def runTest(self):
         content = "---\n" \
-                  "test: ok\n" \
+                  "title: ok\n" \
                   "---\n"
         super(MoreaTestAcceptingValidFilesWithNoComments_Test_1, self).runMoreaTest(content)
 
@@ -84,17 +83,17 @@ class MoreaTestAcceptingValidFilesWithNoComments_Test_2(MoreaTestAcceptingValidF
     def runTest(self):
         content = "---\n" \
                   "title: \"doubly quoted\"\n" \
-                  "description: some long string\n" \
+                  "morea_summary: some long string\n" \
                   "  that spans multiple\n" \
                   "  lines.\n" \
-                  "other: \"some long doubly\n" \
+                  "morea_start_date: \"some long doubly\n" \
                   "  quoted string\"\n" \
-                  "something: true\n" \
-                  "list:\n" \
+                  "published: true\n" \
+                  "morea_readings:\n" \
                   "  - item1\n" \
                   "  - item2\n" \
                   "  - crap\n" \
-                  "other_list:\n" \
+                  "morea_labels:\n" \
                   "- foo1\n" \
                   "- foo2\n" \
                   "---\n" \
@@ -108,16 +107,17 @@ class MoreaTestAcceptingValidFilesWithNoComments_Test_3(MoreaTestAcceptingValidF
 
     def runTest(self):
         content = u'---\ntitle: \" a ≥ 1 and b quoted\"\n' \
-                  u'description:  a ≥ 1 and bing\n' \
+                  u'morea_summary:  a ≥ 1 and bing\n' \
                   u'  that  a ≥ 1 and b multiple\n' \
-                  u'  lines.\nother: \"some  a ≥ 1 and b doubly\n' \
+                  u'  lines.\n' \
+                  u'morea_start_date: \"some  a ≥ 1 and b doubly\n' \
                   u'  quoted string\"\n' \
-                  u'something: true\n' \
-                  u'list:\n' \
+                  u'published: true\n' \
+                  u'morea_labels:\n' \
                   u'  -  a ≥ 1 and b\n' \
                   u'  - item2\n' \
                   u'  -  a ≥ 1 and b\n' \
-                  u'other_list:\n' \
+                  u'morea_readings:\n' \
                   u'-  a ≥ 1 and b\n' \
                   u'- foo2\n' \
                   u'---\n' \
@@ -180,7 +180,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_4(MoreaTestRejectingInva
 
     def runTest(self):
         content = "--\n" \
-                  "TITLE: \"doubly quoted\"\n" \
+                  "title: \"doubly quoted\"\n" \
                   "---\n" \
                   "Some random content\n"
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_4, self).runMoreaTest(content)
@@ -215,7 +215,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_7(MoreaTestRejectingInva
 
     def runTest(self):
         content = "---\n" \
-                  "foo: line that\n" \
+                  "title: line that\n" \
                   "is not indented" \
                   "---\n"
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_7, self).runMoreaTest(content)
@@ -258,19 +258,19 @@ class MoreaTestParsingValidFilesWithNoComments_Test_1(MoreaTestParsingValidFiles
 
     def runTest(self):
         content = "---\n" \
-                  "test: ok\n" \
-                  "long string: wir\n" \
+                  "morea_id: ok\n" \
+                  "title: wir\n" \
                   "      - tanzen\n" \
-                  "list of things:\n" \
+                  "morea_labels:\n" \
                   "  - hello1\n" \
                   "  - hello2\n" \
-                  "list of one thing:\n" \
+                  "morea_readings:\n" \
                   "  - hello1\n" \
                   "---\n"
-        parsetree = {"test": [[False, (False, "ok")]],
-                     "list of things": [[False, [(False, "hello1"), (False, "hello2")]]],
-                     "list of one thing": [[False, [(False, "hello1")]]],
-                     "long string": [[False, (False, "wir - tanzen")]],
+        parsetree = {"morea_id": [[False, (False, "ok")]],
+                     "morea_labels": [[False, [(False, "hello1"), (False, "hello2")]]],
+                     "morea_readings": [[False, [(False, "hello1")]]],
+                     "title": [[False, (False, "wir - tanzen")]],
                      }
 
         super(MoreaTestParsingValidFilesWithNoComments_Test_1, self).runMoreaTest(content, parsetree)
@@ -282,11 +282,11 @@ class MoreaTestParsingValidFilesWithNoComments_Test_2(MoreaTestParsingValidFiles
 
     def runTest(self):
         content = "---\n" \
-                  "long string: wir\n" \
+                  "title: wir\n" \
                   "\n\n\n" \
                   "      - tanzen\n" \
                   "---\n"
-        parsetree = {"long string": [[False, (False, "wir\n\n\n- tanzen")]]
+        parsetree = {"title": [[False, (False, "wir\n\n\n- tanzen")]]
                      }
 
         super(MoreaTestParsingValidFilesWithNoComments_Test_2, self).runMoreaTest(content, parsetree)
@@ -298,9 +298,9 @@ class MoreaTestParsingValidFilesWithNoComments_Test_3(MoreaTestParsingValidFiles
 
     def runTest(self):
         content = "---\n" \
-                  "long string: a ≥ 1\n" \
+                  "morea_summary: a ≥ 1\n" \
                   "---\n"
-        parsetree = {"long string": [[False, (False, u"a \u2265 1")]]
+        parsetree = {"morea_summary": [[False, (False, u"a \u2265 1")]]
                      }
 
         super(MoreaTestParsingValidFilesWithNoComments_Test_3, self).runMoreaTest(content, parsetree)
@@ -312,11 +312,11 @@ class MoreaTestParsingValidFilesWithNoComments_Test_4(MoreaTestParsingValidFiles
 
     def runTest(self):
         content = "---\n" \
-                  "long string: \"something        \n" \
+                  "title: \"something        \n" \
                   " # this hash is fine\n" \
                   "end of string\"\n" \
                   "---\n"
-        parsetree = {"long string": [[False, (False, "something # this hash is fine end of string")]]
+        parsetree = {"title": [[False, (False, "something # this hash is fine end of string")]]
                      }
 
         super(MoreaTestParsingValidFilesWithNoComments_Test_4, self).runMoreaTest(content, parsetree)
@@ -329,12 +329,12 @@ class MoreaTestParsingValidFilesWithNoComments_Test_5(MoreaTestParsingValidFiles
 
     def runTest(self):
         content = "---\n" \
-                  "long string: \"something        \n" \
+                  "title: \"something        \n" \
                   " # this hash is fine\n" \
                   "# and so is this one      # and this one\n" \
                   "end of string\"\n" \
                   "---\n"
-        parsetree = {"long string": [
+        parsetree = {"title": [
             [False, (False, "something # this hash is fine # and so is this one      # and this one end of string")]]
         }
 
@@ -355,9 +355,9 @@ class MoreaTestParsingValidFilesWithComments_Test_1(MoreaTestParsingValidFilesWi
 
     def runTest(self):
         content = "---\n" \
-                  "#test: ok\n" \
+                  "#morea_id: ok\n" \
                   "---\n\n"
-        parsetree = {"test": [[True, (True, "ok")]]
+        parsetree = {"morea_id": [[True, (True, "ok")]]
                      }
         super(MoreaTestParsingValidFilesWithComments_Test_1, self).runMoreaTest(content, parsetree)
 
@@ -369,11 +369,11 @@ class MoreaTestParsingValidFilesWithComments_Test_2(MoreaTestParsingValidFilesWi
 
     def runTest(self):
         content = "---\n" \
-                  "#long string: ok\n" \
+                  "#title: ok\n" \
                   "# something else\n" \
                   "#      another thing\n" \
                   "---\n\n"
-        parsetree = {"long string": [[True, (True, "ok something else another thing")]]
+        parsetree = {"title": [[True, (True, "ok something else another thing")]]
                      }
         super(MoreaTestParsingValidFilesWithComments_Test_2, self).runMoreaTest(content, parsetree)
 
@@ -385,12 +385,12 @@ class MoreaTestParsingValidFilesWithComments_Test_3(MoreaTestParsingValidFilesWi
 
     def runTest(self):
         content = "---\n" \
-                  "#long string:\n" \
+                  "#title:\n" \
                   "# some string\n" \
                   "# something else\n" \
                   "#      another thing\n" \
                   "---\n\n"
-        parsetree = {"long string": [[True, (True, "some string something else another thing")]]
+        parsetree = {"title": [[True, (True, "some string something else another thing")]]
                      }
         super(MoreaTestParsingValidFilesWithComments_Test_3, self).runMoreaTest(content, parsetree)
 
@@ -403,14 +403,14 @@ class MoreaTestParsingValidFilesWithComments_Test_4(MoreaTestParsingValidFilesWi
     def runTest(self):
         content = "---\n" \
                   "title: something    \n" \
-                  "list_of_stuff:   \n" \
+                  "morea_readings:   \n" \
                   "  - item1\n" \
                   "  #- item2 # some comment\n" \
                   " # # # # # # # # # #- item3\n" \
                   "#  - item4###\n" \
                   "  - item5\n" \
                   "---\n\n"
-        parsetree = {'list_of_stuff': [
+        parsetree = {'morea_readings': [
             [False, [(False, 'item1'), (True, 'item2'), (True, 'item3'), (True, 'item4###'), (False, 'item5')]]],
             'title': [[False, (False, 'something')]]
         }
@@ -424,12 +424,12 @@ class MoreaTestParsingValidFilesWithComments_Test_5(MoreaTestParsingValidFilesWi
 
     def runTest(self):
         content = "---\n" \
-                  "list_of_stuff:   \n" \
+                  "morea_readings:   \n" \
                   "  - ####item1\n" \
                   "  - item2\n" \
                   "#  - item5\n" \
                   "---\n\n"
-        parsetree = {'list_of_stuff': [[False, [(False, 'item2'), (True, 'item5')]]],
+        parsetree = {'morea_readings': [[False, [(False, 'item2'), (True, 'item5')]]],
                      }
         super(MoreaTestParsingValidFilesWithComments_Test_5, self).runMoreaTest(content, parsetree)
 
@@ -441,11 +441,11 @@ class MoreaTestParsingValidFilesWithComments_Test_6(MoreaTestParsingValidFilesWi
 
     def runTest(self):
         content = "---\n" \
-                  "#something_long: here is the\n" \
+                  "#title: here is the\n" \
                   "# beginning\n" \
                   "# and some more\n" \
                   "---\n\n"
-        parsetree = {'something_long': [[True, (True, "here is the beginning and some more")]],
+        parsetree = {'title': [[True, (True, "here is the beginning and some more")]],
                      }
         super(MoreaTestParsingValidFilesWithComments_Test_6, self).runMoreaTest(content, parsetree)
 
@@ -457,11 +457,11 @@ class MoreaTestParsingValidFilesWithComments_Test_7(MoreaTestParsingValidFilesWi
 
     def runTest(self):
         content = "---\n" \
-                  "#something_long: \"here is the\n" \
+                  "#title: \"here is the\n" \
                   "# beginning\n" \
                   "# and some more\"\n" \
                   "---\n\n"
-        parsetree = {'something_long': [[True, (True, "here is the beginning and some more")]],
+        parsetree = {'title': [[True, (True, "here is the beginning and some more")]],
                      }
         super(MoreaTestParsingValidFilesWithComments_Test_7, self).runMoreaTest(content, parsetree)
 
@@ -473,17 +473,17 @@ class MoreaTestParsingValidFilesWithComments_Test_8(MoreaTestParsingValidFilesWi
 
     def runTest(self):
         content = "---\n" \
-                  "#something_long: \"here is the ###\n" \
+                  "#title: \"here is the ###\n" \
                   "# beginning ###\n" \
                   "#  # # and some # # more\"   ###### EOL # # # EOL2\n" \
-                  "#extra:\n" \
+                  "#morea_readings:\n" \
                   "##### - item2 # EOL # EOL ##### EOL\n" \
                   "               ## - item3 ###\n" \
                   "# # # # # # - item4\n" \
                   "#   item4item4\n" \
                   "---\n\n"
-        parsetree = {'something_long': [[True, (True, "here is the ### beginning ### # # and some # # more")]],
-                     'extra': [[True, [(True, "item2"), (True, 'item3'), (True, 'item4 item4item4')]]],
+        parsetree = {'title': [[True, (True, "here is the ### beginning ### # # and some # # more")]],
+                     'morea_readings': [[True, [(True, "item2"), (True, 'item3'), (True, 'item4 item4item4')]]],
                      }
         super(MoreaTestParsingValidFilesWithComments_Test_8, self).runMoreaTest(content, parsetree)
 
@@ -495,11 +495,10 @@ class MoreaTestParsingValidFilesWithComments_Test_9(MoreaTestParsingValidFilesWi
 
     def runTest(self):
         content = "---\n" \
-                  "#number: 12\n" \
-                  "othernumber: 42\n" \
+                  "#morea_sort_order: 12\n" \
+                  "morea_sort_order: 42\n" \
                   "---\n\n"
-        parsetree = {'number': [[True, (True, 12)]],
-                     'othernumber': [[False, (False, 42)]],
+        parsetree = {'morea_sort_order': [[True, (True, 12)], [False, (False, 42)]],
                      }
         super(MoreaTestParsingValidFilesWithComments_Test_9, self).runMoreaTest(content, parsetree)
 
@@ -511,11 +510,10 @@ class MoreaTestParsingValidFilesWithComments_Test_10(MoreaTestParsingValidFilesW
 
     def runTest(self):
         content = "---\n" \
-                  "#stuff: false\n" \
-                  "stuff2: True\n" \
+                  "#published: false\n" \
+                  "published: True\n" \
                   "---\n\n"
-        parsetree = {'stuff': [[True, (True, False)]],
-                     'stuff2': [[False, (False, True)]],
+        parsetree = {'published': [[True, (True, False)], [False, (False, True)]],
                      }
         super(MoreaTestParsingValidFilesWithComments_Test_10, self).runMoreaTest(content, parsetree)
 
@@ -532,7 +530,7 @@ class MoreaTestRejectingInvalidFilesWithComments_Test_1(MoreaTestRejectingInvali
 
     def runTest(self):
         content = "---\n" \
-                  "#test:\n" \
+                  "#morea_labels:\n" \
                   "  - itemA\n" \
                   "#  - itemB\n" \
                   "  - itemC\n" \
@@ -565,9 +563,9 @@ class MoreaTestRejectingInvalidFilesWithComments_Test_3(MoreaTestRejectingInvali
         content = "---\n" \
                   "title: \"I love \n" \
                   "# Hello World!!!\n" \
-                  "some_property: hello\n" \
+                  "morea_id: hello\n" \
                   "# Full-line comments\n" \
-                  "some_other_property: full" \
+                  "morea_type: full" \
                   "---\n\n"
 
         super(MoreaTestRejectingInvalidFilesWithComments_Test_3, self).runMoreaTest(content)

@@ -71,8 +71,36 @@ class CustomException(Exception):
 def add_quotes(do_it, string):
     if not do_it:
         return string
-    if '"' in string:
-        return "'" + string + "'"
-    else:
-        return '"' + string + '"'
 
+    # Deal with multi-line scalar values
+    if "\n" in string:
+        prefix = "|\n"
+        offset = "  "
+    else:
+        prefix = ""
+        offset = ""
+
+    # Figure out the quoting
+    if ('"' not in string) and ("'" not in string):
+        quotes = '"'
+    elif '"' in string and "'" not in string:
+        quotes = "'"
+    elif "'" in string and '"' not in string:
+        quotes = '"'
+    else:
+        quotes = ""
+
+    # put the last quote right before the last (if any)
+    (string, count) = re.subn("\n$", quotes, string)
+    if count == 0:
+        string += quotes
+
+    # Add the prefix and quotes
+    string = prefix + quotes + string
+
+    # Deal with the offset for multi-line values
+    new_string = ""
+    for l in string.splitlines():
+        new_string += offset + l + "\n"
+
+    return new_string

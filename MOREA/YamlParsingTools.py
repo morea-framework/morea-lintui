@@ -134,6 +134,7 @@ def remove_all_end_of_line_comments(string):
     for l in string.splitlines():
         # Look for end-of-line comments, remove them and set the warning flag
         newl = l
+        count = 0
         while True:
             (newl, count) = re.subn(r'(?P<start>^.*[^\s]\s\s*)#.*', r'\g<start>', newl)
             if count == 0:

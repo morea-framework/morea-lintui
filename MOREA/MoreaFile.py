@@ -167,9 +167,11 @@ class MoreaFile(object):
         string += "---\n"
         string += self.non_yaml_contents
 
-        print "NEWFILECONTENT=", string
-        print "-----------------\n"
-
+        # Saving the file
+        f = open(self.path, 'w')
+        f.write(string)
+        f.close()
+        return
 
 ################################################################
 ###############     HELPER FUNCTIONS BELOW                     #
