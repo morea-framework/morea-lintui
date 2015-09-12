@@ -85,7 +85,7 @@ class MoreaContent(object):
         err_msg = ""
 
         # Build list of ALL ids
-        ids = [[f.path, f.get_value_of_scalar_required_property("morea_id")] for f in self.files]
+        ids = [[f.path, f.get_value_of_scalar_property("morea_id")] for f in self.files]
 
         # Find duplicates (very inefficient, but makes error reporting nice)
         for [path, id] in ids:
@@ -112,12 +112,12 @@ class MoreaContent(object):
                         err_msg += "  Error: " + f.path + " references unknown morea_id " + idstring + "\n"
                         continue
 
-                    morea_type = referenced_file.get_value_of_scalar_required_property("morea_type")
+                    morea_type = referenced_file.get_value_of_scalar_property("morea_type")
                     if not MoreaGrammar.is_valid_reference(label, morea_type):
                         print "label=", label, "idstring= ", idstring
                         err_msg += "  Error: File " + f.path + " mistakenly references id " + idstring + \
                                    ", which is of type " + \
-                                   referenced_file.get_value_of_scalar_required_property("morea_type") + \
+                                   referenced_file.get_value_of_scalar_property("morea_type") + \
                                    ", as part of " + label + "\n"
 
         if err_msg != "":
@@ -127,14 +127,14 @@ class MoreaContent(object):
 
     def get_file(self, id_string):
         for f in self.files:
-            if f.get_value_of_scalar_required_property("morea_id") == id_string:
+            if f.get_value_of_scalar_property("morea_id") == id_string:
                 return f
         raise CustomException("")
 
     def get_filelist_for_type(self, type_string):
         filelist = []
         for f in self.files:
-            if f.get_value_of_scalar_required_property("morea_type") == type_string:
+            if f.get_value_of_scalar_property("morea_type") == type_string:
                 filelist.append(f)
         return filelist
 

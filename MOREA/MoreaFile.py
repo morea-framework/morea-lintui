@@ -107,25 +107,31 @@ class MoreaFile(object):
 
         return
 
-    def get_value_of_scalar_required_property(self, name):
-        try:
-            prop = self.property_list[name]
-            for version in prop.versions:
-                if not version.commented_out:
-                    if type(version.values) != list:
-                        if not version.values.commented_out:
-                            return version.values.value
-                    else:
-                        for val in version.values:
-                            if not val.commented_out:
-                                return val.value
-        except Exception as e:
-            raise CustomException(str(e))
-        raise CustomException("  Value for property " + name + " not found!")
+    def get_value_of_scalar_property(self, name):
+        if name not in self.property_list:
+            return None
 
-    def set_value_of_scalar_required_property(self, name, value):
+        prop = self.property_list[name]
+        if prop.grammar.multiple_values:
+            raise CustomException("  Internal error: property "+name+" is not scalar!")
+
+        for version in prop.versions:
+            if not version.commented_out:
+                if type(version.values) != list:
+                    if not version.values.commented_out:
+                        return version.values.value
+                else:
+                    for val in version.values:
+                        if not val.commented_out:
+                            return val.value
+        return None
+
+    def set_value_of_scalar_property(self, name, value):
+
         try:
             prop = self.property_list[name]
+            if prop.grammar.multiple_values:
+                raise CustomException("  Internal error: property "+name+" is not scalar!")
             for version in prop.versions:
                 if not version.commented_out:
                     if type(version.values) != list:
