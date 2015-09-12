@@ -1,7 +1,8 @@
+import time
 from YamlParsingTools import *
 from MoreaProperty import Property
 from MoreaGrammar import MoreaGrammar
-from Toolbox.toolbox import offset_string
+from Toolbox.toolbox import offset_string, morea_file_monitor
 
 __author__ = 'casanova'
 
@@ -12,6 +13,7 @@ class MoreaFile(object):
     """A class that describes all content of a Morea .md file"""
 
     def __init__(self, path, warnings, parse_comments):
+
         self.path = path
 
         # Check that the .md file has 2 yaml documents in it and that the YAML can be parsed
@@ -158,6 +160,11 @@ class MoreaFile(object):
         return reference_list
 
     def save(self):
+
+        # Don't do anything if the object hasn't changed
+        if not morea_file_monitor.has_changed(self):
+            return
+
         string = "---\n"
         for pname in MoreaGrammar.property_output_order:
             if pname in self.property_list:
@@ -172,6 +179,7 @@ class MoreaFile(object):
         f.write(string)
         f.close()
         return
+
 
 ################################################################
 ###############     HELPER FUNCTIONS BELOW                     #

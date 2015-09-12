@@ -1,3 +1,5 @@
+import time
+
 __author__ = 'casanova'
 
 import textwrap
@@ -104,3 +106,23 @@ def add_quotes(do_it, string):
         new_string += offset + l + "\n"
 
     return new_string
+
+
+from weakref import WeakKeyDictionary
+from cPickle import dumps
+
+class ObjectMonitor:
+    def __init__(self):
+        self.objects = WeakKeyDictionary()
+
+    def has_changed(self, obj):
+        current_pickle = dumps(obj, -1)
+        changed = False
+        if obj in self.objects:
+            changed = current_pickle != self.objects[obj]
+        self.objects[obj] = current_pickle
+        #print "File"  + obj.path + "has changed: " + str(changed)
+        return changed
+
+morea_file_monitor = ObjectMonitor()
+

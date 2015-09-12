@@ -1,3 +1,4 @@
+from Toolbox import toolbox
 from Toolbox.toolbox import CustomException
 from MoreaFile import MoreaFile
 from MoreaGrammar import MoreaGrammar
@@ -34,6 +35,11 @@ class MoreaContent(object):
             raise CustomException(err_msg)
 
         print "  Acquired content from " + str(len(self.files)) + " MOREA .md files"
+        return
+
+    def take_pickles(self):
+        for f in self.files:
+            toolbox.morea_file_monitor.has_changed(f)
         return
 
     def check(self):
@@ -73,10 +79,6 @@ class MoreaContent(object):
         except CustomException as e:
             raise e
 
-        return
-
-    def save(self):
-        print "SAVE: NOT IMPLEMENTED YET"
         return
 
     def check_for_duplicate_ids(self):

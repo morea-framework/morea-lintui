@@ -104,7 +104,7 @@ class PropertyVersion(object):
             value_list = self.values
         for v in value_list:
             if v.value is None:
-                print "\n"
+                string +=  "\n"
                 continue
             if self.commented_out or v.commented_out:
                 string += "#  - " + add_quotes(self.grammar.quoted, str(v.value)) + "\n"

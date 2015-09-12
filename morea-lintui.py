@@ -184,6 +184,8 @@ print(chr(27) + "[2J")
 # Launch the ncurses UI
 if args.tui:
     content_copy = copy.deepcopy(morea_content)
+    content_copy.take_pickles()
     tui = TUI.TUI.TUI(content_copy)
     updated_morea_content = tui.launch()
-    updated_morea_content.save()
+    if updated_morea_content is not None:
+        updated_morea_content.save()
