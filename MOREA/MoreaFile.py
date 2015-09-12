@@ -1,4 +1,3 @@
-import time
 from YamlParsingTools import *
 from MoreaProperty import Property
 from MoreaGrammar import MoreaGrammar

@@ -47,6 +47,7 @@ class TopLevelFrame(urwid.Pile):
 
 class TUI:
     def __init__(self, morea_content):
+        self.save = False
         self.content = morea_content
 
         # URWID customizations (could break in future versions of URWID)
@@ -113,8 +114,10 @@ class TUI:
             self.frame_holder.set_body(self.top_level_frame_dict["assessments"])
             self.main_loop.draw_screen()
         elif key == 'X' or key == 'x':
+            self.save = False
             raise urwid.ExitMainLoop()
         elif key == 'Q' or key == 'q':
+            self.save = True
             raise urwid.ExitMainLoop()
 
     def handle_button_press(self, button, user_data):
@@ -128,5 +131,8 @@ class TUI:
 
     def launch(self):
         self.main_loop.run()
-        return self.content
+        if self.save:
+            return self.content
+        else:
+            return None
         # TODO: do something?

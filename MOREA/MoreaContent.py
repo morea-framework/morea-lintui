@@ -108,9 +108,9 @@ class MoreaContent(object):
                     referenced_list = None
                     try:
                         referenced_file = self.get_file(idstring)
-                    except CustomException as e:
+                    except CustomException:
                         err_msg += "  Error: " + f.path + " references unknown morea_id " + idstring + "\n"
-                    continue
+                        continue
 
                     morea_type = referenced_file.get_value_of_scalar_required_property("morea_type")
                     if not MoreaGrammar.is_valid_reference(label, morea_type):

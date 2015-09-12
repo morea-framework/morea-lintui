@@ -85,11 +85,8 @@ def handle_input(key):
     elif key == 'W' or key == 'w':
         frame_dict["outcomes"] = MainFrame("NEWOUTCOMES")
         main_loop.draw_screen()
-
-
     elif key == 'X' or key == 'x':
         raise urwid.ExitMainLoop()
-
     elif key == 'Q' or key == 'q':
         raise urwid.ExitMainLoop()
 

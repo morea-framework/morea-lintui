@@ -56,7 +56,6 @@ class PropertyVersion(object):
 
         # print "IN PROPERTY VERSION CONS:", name, commented_out, value
 
-
         if type(value) != list:
             self.values = PropertyScalarValue(commented_out, value)  #
         else:
@@ -104,7 +103,7 @@ class PropertyVersion(object):
             value_list = self.values
         for v in value_list:
             if v.value is None:
-                string +=  "\n"
+                string += "\n"
                 continue
             if self.commented_out or v.commented_out:
                 string += "#  - " + add_quotes(self.grammar.quoted, str(v.value)) + "\n"
