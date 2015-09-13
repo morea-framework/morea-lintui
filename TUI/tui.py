@@ -22,6 +22,7 @@ class TopLevelFrame(urwid.Pile):
         else:
             sorting_header = []
 
+        # noinspection PyTypeChecker
         list_of_rows.append(urwid.Columns([type_column_header] +
                                           [(6, header) for header in other_column_headers] +
                                           sorting_header, dividechars=1))
@@ -33,9 +34,10 @@ class TopLevelFrame(urwid.Pile):
         filelist = self.tui.content.get_filelist_for_type(morea_type_key_and_nickname[0])
 
         # Sort the files (is morea_sort_order is not specified, then at the top)
-        filelist.sort(key=lambda x: x.get_value_of_scalar_property("morea_sort_order"), reverse=False)
+        filelist.sort(key=lambda xx: xx.get_value_of_scalar_property("morea_sort_order"), reverse=False)
 
         row_count = 0
+        focus_row = -1
         for f in filelist:
 
             widget_list = []
@@ -196,9 +198,11 @@ class TUI:
             self.save = True
             raise urwid.ExitMainLoop()
 
+    # noinspection PyMethodMayBeStatic
     def handle_moreaid_button_press(self, button, user_data):
         return
 
+    # noinspection PyUnusedLocal
     def handle_module_sorting_button_press(self, button, user_data):
         (direction, f) = user_data
         self.content.update_file_sort_order(f, direction)
@@ -209,6 +213,7 @@ class TUI:
         self.main_loop.draw_screen()
         return
 
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def handle_toplevelframe_checkbox_state_change(self, cb, state, user_data):
         (f, property_key) = user_data
         f.set_value_of_scalar_property(property_key, state)

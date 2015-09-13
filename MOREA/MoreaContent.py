@@ -173,11 +173,11 @@ class MoreaContent(object):
 
         # Decide whether there is anything to do
         if direction == -1:
-            index = sorted_list.index(file)
+            index = sorted_list.index(morea_file)
             if (index == 0) or (sorted_list[index - 1].get_value_of_scalar_property("morea_sort_order") is None):
                 return
         else:  # direction = +1
-            index = sorted_list.index(file)
+            index = sorted_list.index(morea_file)
             if (index == len(sorted_list) - 1) or \
                     (sorted_list[index + 1].get_value_of_scalar_property("morea_sort_order") is None):
                 return

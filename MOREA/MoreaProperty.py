@@ -62,7 +62,7 @@ class PropertyVersion(object):
             self.values = []
             for val in value:
                 if val is not None:
-                    # print "IN PROPERTYVERSION ECOMMENTIFYING: ", val
+                    # print "IN PROPERTYVERSION DECOMMENTIFYING: ", val
                     (decommentified_value, value_commented_out) = decommentify(val)
                     # print "    ---> ", decommentified_value, value_commented_out
                     if self.commented_out is True and value_commented_out is False:
