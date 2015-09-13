@@ -1,5 +1,20 @@
 # morea-lintui
 
-morea-lintui is a Morea content validator (like link for C) and a More content editor (via a Text User Interface, or tui).
+Morea content validator (like lint for C) and Morea content editor (via a Text User Interface, or tui).
+
+The content validator does:
+    * Check YAML syntax (more precisely than jekyll)
+    * Check that every reference to a Morea id is valid
+    * Type-checking of references
+    * Checking for value collisions
+    * Issue warnings for potentially dangerous behavior
+
+
+The content editor does:
+    * Provide a simple way to view Morea content
+    * Provide a simple way to edit parts of the Morea content
+
+
+Here is a screenshot of the content editor TUI:
 
 [](https://github.com/morea-framework/morea-lintui/blob/master/docs/morea_lintui.jpg)
