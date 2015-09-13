@@ -80,12 +80,11 @@ def print_welcome_screen():
     if not args.tui:
         print_as_paragraph(green, "- This script will modify your .md files based on your interaction with "
                                   "the interface. Note that cosmetic changes will occur as well (e.g., white "
-                                  "spacing, indentation), making your files more uniform. Bend to this "
-                                  " script's will!")
+                                  "spacing, indentation, deterministic orderings), making your files more uniform.")
         print "\n"
 
-        print_as_paragraph(green, "- Resizing the terminal window will not be a good idea (unless you"
-                                  " get an error that tells you to do so due to it being too small).")
+        print_as_paragraph(green, "- You may have to resize your terminal window to make"
+                                  " the user interface look nice(r).")
         print "\n"
 
     raw_input(bold("Press ENTER to continue, ^C to abort --"))
