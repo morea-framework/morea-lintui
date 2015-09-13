@@ -1,3 +1,4 @@
+import time
 from Toolbox import toolbox
 from Toolbox.toolbox import CustomException
 from MoreaFile import MoreaFile
@@ -137,7 +138,62 @@ class MoreaContent(object):
                 filelist.append(f)
         return filelist
 
-    def save(self):
+    def update_file_sort_order(self, file, direction):
+
+        if file.get_value_of_scalar_property("morea_sort_order") is None:
+            return
+
+        # This is a TOTAL HACK!!!!
+
+        # Build a sorted list
+        sorted_list = sorted(self.get_filelist_for_type(file.get_value_of_scalar_property("morea_type")),
+                             key=lambda x: x.get_value_of_scalar_property("morea_sort_order"),
+                             reverse=False)
+
+        # Decide whether there is anything to do
+        if direction == -1:
+            index = sorted_list.index(file)
+            if (index == 0) or (sorted_list[index - 1].get_value_of_scalar_property("morea_sort_order") is None):
+                return
+        else:  # direction = +1
+            index = sorted_list.index(file)
+            if (index == len(sorted_list) - 1) or (
+                        sorted_list[index + 1].get_value_of_scalar_property("morea_sort_order") is None):
+                return
+
+        # Multiply all the sort_orders by 2, to create space
         for f in self.files:
-            f.save()
+            sort_order = f.get_value_of_scalar_property("morea_sort_order")
+            if sort_order is not None:
+                f.set_value_of_scalar_property("morea_sort_order", 2 * sort_order)
+
+        # Udpate
+        index = sorted_list.index(file)
+
+        if direction == -1:
+            file.set_value_of_scalar_property("morea_sort_order",
+                                              sorted_list[index - 1].get_value_of_scalar_property(
+                                                  "morea_sort_order") - 1)
+        else:
+            file.set_value_of_scalar_property("morea_sort_order",
+                                              sorted_list[index + 1].get_value_of_scalar_property(
+                                                  "morea_sort_order") + 1)
+
+        # Re-sort the list it all
+        sorted_list.sort(key=lambda x: x.get_value_of_scalar_property("morea_sort_order"),
+                         reverse=False)
+
+        # RE-compact it all using 10-increments
+        counter = 10
+        for f in sorted_list:
+            if f.get_value_of_scalar_property("morea_sort_order") is not None:
+                f.set_value_of_scalar_property("morea_sort_order", counter)
+                counter += 10
+
         return
+
+
+def save(self):
+    for f in self.files:
+        f.save()
+    return
