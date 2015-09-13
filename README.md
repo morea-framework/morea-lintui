@@ -17,4 +17,4 @@ The content editor does:
 
 Here is a screenshot of the content editor TUI:
 
-<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/morea_lintui.jpg">
+[](https://github.com/morea-framework/morea-lintui/blob/master/docs/morea_lintui.jpg)
