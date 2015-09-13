@@ -7,7 +7,7 @@ import argparse
 from MOREA.MoreaContent import MoreaContent
 from Testing.CustomTestRunner import CustomTestRunner
 from Toolbox.toolbox import *
-from TUI.TUI_NEW import TUI
+from TUI.TUI import TUI
 
 __author__ = 'casanova'
 
