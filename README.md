@@ -3,6 +3,7 @@
 Morea content validator (like lint for C) and Morea content editor (via a Text User Interface, or tui).
 
 The content validator does:
+
     * Check YAML syntax (more precisely than jekyll)
     * Check that every reference to a Morea id is valid
     * Type-checking of references
@@ -11,6 +12,7 @@ The content validator does:
 
 
 The content editor does:
+
     * Provide a simple way to view Morea content
     * Provide a simple way to edit parts of the Morea content
 
