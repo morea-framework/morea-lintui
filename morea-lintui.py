@@ -5,10 +5,9 @@ import subprocess
 import argparse
 
 from MOREA.MoreaContent import MoreaContent
-from TUI.TUI import *
 from Testing.CustomTestRunner import CustomTestRunner
 from Toolbox.toolbox import *
-import TUI.TUI
+from TUI.TUI_NEW import TUI
 
 __author__ = 'casanova'
 
@@ -22,7 +21,10 @@ as a user of jekyll I've missed those errors countless times because I blinked
 and didn't see them go by on my terminal (even though they show up yellow-ish).
 This issue is discussed at:
     https://github.com/jekyll/jekyll/issues/1907
-and may be fixed in  jekyll v3.0.xx (currently beta)? I am running 2.5.3
+and may be fixed in  jekyll v3.0.xx (currently beta)? I am running 2.5.3.
+
+This function isn't really useful anyway, since more-lintui is much more anal and
+precise in catching errors and issuing warnings.
 """
 
 
@@ -185,7 +187,7 @@ print(chr(27) + "[2J")
 if args.tui:
     content_copy = copy.deepcopy(morea_content)
     content_copy.take_pickles()
-    tui = TUI.TUI.TUI(content_copy)
+    tui = TUI(content_copy)
     updated_morea_content = tui.launch()
     if updated_morea_content is not None:
         print "---", type(updated_morea_content)
