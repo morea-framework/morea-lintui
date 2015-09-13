@@ -46,8 +46,7 @@ class TopLevelFrame(urwid.Pile):
                 button_label = f.get_value_of_scalar_property("morea_id")
             else:
                 button_label = u"\u25BA " + f.get_value_of_scalar_property("morea_id") + \
-                               "\n   (" + f.get_value_of_scalar_property("title") + ")" + \
-                               str(f.get_value_of_scalar_property("morea_sort_order"))
+                               '\n   "' + f.get_value_of_scalar_property("title") + '"'
 
             button = urwid.Button(button_label,
                                   on_press=self.tui.handle_moreaid_button_press,

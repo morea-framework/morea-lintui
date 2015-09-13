@@ -47,6 +47,8 @@ class MoreaContent(object):
         try:
             self.type_check()
             self.reference_check()
+            self.check_for_sort_order_collisions("module")
+            self.check_for_sort_order_collisions("outcome")
         except CustomException as e:
             raise e
         return
@@ -125,6 +127,26 @@ class MoreaContent(object):
 
         return
 
+    def check_for_sort_order_collisions(self, filetype):
+        err_msg = ""
+
+        # Doing is for modules
+        module_files = [f for f in self.files if f.get_value_of_scalar_property("morea_type") == filetype]
+
+        # Sort files by sort order
+        module_files.sort(key=lambda x: x.get_value_of_scalar_property("morea_sort_order"), reverse=False)
+        for i in xrange(1, len(module_files)):
+            current = module_files[i].get_value_of_scalar_property("morea_sort_order")
+            previous = module_files[i - 2].get_value_of_scalar_property("morea_sort_order")
+            if previous is not None and current == previous:
+                err_msg += "  Error: Files " + module_files[i].path + " and " + \
+                           module_files[i - 1].path + " have identical morea_sort_order values (" + str(current) + ")\n"
+
+        if err_msg != "":
+            raise CustomException(err_msg)
+
+        return
+
     def get_file(self, id_string):
         for f in self.files:
             if f.get_value_of_scalar_property("morea_id") == id_string:
@@ -191,7 +213,6 @@ class MoreaContent(object):
                 counter += 10
 
         return
-
 
     def save(self):
         for f in self.files:

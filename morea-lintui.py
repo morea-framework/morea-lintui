@@ -159,7 +159,7 @@ except CustomException as e:
     print yellow(str(e))
     print_as_paragraph(red, "MOREA .md files seem to have YAML issues. "
                             "Fix the above error(s) and re-run this script "
-                            "  (which is not as lenient as morea-run-local.sh, for good reasons).")
+                            "  (which is not as lenient as jekyll, for good reasons).")
     exit(1)
 
 # Checking MOREA content
@@ -169,7 +169,7 @@ try:
 except CustomException as e:
     print yellow(unicode(e))
     print_as_paragraph(red, "MOREA .md files seem to have issues. Fix the above error(s) "
-                            "and re-run this script (which is not as lenient as morea-run-local.sh, "
+                            "and re-run this script (which is not as lenient as jekyll, "
                             "for good reasons).")
     exit(1)
 
