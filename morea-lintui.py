@@ -187,4 +187,5 @@ if args.tui:
     tui = TUI.TUI.TUI(content_copy)
     updated_morea_content = tui.launch()
     if updated_morea_content is not None:
+        print "---", type(updated_morea_content)
         updated_morea_content.save()

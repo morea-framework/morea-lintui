@@ -193,7 +193,7 @@ class MoreaContent(object):
         return
 
 
-def save(self):
-    for f in self.files:
-        f.save()
-    return
+    def save(self):
+        for f in self.files:
+            f.save()
+        return
