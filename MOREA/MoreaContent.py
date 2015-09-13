@@ -1,11 +1,10 @@
-import time
+import os
+import re
+
 from Toolbox import toolbox
 from Toolbox.toolbox import CustomException
 from MoreaFile import MoreaFile
 from MoreaGrammar import MoreaGrammar
-
-import os
-import re
 
 __author__ = 'casanova'
 
@@ -88,12 +87,12 @@ class MoreaContent(object):
         err_msg = ""
 
         # Build list of ALL ids
-        ids = [[f.path, f.get_value_of_scalar_property("morea_id")] for f in self.files]
+        morea_ids = [[f.path, f.get_value_of_scalar_property("morea_id")] for f in self.files]
 
         # Find duplicates (very inefficient, but makes error reporting nice)
-        for [path, id] in ids:
-            if len([[p, i] for [p, i] in ids if id == i]) > 1:
-                err_msg += "  Error: Duplicated morea_id " + id + " (one occurrence in file " + path + ")\n"
+        for [path, morea_id] in morea_ids:
+            if len([[p, i] for [p, i] in morea_ids if morea_id == i]) > 1:
+                err_msg += "  Error: Duplicated morea_id " + morea_id + " (one occurrence in file " + path + ")\n"
 
         if err_msg != "":
             raise CustomException(err_msg)
@@ -160,15 +159,15 @@ class MoreaContent(object):
                 filelist.append(f)
         return filelist
 
-    def update_file_sort_order(self, file, direction):
+    def update_file_sort_order(self, morea_file, direction):
 
-        if file.get_value_of_scalar_property("morea_sort_order") is None:
+        if morea_file.get_value_of_scalar_property("morea_sort_order") is None:
             return
 
         # This is a TOTAL HACK!!!!
 
         # Build a sorted list
-        sorted_list = sorted(self.get_filelist_for_type(file.get_value_of_scalar_property("morea_type")),
+        sorted_list = sorted(self.get_filelist_for_type(morea_file.get_value_of_scalar_property("morea_type")),
                              key=lambda x: x.get_value_of_scalar_property("morea_sort_order"),
                              reverse=False)
 
@@ -179,8 +178,8 @@ class MoreaContent(object):
                 return
         else:  # direction = +1
             index = sorted_list.index(file)
-            if (index == len(sorted_list) - 1) or (
-                        sorted_list[index + 1].get_value_of_scalar_property("morea_sort_order") is None):
+            if (index == len(sorted_list) - 1) or \
+                    (sorted_list[index + 1].get_value_of_scalar_property("morea_sort_order") is None):
                 return
 
         # Multiply all the sort_orders by 2, to create space
@@ -190,16 +189,16 @@ class MoreaContent(object):
                 f.set_value_of_scalar_property("morea_sort_order", 2 * sort_order)
 
         # Udpate
-        index = sorted_list.index(file)
+        index = sorted_list.index(morea_file)
 
         if direction == -1:
-            file.set_value_of_scalar_property("morea_sort_order",
-                                              sorted_list[index - 1].get_value_of_scalar_property(
-                                                  "morea_sort_order") - 1)
+            morea_file.set_value_of_scalar_property("morea_sort_order",
+                                                    sorted_list[index - 1].get_value_of_scalar_property(
+                                                        "morea_sort_order") - 1)
         else:
-            file.set_value_of_scalar_property("morea_sort_order",
-                                              sorted_list[index + 1].get_value_of_scalar_property(
-                                                  "morea_sort_order") + 1)
+            morea_file.set_value_of_scalar_property("morea_sort_order",
+                                                    sorted_list[index + 1].get_value_of_scalar_property(
+                                                        "morea_sort_order") + 1)
 
         # Re-sort the list it all
         sorted_list.sort(key=lambda x: x.get_value_of_scalar_property("morea_sort_order"),

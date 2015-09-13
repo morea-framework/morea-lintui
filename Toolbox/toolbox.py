@@ -1,5 +1,3 @@
-import time
-
 __author__ = 'casanova'
 
 import textwrap
@@ -107,9 +105,10 @@ def add_quotes(do_it, string):
 
     return new_string
 
-
+#  Create a monitor that detects object changes
 from weakref import WeakKeyDictionary
 from cPickle import dumps
+
 
 class ObjectMonitor:
     def __init__(self):
@@ -121,8 +120,7 @@ class ObjectMonitor:
         if obj in self.objects:
             changed = current_pickle != self.objects[obj]
         self.objects[obj] = current_pickle
-        #print "File"  + obj.path + "has changed: " + str(changed)
+        # print "File"  + obj.path + "has changed: " + str(changed)
         return changed
 
 morea_file_monitor = ObjectMonitor()
-

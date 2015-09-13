@@ -1,5 +1,6 @@
-from Toolbox.toolbox import bold, CustomException
 import re
+
+from Toolbox.toolbox import bold, CustomException
 
 __author__ = 'casanova'
 
@@ -56,7 +57,6 @@ def commentify(string, parse_comments):
     # Ignore full-line comments, as they should be continuations from previous lines!
     # (string, count) = re.subn('^\s*#(?P<content>[^\-:]*$)', r' \g<content>', string)
     # print "NOW: ", string
-
 
     # Look for end-of-line comments, remove them and set the warning flag
     # (string, count) = re.subn(r'(?P<start>^.*[\-:].*)\s(?P<comment>#.*)', r'\g<start>', string)
@@ -167,7 +167,6 @@ def make_all_comments_one_liners(string):
         # Update number of quotes seen so far
         seen_quotes += len(re.findall('"', l))
 
-
         # print "commented_out_decl: ", commented_out_declaration, \
         #       "  commented_out_dangling:", commented_out_dangling_line, \
         #       "seen_quotes =", seen_quotes
@@ -210,7 +209,6 @@ def get_commentified_front_matter(path, warnings, parse_comments):
     raw_front_matter = get_raw_front_matter(path)
     eol_comment_found = False
 
-
     # PREPROCESSING
     try:
         sanitized_front_matter = raw_front_matter
@@ -232,7 +230,6 @@ def get_commentified_front_matter(path, warnings, parse_comments):
                 print sanitized_front_matter
                 print "**********************************\n"
 
-
             # DO A PASS TO MAKE ALL COMMENTS ONE-LINERS
             sanitized_front_matter = make_all_comments_one_liners(sanitized_front_matter)
 
@@ -240,7 +237,6 @@ def get_commentified_front_matter(path, warnings, parse_comments):
                 print "\n*********  AFTER PASS (MAKE ALL COMMENTS ONE-LINERS)  ****************\n"
                 print sanitized_front_matter
                 print "**********************************\n"
-
 
             # DO A PASS TO DEAL WITH #'S AND QUOTES
             sanitized_front_matter = batch_quoted_character_replacement(sanitized_front_matter, "#", "__GENUINEHASH__")
@@ -250,7 +246,6 @@ def get_commentified_front_matter(path, warnings, parse_comments):
                 print sanitized_front_matter
                 print "**********************************\n"
 
-
             # DO A PASS TO REMOVE ALL REDUNDANT COMMENTS
             sanitized_front_matter = remove_redundant_hashes(sanitized_front_matter)
 
@@ -259,8 +254,6 @@ def get_commentified_front_matter(path, warnings, parse_comments):
                 print sanitized_front_matter
                 print "**********************************\n"
 
-
-
             # DO A  PASS TO REMOVE ALL END-OF-LINE COMMENTS
             sanitized_front_matter, eol_comment_found = remove_all_end_of_line_comments(sanitized_front_matter)
 
@@ -268,7 +261,6 @@ def get_commentified_front_matter(path, warnings, parse_comments):
                 print "\n*********  AFTER 5TH PASS (REMOVE END-OF-LINE COMMENTS) ****************\n"
                 print sanitized_front_matter
                 print "**********************************\n"
-
 
     except CustomException as e:
         raise CustomException("    md content pre-processing error for file " + path + "\n" + str(e))

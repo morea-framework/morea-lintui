@@ -2,21 +2,21 @@ __author__ = 'casanova'
 
 import urwid
 
-# URWID customization
+# urwid customization
 urwid.Button.button_right = urwid.Text("")
 urwid.Button.button_left = urwid.Text("")
 
 
 class MainFrame(urwid.Columns):
     def __init__(self, string, num):
-        list_of_buttons = [urwid.AttrWrap(urwid.Button(string + "_" + str(i)), 'button normal', 'button select') for i in xrange(0, num)]
+        list_of_buttons = [urwid.AttrWrap(urwid.Button(string + "_" + str(i)), 'button normal', 'button select') for i
+                           in xrange(0, num)]
         widget_list = [urwid.Pile(list_of_buttons),
                        urwid.CheckBox("", state=False), urwid.CheckBox("")]
 
         # widget_list = [urwid.Pile([urwid.Button(string + "1", ), urwid.Button(string + "2")]),
         #               urwid.CheckBox("", state=False), urwid.CheckBox("")]
         super(MainFrame, self).__init__(widget_list)
-
 
 # Set up our color scheme
 palette = [
@@ -27,8 +27,8 @@ palette = [
     ('reading button', 'dark green,bold', ''),
     ('experience button', 'dark green,bold', ''),
     ('assessment button', 'dark green,bold', ''),
-    ('button normal','light gray', '', 'standout'),
-    ('button select','white',      'dark green'),
+    ('button normal', 'light gray', '', 'standout'),
+    ('button select', 'white', 'dark green'),
     ('quit button', 'dark red,bold', ''),
     ('exit button', 'dark red,bold', ''),
     ('getting quote', 'dark blue', 'black')]
@@ -51,8 +51,9 @@ menu_bottom = urwid.Text([
 
 
 # Create the module Frames
-main_frame = MainFrame("hello",4)
+main_frame = MainFrame("hello", 4)
 
+# noinspection PyDictCreation
 frame_dict = {}
 frame_dict["modules"] = MainFrame("MODULES", 3)
 frame_dict["outcomes"] = MainFrame("OUTCOMES", 4)
@@ -88,7 +89,6 @@ def handle_input(key):
         raise urwid.ExitMainLoop()
     elif key == 'Q' or key == 'q':
         raise urwid.ExitMainLoop()
-
 
 # Create the event loop
 main_loop = urwid.MainLoop(layout, palette, unhandled_input=handle_input)

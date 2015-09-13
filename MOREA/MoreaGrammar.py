@@ -126,11 +126,11 @@ class MoreaGrammar(object):
     required_properties = [x for x in property_syntaxes.keys() if property_syntaxes[x].required is True]
 
     @staticmethod
-    def is_valid_reference(label, id):
-        if [label, id] in [["morea_outcomes", "outcome"],
-                           ["morea_readings", "reading"],
-                           ["morea_experiences", "experience"],
-                           ["morea_assessments", "assessment"]]:
+    def is_valid_reference(label, morea_id):
+        if [label, morea_id] in [["morea_outcomes", "outcome"],
+                                 ["morea_readings", "reading"],
+                                 ["morea_experiences", "experience"],
+                                 ["morea_assessments", "assessment"]]:
             return True
         return False
 
@@ -184,7 +184,6 @@ class MoreaGrammar(object):
             if v.value is not None and type(v.value) != syntax.data_type:
                 err_msg += "  Error: value '" + my_str(
                     v.value) + "' has invalid type for property " + syntax.name + "\n"
-
 
         # Check for allowed values
         if syntax.allowed_values is not None:

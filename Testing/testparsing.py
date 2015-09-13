@@ -3,6 +3,7 @@ __author__ = 'casanova'
 
 import unittest
 import shutil
+
 from MOREA.MoreaFile import MoreaFile, flattened_property_list
 from Toolbox.toolbox import *
 from MOREA.MoreaProperty import *
@@ -65,6 +66,7 @@ class MoreaTestAcceptingValidFilesNoComments(MoreaTestAcceptingValidFiles):
         super(MoreaTestAcceptingValidFilesNoComments, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestAcceptingValidFilesWithNoComments_Test_1(MoreaTestAcceptingValidFilesNoComments):
     def shortDescription(self):
         return super(MoreaTestAcceptingValidFilesWithNoComments_Test_1, self).shortDescription() + "minimal file."
@@ -76,6 +78,7 @@ class MoreaTestAcceptingValidFilesWithNoComments_Test_1(MoreaTestAcceptingValidF
         super(MoreaTestAcceptingValidFilesWithNoComments_Test_1, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestAcceptingValidFilesWithNoComments_Test_2(MoreaTestAcceptingValidFilesNoComments):
     def shortDescription(self):
         return super(MoreaTestAcceptingValidFilesWithNoComments_Test_2, self).shortDescription() + "full-fledged file."
@@ -101,6 +104,7 @@ class MoreaTestAcceptingValidFilesWithNoComments_Test_2(MoreaTestAcceptingValidF
         super(MoreaTestAcceptingValidFilesWithNoComments_Test_2, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestAcceptingValidFilesWithNoComments_Test_3(MoreaTestAcceptingValidFilesNoComments):
     def shortDescription(self):
         return super(MoreaTestAcceptingValidFilesWithNoComments_Test_3, self).shortDescription() + "unicode support."
@@ -133,8 +137,7 @@ class MoreaTestRejectingInvalidFiles(MoreaParsingTestCase):
     def runMoreaTest(self, content):
         try:
             MoreaFile(write_string_to_testfile("test.md", content), warnings=False, parse_comments=True)
-        except CustomException as e:
-            # print "GOT EXPECTED EXCEPTION: " + str(e)
+        except CustomException:
             self.assertTrue(True)
             return
 
@@ -146,6 +149,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments(MoreaTestRejectingInvalidFile
         return super(MoreaTestRejectingInvalidFilesWithNoComments, self).shortDescription() + "no comments, "
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithNoComments_Test_1(MoreaTestRejectingInvalidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithNoComments_Test_1, self).shortDescription() + "empty file."
@@ -155,6 +159,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_1(MoreaTestRejectingInva
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_1, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithNoComments_Test_2(MoreaTestRejectingInvalidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithNoComments_Test_2, self).shortDescription() + "one new line."
@@ -164,6 +169,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_2(MoreaTestRejectingInva
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_2, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithNoComments_Test_3(MoreaTestRejectingInvalidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithNoComments_Test_3, self).shortDescription() + "some strings."
@@ -174,6 +180,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_3(MoreaTestRejectingInva
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_3, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithNoComments_Test_4(MoreaTestRejectingInvalidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithNoComments_Test_4, self).shortDescription() + "wrong delimiter."
@@ -186,6 +193,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_4(MoreaTestRejectingInva
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_4, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithNoComments_Test_5(MoreaTestRejectingInvalidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithNoComments_Test_5, self).shortDescription() + "empty content."
@@ -196,6 +204,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_5(MoreaTestRejectingInva
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_5, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithNoComments_Test_6(MoreaTestRejectingInvalidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithNoComments_Test_6,
@@ -209,6 +218,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_6(MoreaTestRejectingInva
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_6, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithNoComments_Test_7(MoreaTestRejectingInvalidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithNoComments_Test_7, self).shortDescription() + "broken line."
@@ -252,6 +262,7 @@ class MoreaTestParsingValidFilesWithNoComments(MoreaTestParsingValidFiles):
         super(MoreaTestParsingValidFilesWithNoComments, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithNoComments_Test_1(MoreaTestParsingValidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithNoComments_Test_1, self).shortDescription() + "full file."
@@ -276,6 +287,7 @@ class MoreaTestParsingValidFilesWithNoComments_Test_1(MoreaTestParsingValidFiles
         super(MoreaTestParsingValidFilesWithNoComments_Test_1, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithNoComments_Test_2(MoreaTestParsingValidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithNoComments_Test_2, self).shortDescription() + "multi-line string."
@@ -292,6 +304,7 @@ class MoreaTestParsingValidFilesWithNoComments_Test_2(MoreaTestParsingValidFiles
         super(MoreaTestParsingValidFilesWithNoComments_Test_2, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithNoComments_Test_3(MoreaTestParsingValidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithNoComments_Test_3, self).shortDescription() + "unicode."
@@ -306,6 +319,7 @@ class MoreaTestParsingValidFilesWithNoComments_Test_3(MoreaTestParsingValidFiles
         super(MoreaTestParsingValidFilesWithNoComments_Test_3, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithNoComments_Test_4(MoreaTestParsingValidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithNoComments_Test_4, self).shortDescription() + "multi-line with #'s."
@@ -322,6 +336,7 @@ class MoreaTestParsingValidFilesWithNoComments_Test_4(MoreaTestParsingValidFiles
         super(MoreaTestParsingValidFilesWithNoComments_Test_4, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithNoComments_Test_5(MoreaTestParsingValidFilesWithNoComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithNoComments_Test_5,
@@ -349,6 +364,7 @@ class MoreaTestParsingValidFilesWithComments(MoreaTestParsingValidFiles):
         super(MoreaTestParsingValidFilesWithComments, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_1(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_1, self).shortDescription() + "all commented out."
@@ -362,6 +378,7 @@ class MoreaTestParsingValidFilesWithComments_Test_1(MoreaTestParsingValidFilesWi
         super(MoreaTestParsingValidFilesWithComments_Test_1, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_2(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_2,
@@ -378,6 +395,7 @@ class MoreaTestParsingValidFilesWithComments_Test_2(MoreaTestParsingValidFilesWi
         super(MoreaTestParsingValidFilesWithComments_Test_2, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_3(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_3,
@@ -395,6 +413,7 @@ class MoreaTestParsingValidFilesWithComments_Test_3(MoreaTestParsingValidFilesWi
         super(MoreaTestParsingValidFilesWithComments_Test_3, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_4(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_4,
@@ -417,6 +436,7 @@ class MoreaTestParsingValidFilesWithComments_Test_4(MoreaTestParsingValidFilesWi
         super(MoreaTestParsingValidFilesWithComments_Test_4, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_5(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_5,
@@ -434,6 +454,7 @@ class MoreaTestParsingValidFilesWithComments_Test_5(MoreaTestParsingValidFilesWi
         super(MoreaTestParsingValidFilesWithComments_Test_5, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_6(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_6,
@@ -450,6 +471,7 @@ class MoreaTestParsingValidFilesWithComments_Test_6(MoreaTestParsingValidFilesWi
         super(MoreaTestParsingValidFilesWithComments_Test_6, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_7(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_7,
@@ -466,6 +488,7 @@ class MoreaTestParsingValidFilesWithComments_Test_7(MoreaTestParsingValidFilesWi
         super(MoreaTestParsingValidFilesWithComments_Test_7, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_8(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_8,
@@ -488,6 +511,7 @@ class MoreaTestParsingValidFilesWithComments_Test_8(MoreaTestParsingValidFilesWi
         super(MoreaTestParsingValidFilesWithComments_Test_8, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_9(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_9,
@@ -503,6 +527,7 @@ class MoreaTestParsingValidFilesWithComments_Test_9(MoreaTestParsingValidFilesWi
         super(MoreaTestParsingValidFilesWithComments_Test_9, self).runMoreaTest(content, parsetree)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestParsingValidFilesWithComments_Test_10(MoreaTestParsingValidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestParsingValidFilesWithComments_Test_10,
@@ -523,6 +548,7 @@ class MoreaTestRejectingInvalidFilesWithComments(MoreaTestRejectingInvalidFiles)
         return super(MoreaTestRejectingInvalidFilesWithComments, self).shortDescription() + "comments, "
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithComments_Test_1(MoreaTestRejectingInvalidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithComments_Test_1,
@@ -538,6 +564,7 @@ class MoreaTestRejectingInvalidFilesWithComments_Test_1(MoreaTestRejectingInvali
         super(MoreaTestRejectingInvalidFilesWithComments_Test_1, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithComments_Test_2(MoreaTestRejectingInvalidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithComments_Test_2,
@@ -554,6 +581,7 @@ class MoreaTestRejectingInvalidFilesWithComments_Test_2(MoreaTestRejectingInvali
         super(MoreaTestRejectingInvalidFilesWithComments_Test_2, self).runMoreaTest(content)
 
 
+# noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithComments_Test_3(MoreaTestRejectingInvalidFilesWithComments):
     def shortDescription(self):
         return super(MoreaTestRejectingInvalidFilesWithComments_Test_3,

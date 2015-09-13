@@ -1,15 +1,14 @@
 import copy
 import unittest
-from MOREA.MoreaContent import MoreaContent
-from TUI.TUI import *
 import shlex
 import subprocess
+import argparse
+
+from MOREA.MoreaContent import MoreaContent
+from TUI.TUI import *
 from Testing.CustomTestRunner import CustomTestRunner
 from Toolbox.toolbox import *
-import argparse
-import os
 import TUI.TUI
-
 
 __author__ = 'casanova'
 
@@ -32,16 +31,18 @@ def pre_validate_site(morea_root):
     err_msg = ""
 
     print "  Using jekyll to generate tmp site..."
-    tmp_site = "/tmp/morea-ncursed-site/"
+    tmp_site = "/tmp/morea-lintui-site/"
     command = "jekyll build --source " + morea_root + "/.. --destination " + tmp_site
 
     # Check that we can run jekyll with a zero exit code
     stdout = ""
     stderr = ""
+
+    # noinspection PyBroadException
     try:
         proc = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = proc.communicate()
-    except Exception, msg:
+    except Exception:
         err_msg += "jekyll returns a non-zero error code\n"
         valid = False
 
@@ -63,6 +64,7 @@ def pre_validate_site(morea_root):
 
 """ This function prints a "splash" screen
 """
+
 
 def print_welcome_screen():
     print(chr(27) + "[2J")
@@ -89,7 +91,6 @@ def print_welcome_screen():
 
     raw_input(bold("Press ENTER to continue, ^C to abort --"))
     print(chr(27) + "[2J")
-
 
 ######################################################################################
 ######################################################################################
@@ -180,7 +181,7 @@ if not args.tui:
 raw_input(bold("\n\nPress ENTER to launch the interface, ^C to abort --"))
 print(chr(27) + "[2J")
 
-# Launch the ncurses UI
+# Launch the TUI
 if args.tui:
     content_copy = copy.deepcopy(morea_content)
     content_copy.take_pickles()

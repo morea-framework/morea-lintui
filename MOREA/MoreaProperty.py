@@ -43,7 +43,7 @@ class Property(object):
 
 
 class PropertyVersion(object):
-    """A class that descibes a version of a morea property
+    """A class that describes a version of a morea property
         Values are PropertyScalarValue
         If the property is an atom, then it's a single value thing ("a: b")
         otherwise it's a list  thing ("a:\n -d\n -r\n")"""
@@ -92,6 +92,7 @@ class PropertyVersion(object):
             if type(self.values) == list:
                 value = self.values[0].value
             else:
+                # noinspection PyUnresolvedReferences
                 value = self.values.value
             string += add_quotes(self.grammar.quoted, str(value)) + "\n"
             return string
@@ -120,6 +121,7 @@ class PropertyVersion(object):
     def flatten(self):
 
         if type(self.values) != list:
+            # noinspection PyUnresolvedReferences,PyUnresolvedReferences,PyUnresolvedReferences
             flattened_value = (self.values.commented_out, self.values.value)
         else:
             flattened_value = []
