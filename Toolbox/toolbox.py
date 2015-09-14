@@ -1,3 +1,5 @@
+import subprocess
+
 __author__ = 'casanova'
 
 import textwrap
@@ -122,4 +124,10 @@ class ObjectMonitor:
         # print "File"  + obj.path + "has changed: " + str(changed)
         return changed
 
+
 morea_file_monitor = ObjectMonitor()
+
+
+# Function  to determine number of supported colors
+def num_term_colors():
+    return int(subprocess.check_output(['tput', 'colors']))

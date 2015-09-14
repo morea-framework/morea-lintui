@@ -1,4 +1,5 @@
 import time
+from Toolbox.toolbox import num_term_colors
 from TopLevelFrame import TopLevelFrame
 
 __author__ = 'casanova'
@@ -18,40 +19,31 @@ class TUI(object):
         urwid.CheckBox.states[True] = urwid.SelectableIcon(u"[\u2715]")
 
         # Color palette
-        # background_color = 'dark gray'
 
-#        self.palette = [
-#            # ('top button', 'dark green, bold', background_color, 'red', 'black'),
-#            ('topframe_not_selected', 'white', background_color),
-#            ('topframe_selected', 'yellow, standout', background_color),
-#            ('body', 'white', background_color),
-#            ('bottom button', 'dark red,bold', background_color),
-#            ('header', 'bold', background_color),
-#        ]
-
-        self.palette = [
-            ('top button key', 'dark green', 'black', '', 'light gray', 'dark gray'),
-            ('top button nonkey', 'white', 'black', '', 'white', 'dark red'),
-            ('bottom button key', 'dark red', 'black', '', 'light gray', 'dark gray'),
-            ('bottom button nonkey', 'white', 'black', '', 'white', 'dark red'),
-            ('body', 'white', 'black', '', 'white', 'dark gray'),
-            ('topframe not selected', 'white', 'black', '', 'white', 'dark gray'),
-            ('topframe selected', 'brown, standout', 'black', '', 'yellow, standout', 'dark gray'),
-            ('header', 'white, bold', 'black', '', 'white, bold', 'dark gray'),
-        ]
-
-
-
-
-
-        #screen.register_palette('top button', foreground='dark green', background='dark gray',
-        #                             mono=None, foreground_high='dark red', background_high='yellow')
-
-
-        #screen.register_palette(self.palette)
-
-        # Set the terminal in 88-color mode
-        #screen = urwid.raw_display.Screen()
+        # This is a hack because I can't get the %$#@#$ palette to work correctly
+        # to handle different color modes
+        if num_term_colors() == 256:
+            self.palette = [
+                ('top button key', 'dark green', 'dark gray', '', 'light gray', 'dark gray'),
+                ('top button nonkey', 'white', 'dark gray', '', 'white', 'dark red'),
+                ('bottom button key', 'dark red', 'dark gray', '', 'light gray', 'dark gray'),
+                ('bottom button nonkey', 'white', 'dark gray', '', 'white', 'dark gray'),
+                ('body', 'white', 'dark gray', '', 'white', 'dark gray'),
+                ('topframe not selected', 'white', 'dark gray', '', 'white', 'dark gray'),
+                ('topframe selected', 'brown, standout', 'dark gray', '', 'yellow, standout', 'dark gray'),
+                ('header', 'white, bold', 'dark gray', '', 'white, bold', 'dark gray'),
+            ]
+        else:
+            self.palette = [
+                ('top button key', 'dark green', 'black', '', 'light gray', 'dark gray'),
+                ('top button nonkey', 'white', 'black', '', 'white', 'dark red'),
+                ('bottom button key', 'dark red', 'black', '', 'light gray', 'dark gray'),
+                ('bottom button nonkey', 'white', 'black', '', 'white', 'dark gray'),
+                ('body', 'white', 'black', '', 'white', 'dark gray'),
+                ('topframe not selected', 'white', 'black', '', 'white', 'dark gray'),
+                ('topframe selected', 'brown, standout', 'black', '', 'yellow, standout', 'dark gray'),
+                ('header', 'white, bold', 'black', '', 'white, bold', 'dark gray'),
+            ]
 
         # Create the top menu
         menu_top = urwid.Text([
@@ -78,6 +70,7 @@ class TUI(object):
         self.frame_holder = urwid.Filler(self.top_level_frame_dict["modules"], valign='top', top=1, bottom=1)
         v_padding = urwid.Padding(self.frame_holder, left=1, right=1)
         line_box = urwid.LineBox(v_padding)
+
         # Assemble the widgets into the widget layout
         overall_layout = urwid.AttrWrap(urwid.Frame(header=menu_top, body=line_box, footer=menu_bottom), 'body')
         self.main_loop = urwid.MainLoop(overall_layout, palette=self.palette, unhandled_input=self.handle_key_stroke)

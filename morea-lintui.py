@@ -112,6 +112,7 @@ parser.add_argument('--no-splash', help="don't display initial warning screen",
 
 args = parser.parse_args()
 
+
 if args.test:
     print green("Running test suite:")
     dirname, filename = os.path.split(os.path.abspath(__file__))
