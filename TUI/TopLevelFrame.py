@@ -43,11 +43,10 @@ class TopLevelFrame(urwid.Pile):
             row_count += 1
 
             # Create the morea_id button
-            if f.get_value_of_scalar_property("title") == "":
-                button_label = f.get_value_of_scalar_property("morea_id")
-            else:
-                button_label = u"\u25BA " + f.get_value_of_scalar_property("morea_id") + \
-                               '\n   "' + f.get_value_of_scalar_property("title") + '"'
+            button_label = u"\u25BA " + f.get_value_of_scalar_property("morea_id") + "\n"
+            if f.get_value_of_scalar_property("title") != "":
+
+                button_label += '   "' + f.get_value_of_scalar_property("title") + '"'
 
             button = urwid.Button(button_label,
                                   on_press=self.tui.handle_moreaid_button_press,
@@ -94,7 +93,10 @@ class TopLevelFrame(urwid.Pile):
                         # print "SETTING FOCUS"
                         row.set_focus_column(len(widget_list) - 2)
 
-            list_of_rows.append(urwid.AttrWrap(row, 'topframe_not_selected', 'topframe_selected'))
+            list_of_rows.append(urwid.AttrWrap(row, 'topframe not selected', 'topframe selected'))
+
+        # Create a blank row
+        list_of_rows.append(urwid.Columns([urwid.Button("")], dividechars=1))
 
         # Add all the rows in the pile
         urwid.Pile.__init__(self, list_of_rows)

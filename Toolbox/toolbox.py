@@ -9,8 +9,8 @@ class TextColors:
     BOLD = '\033[1m'
     PINK = '\033[95m'
     BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
     RED = '\033[91m'
     CYAN = '\033[96m'
     END = '\033[0m'
@@ -20,7 +20,6 @@ class TextColors:
 
 
 def my_str(s):
-    print "----> ", type(s)
     if type(s) == unicode:
         return s
     else:
