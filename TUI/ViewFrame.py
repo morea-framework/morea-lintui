@@ -1,10 +1,14 @@
 import time
+
 import urwid
+
 import MOREA
+from MOREA.MoreaGrammar import MoreaGrammar
+from MOREA.MoreaProperty import Property, ScalarPropertyValue, PropertyVersion
 
 __author__ = 'casanova'
 
-max_label_width = max([len(x) for x in MOREA.MoreaGrammar.MoreaGrammar.property_syntaxes])
+max_label_width = max([len(x) for x in MoreaGrammar.property_syntaxes])
 
 true_label = "[ True  ]"
 false_label = "[ False ]"
@@ -16,6 +20,7 @@ commentedout_false_label = " "
 class ViewFrame(urwid.Pile):
     def __init__(self, _tui, morea_file):
         self.tui = _tui
+        self.morea_file = morea_file
 
         # Compute the max width of field labels
 
@@ -24,17 +29,18 @@ class ViewFrame(urwid.Pile):
         # Create the rows for all the file properties (only Yaml content)
         property_list = morea_file.property_list
 
+        self.property_tui_dict = {}
         for pname in property_list:
             # Build a class that embodies a property
-            property_tui = PropertyTui(morea_file, morea_file.property_list[pname])
-            self.list_of_rows += property_tui.get_rows()
+            self.property_tui_dict[pname] = PropertyTui(morea_file, morea_file.property_list[pname])
+            self.list_of_rows += self.property_tui_dict[pname].get_rows()
 
         # Create an empty row
         self.list_of_rows.append(urwid.Columns([]))
 
         # Create the last row
-        cancel_button = urwid.Button("Cancel", on_press=self.tui.handle_viewframe_cancel, user_data=morea_file)
-        save_button = urwid.Button("Save")
+        cancel_button = urwid.Button("Cancel", on_press=self.handle_viewframe_cancel, user_data=[None])
+        save_button = urwid.Button("Save", on_press=self.handle_viewframe_save, user_data=[None])
         last_row = urwid.Columns([(10, urwid.AttrWrap(cancel_button, 'truefalse not selected', 'truefalse selected')),
                                   (10, urwid.AttrWrap(save_button, 'truefalse not selected', 'truefalse selected'))],
                                  dividechars=1)
@@ -43,23 +49,59 @@ class ViewFrame(urwid.Pile):
         # Add all the rows in the pile
         urwid.Pile.__init__(self, self.list_of_rows)
 
+    def handle_viewframe_cancel(self, button, user_data):
+        # Simply show the correct toplevel_frame
+        self.tui.frame_holder.set_body(
+            self.tui.top_level_frame_dict[self.morea_file.get_value_of_scalar_property("morea_type")])
+        self.tui.main_loop.draw_screen()
+        return
+
+    def handle_viewframe_save(self, button, user_data):
+        putative_property_list = {}
+        for pname in self.property_tui_dict:
+            putative_property_list[pname] = self.property_tui_dict[pname].get_property()
+
+        # print "PROPERTYLIST:"
+        # for pname in putative_property_list:
+        #    putative_property_list[pname].display()
+        # time.sleep(1000)
+
+        # At this point we have the putative property
+        # Go through the properties, and replace the
+        # TODO
+        print "SHOULD DO SOMETIHNG!!!"
+        time.sleep(2)
+
+
+        # Close this frame
+        self.tui.frame_holder.set_body(
+            self.tui.top_level_frame_dict[self.morea_file.get_value_of_scalar_property("morea_type")])
+        self.tui.main_loop.draw_screen()
+
 
 class PropertyTui:
     def __init__(self, morea_file, property):
         self.morea_file = morea_file
         self.property = property
-        self.versions = []
+        self.version_tuis = []
 
         for v in self.property.versions:
-            self.versions.append(PropertyVersionTui(morea_file, property, v))
-
+            self.version_tuis.append(PropertyVersionTui(morea_file, property, v))
         return
 
     def get_rows(self):
         row_list = []
-        for v in self.versions:
-            row_list = row_list + v.get_rows()
+        for vt in self.version_tuis:
+            row_list = row_list + vt.get_rows()
         return row_list
+
+    def get_property(self):
+        p = Property(self.property.name)
+        for vt in self.version_tuis:
+            version = vt.get_version()
+            if version is not None:
+                p.add_property_version(version)
+        return p
 
 
 class PropertyVersionTui:
@@ -77,9 +119,8 @@ class PropertyVersionTui:
     def get_rows(self):
         return self.instance.get_rows()
 
-    def apply_changes(self):
-        # TODO
-        return
+    def get_version(self):
+        return self.instance.get_version()
 
 
 class TBDValueTui:
@@ -90,6 +131,9 @@ class TBDValueTui:
 
     def get_rows(self):
         return [self.row]
+
+    def get_version(self):
+        return None
 
 
 class BoolanValueTui:
@@ -130,6 +174,16 @@ class BoolanValueTui:
     def get_rows(self):
         return [self.row]
 
+    def get_version(self):
+        commented_out = self.comment_button.get_label() == commentedout_true_label
+        value = self.true_false_button.get_label() == true_label
+
+        # Create a value-less property version
+        version = PropertyVersion(self.property.name, self.property.grammar, commented_out)
+        # add a scalar value
+        version.add_scalar_property_value(ScalarPropertyValue(commented_out, value))
+
+        return version
 
 
 def handle_true_false_button_click(button, user_data):
@@ -140,7 +194,7 @@ def handle_true_false_button_click(button, user_data):
     return
 
 
-# TODO MAKE IT SO THAT COMMENTING HAPPENS CORECTLY
+# TODO MAKE IT SO THAT COMMENTING HAPPENS CORRECTLY
 def handle_commentedout_button_click(button, user_data):
     if button.get_label() == commentedout_true_label:
         button.set_label(commentedout_false_label)

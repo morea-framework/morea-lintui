@@ -145,14 +145,6 @@ class TUI(object):
         self.main_loop.draw_screen()
         return
 
-    def handle_viewframe_cancel(self, button, user_data):
-        f = user_data
-        # Simply show the correct toplevel_frame
-        self.frame_holder.set_body(
-            self.top_level_frame_dict[f.get_value_of_scalar_property("morea_type")])
-        self.main_loop.draw_screen()
-        return
-
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def handle_toplevelframe_checkbox_state_change(self, cb, state, user_data):
         (f, property_key) = user_data

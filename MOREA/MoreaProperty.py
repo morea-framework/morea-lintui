@@ -14,13 +14,19 @@ class Property(object):
         self.grammar = MoreaGrammar.MoreaGrammar.property_syntaxes[self.name]
         return
 
+    # To be called when parsing
     def add_version(self, commented_out, value):
         # print "IN ADD_VERSION: ", self.name, commented_out, value
         try:
-            version = PropertyVersion(self.name, self.grammar, commented_out, value)
+            version = PropertyVersion(self.name, self.grammar, commented_out)
+            version.add_value(value)
         except CustomException as e:
             raise e
 
+        self.versions.append(version)
+
+    # To be called by the TUI, most likely
+    def add_property_version(self, version):
         self.versions.append(version)
 
     def has_uncommented_versions(self):
@@ -48,16 +54,20 @@ class PropertyVersion(object):
         If the property is an atom, then it's a single value thing ("a: b")
         otherwise it's a list  thing ("a:\n -d\n -r\n")"""
 
-    def __init__(self, name, grammar, commented_out, value):
+    def __init__(self, name, grammar, commented_out):
         self.name = name
         self.grammar = grammar
         self.commented_out = commented_out
         self.values = []
 
-        # print "IN PROPERTY VERSION CONS:", name, commented_out, value
+        return
+
+    # To be called when parsing
+    def add_value(self, value):
+        #print "IN PROPERTY VERSION add_value:", name, commented_out, value
 
         if type(value) != list:
-            self.values = PropertyScalarValue(commented_out, value)  #
+            self.values = ScalarPropertyValue(self.commented_out, value)  #
         else:
             self.values = []
             for val in value:
@@ -67,14 +77,24 @@ class PropertyVersion(object):
                     # print "    ---> ", decommentified_value, value_commented_out
                     if self.commented_out is True and value_commented_out is False:
                         raise CustomException("  Fishy commenting for (commented out) " +
-                                              name + " field" + "\n" + "\n")
-                    self.values.append(PropertyScalarValue(value_commented_out, decommentified_value))
+                                              self.name + " field" + "\n" + "\n")
+                    self.values.append(ScalarPropertyValue(value_commented_out, decommentified_value))
 
         return
 
+    # Neded by the TUI
+    def add_scalar_property_value(self, property_scalar_value):
+        self.values.append(property_scalar_value)
+
     def display(self):
         print self.name + "(" + "commented_out: " + str(self.commented_out) + ")"
-        print "\t" + str(self.values)
+        if type(self.values) != list:
+            print "\t(" + str(self.values.commented_out)+", "+str(self.values.value) + ")"
+        else:
+            print "THERE"
+            for val in self.values:
+                print "\t(" + str(val.commented_out)+", "+str(val.value)+")"
+        return
 
     def to_string(self):
         string = ""
@@ -130,7 +150,7 @@ class PropertyVersion(object):
         return [self.commented_out, flattened_value]
 
 
-class PropertyScalarValue(object):
+class ScalarPropertyValue(object):
     """ A simple class for better software engineering """
 
     def __init__(self, commented_out, value):
