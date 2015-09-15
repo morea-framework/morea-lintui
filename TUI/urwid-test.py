@@ -1,22 +1,87 @@
+import time
+
 __author__ = 'casanova'
 
 import urwid
+
+class TrueFalseCheckBox(urwid.CheckBox):
+    def __init__(self, label, state=False, has_mixed=False, on_state_change=None, user_data=None):
+        self.states[True] =  urwid.SelectableIcon(u"[True ]")
+        self.states[False] = urwid.SelectableIcon(u"[False]")
+        super(TrueFalseCheckBox, self).__init__(label, state, has_mixed, on_state_change, user_data)
 
 # urwid customization
 urwid.Button.button_right = urwid.Text("")
 urwid.Button.button_left = urwid.Text("")
 
+class PopUpDialog(urwid.WidgetWrap):
+    """A dialog that appears with nothing but a close button """
+    signals = ['close']
+    def __init__(self):
+        close_button = urwid.Button("that's pretty cool")
+        other_button = urwid.Button("OTHER")
 
-class MainFrame(urwid.Columns):
+        urwid.connect_signal(close_button, 'click',
+                             lambda button:self._emit("close"))
+        pile = urwid.Pile([urwid.Text(
+            "^^  I'm attached to the widget that opened me. "
+            "Try resizing the window!\n"), close_button, other_button])
+        fill = urwid.Filler(pile)
+        stuff = urwid.LineBox(fill)
+        self.__super.__init__(urwid.AttrWrap(stuff, 'popbg'))
+
+
+class ThingWithAPopUp(urwid.PopUpLauncher):
+    def __init__(self):
+        self.__super.__init__(urwid.Button("click-me"))
+        urwid.connect_signal(self.original_widget, 'click',
+                             lambda button: self.open_pop_up())
+
+    def create_pop_up(self):
+        pop_up = PopUpDialog()
+        urwid.connect_signal(pop_up, 'close',
+                             lambda button: self.close_pop_up())
+        return pop_up
+
+    def get_pop_up_parameters(self):
+        return {'left':0, 'top':1, 'overlay_width':32, 'overlay_height':20}
+
+
+
+
+class MainFrame(urwid.Pile):
     def __init__(self, string, num):
-        list_of_buttons = [urwid.AttrWrap(urwid.Button(string + "_" + str(i)), 'button normal', 'button select') for i
-                           in xrange(0, num)]
-        widget_list = [urwid.Pile(list_of_buttons),
-                       urwid.CheckBox("", state=False), urwid.CheckBox("")]
 
-        # widget_list = [urwid.Pile([urwid.Button(string + "1", ), urwid.Button(string + "2")]),
-        #               urwid.CheckBox("", state=False), urwid.CheckBox("")]
-        super(MainFrame, self).__init__(widget_list)
+        row_list = []
+
+        # Create a row with a text entry zone:
+        trash_button = urwid.CheckBox("")
+        text_entry = urwid.Edit(caption="morea_title: ", edit_text="whatever", multiline=False,
+                                align="left", wrap="space", allow_tab="False")
+        urwid.connect_signal(text_entry, 'change', self.something, "hello")
+        row_list.append(urwid.Columns([(4,trash_button), text_entry]))
+
+        # Create a row with a popup
+        trash_button = urwid.CheckBox("")
+        text_entry = urwid.Button("morea_summary")
+        text_label = urwid.Text(' "Some description that...."')
+        row_list.append(urwid.Columns([(4,trash_button), ThingWithAPopUp(), (10,text_label)]))
+
+        # Create a row with a True/false
+        text_entry = urwid.Button("morea_published")
+        trash_button = TrueFalseCheckBox("")
+        row_list.append(urwid.Columns([(14,text_entry), (10,trash_button)]))
+
+        super(MainFrame, self).__init__(row_list)
+
+    def something(self, text_entry, state, userdata):
+        return
+
+    def popupcallback(self):
+
+        return
+
+
 
 # Set up our color scheme
 palette = [
@@ -30,6 +95,7 @@ palette = [
     ('button normal', 'light gray', '', 'standout'),
     ('button select', 'white', 'dark green'),
     ('quit button', 'dark red,bold', ''),
+    ('popbg', 'black', 'light gray'),
     ('exit button', 'dark red,bold', ''),
     ('getting quote', 'dark blue', 'black')]
 
@@ -91,7 +157,7 @@ def handle_input(key):
         raise urwid.ExitMainLoop()
 
 # Create the event loop
-main_loop = urwid.MainLoop(layout, palette, unhandled_input=handle_input)
+main_loop = urwid.MainLoop(layout, pop_ups=True, palette=palette, unhandled_input=handle_input)
 
 # Kick off the program
 main_loop.run()

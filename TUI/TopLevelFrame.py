@@ -50,7 +50,7 @@ class TopLevelFrame(urwid.Pile):
 
             button = urwid.Button(button_label,
                                   on_press=self.tui.handle_moreaid_button_press,
-                                  user_data=["edit", f])
+                                  user_data=f)
 
             widget_list += [button]
 

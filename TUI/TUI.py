@@ -1,4 +1,5 @@
 import time
+from ViewFrame import ViewFrame
 from Toolbox.toolbox import num_term_colors
 from TopLevelFrame import TopLevelFrame
 
@@ -30,7 +31,9 @@ class TUI(object):
                 ('bottom button nonkey', 'white', 'dark gray', '', 'white', 'dark gray'),
                 ('body', 'white', 'dark gray', '', 'white', 'dark gray'),
                 ('topframe not selected', 'white', 'dark gray', '', 'white', 'dark gray'),
-                ('topframe selected', 'brown, standout', 'dark gray', '', 'yellow, standout', 'dark gray'),
+                ('topframe selected', 'yellow, standout', 'dark gray', '', 'yellow, standout', 'dark gray'),
+                ('truefalse not selected', 'white', 'dark gray', '', 'white', 'dark gray'),
+                ('truefalse selected', 'standout', 'dark gray', '', 'standout', 'dark gray'),
                 ('header', 'white, bold', 'dark gray', '', 'white, bold', 'dark gray'),
             ]
         else:
@@ -41,7 +44,9 @@ class TUI(object):
                 ('bottom button nonkey', 'white', 'black', '', 'white', 'dark gray'),
                 ('body', 'white', 'black', '', 'white', 'dark gray'),
                 ('topframe not selected', 'white', 'black', '', 'white', 'dark gray'),
-                ('topframe selected', 'brown, standout', 'black', '', 'yellow, standout', 'dark gray'),
+                ('topframe selected', 'yellow, standout', 'black', '', 'yellow, standout', 'dark gray'),
+                ('truefalse not selected', 'white', 'dark gray', '', 'white', 'dark gray'),
+                ('truefalse selected', 'standout', 'dark gray', '', 'standout', 'dark gray'),
                 ('header', 'white, bold', 'black', '', 'white, bold', 'dark gray'),
             ]
 
@@ -67,7 +72,7 @@ class TUI(object):
         self.create_assessments_top_level_frame()
 
         # Set up the main view
-        self.frame_holder = urwid.Filler(self.top_level_frame_dict["modules"], valign='top', top=1, bottom=1)
+        self.frame_holder = urwid.Filler(self.top_level_frame_dict["module"], valign='top', top=1, bottom=1)
         v_padding = urwid.Padding(self.frame_holder, left=1, right=1)
         line_box = urwid.LineBox(v_padding)
 
@@ -81,39 +86,39 @@ class TUI(object):
         return
 
     def create_module_top_level_frame(self, focus=None):
-        self.top_level_frame_dict["modules"] = TopLevelFrame(self, ("module", "-- MODULES --"),
+        self.top_level_frame_dict["module"] = TopLevelFrame(self, ("module", "-- MODULES --"),
                                                              [("published", "publi\nshed"),
                                                               ("morea_coming_soon", "coming\nsoon"),
                                                               ("morea_highlight", "high\nlight")],
                                                              sorting=True, focus=focus)
 
     def create_outcomes_top_level_frame(self):
-        self.top_level_frame_dict["outcomes"] = TopLevelFrame(self, ("outcome", "-- OUTCOMES  --"), [])
+        self.top_level_frame_dict["outcome"] = TopLevelFrame(self, ("outcome", "-- OUTCOMES  --"), [])
 
     def create_readings_top_level_frame(self):
-        self.top_level_frame_dict["readings"] = TopLevelFrame(self, ("reading", "-- READINGS --"), [])
+        self.top_level_frame_dict["reading"] = TopLevelFrame(self, ("reading", "-- READINGS --"), [])
 
     def create_experiences_top_level_frame(self):
-        self.top_level_frame_dict["experiences"] = TopLevelFrame(self, ("experience", "-- EXPERIENCES --"), [])
+        self.top_level_frame_dict["experience"] = TopLevelFrame(self, ("experience", "-- EXPERIENCES --"), [])
 
     def create_assessments_top_level_frame(self):
-        self.top_level_frame_dict["assessments"] = TopLevelFrame(self, ("assessment", "-- ASSESSMENTS --"), [])
+        self.top_level_frame_dict["assessment"] = TopLevelFrame(self, ("assessment", "-- ASSESSMENTS --"), [])
 
     def handle_key_stroke(self, key):
         if key == 'M' or key == 'm':
-            self.frame_holder.set_body(self.top_level_frame_dict["modules"])
+            self.frame_holder.set_body(self.top_level_frame_dict["module"])
             self.main_loop.draw_screen()
         elif key == 'O' or key == 'o':
-            self.frame_holder.set_body(self.top_level_frame_dict["outcomes"])
+            self.frame_holder.set_body(self.top_level_frame_dict["outcome"])
             self.main_loop.draw_screen()
         elif key == 'R' or key == 'r':
-            self.frame_holder.set_body(self.top_level_frame_dict["readings"])
+            self.frame_holder.set_body(self.top_level_frame_dict["reading"])
             self.main_loop.draw_screen()
         elif key == 'E' or key == 'e':
-            self.frame_holder.set_body(self.top_level_frame_dict["experiences"])
+            self.frame_holder.set_body(self.top_level_frame_dict["experience"])
             self.main_loop.draw_screen()
         elif key == 'A' or key == 'a':
-            self.frame_holder.set_body(self.top_level_frame_dict["assessments"])
+            self.frame_holder.set_body(self.top_level_frame_dict["assessment"])
             self.main_loop.draw_screen()
         elif key == 'X' or key == 'x':
             self.save = False
@@ -124,6 +129,9 @@ class TUI(object):
 
     # noinspection PyMethodMayBeStatic
     def handle_moreaid_button_press(self, button, user_data):
+        f = user_data
+        self.frame_holder.set_body(ViewFrame(self, f))
+        self.main_loop.draw_screen()
         return
 
     # noinspection PyUnusedLocal
@@ -133,7 +141,15 @@ class TUI(object):
 
         # Regenerate the module frame, with the correct focus
         self.create_module_top_level_frame(focus=("sorting", direction, f))
-        self.frame_holder.set_body(self.top_level_frame_dict["modules"])
+        self.frame_holder.set_body(self.top_level_frame_dict["module"])
+        self.main_loop.draw_screen()
+        return
+
+    def handle_viewframe_cancel(self, button, user_data):
+        f = user_data
+        # Simply show the correct toplevel_frame
+        self.frame_holder.set_body(
+            self.top_level_frame_dict[f.get_value_of_scalar_property("morea_type")])
         self.main_loop.draw_screen()
         return
 
