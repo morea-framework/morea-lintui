@@ -201,18 +201,19 @@ class MoreaFile(object):
 
 def build_property_list(parsed_front_matter):
     property_list = {}
-    # print "PARSED = ", parsed_front_matter
+    #print "PARSED = ", parsed_front_matter
 
     # print "BUilDING PROPERTY LIST"
     for name in parsed_front_matter:
 
-        # Check that the property is for a known field
-        if name not in MoreaGrammar.property_syntaxes:
-            raise CustomException("  Uknown property '"+ name + "'")
 
         # print "NAME=", name
         # get the uncommentified name and commented_out status
         (decommentified_name, commented_out) = decommentify(name)
+
+        # Check that the property is for a known field
+        if decommentified_name not in MoreaGrammar.property_syntaxes:
+            raise CustomException("  Uknown property '"+ name + "'")
 
         # print "DECOMMENTIFIED NAME--> ", decommentified_name, ",",  commented_out
 
@@ -230,7 +231,7 @@ def build_property_list(parsed_front_matter):
         try:
             property_list[decommentified_name].create_and_add_version(commented_out, value)
         except CustomException as e:
-            # print "FAILED!!!"
+            exit(1)
             raise e
 
     # print "PROPERTY LIST="
