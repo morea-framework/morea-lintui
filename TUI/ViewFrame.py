@@ -39,7 +39,7 @@ class SaveButtonWithAPopup(urwid.PopUpLauncher):
         self.viewframe = viewframe
         self.morea_file = morea_file
         self.popup_message = ""
-        super(SaveButtonWithAPopup, self).__init__(urwid.Button("Confirm"))
+        super(SaveButtonWithAPopup, self).__init__(urwid.Button("CONFIRM"))
         # urwid.connect_signal(self.original_widget, 'click',
         #                      self.open_the_pop_up, None)
         urwid.connect_signal(self.original_widget, 'click',
@@ -94,7 +94,7 @@ class ViewFrame(urwid.Pile):
 
         # Create the last row
 
-        self.cancel_button = urwid.Button("Cancel", on_press=self.handle_viewframe_cancel, user_data=None)
+        self.cancel_button = urwid.Button("CANCEL", on_press=self.handle_viewframe_cancel, user_data=None)
         self.save_button = SaveButtonWithAPopup(self.tui, self, self.morea_file)
 
         last_row = urwid.Columns(
@@ -195,8 +195,9 @@ class PropertyVersionTui:
 class TBDValueTui:
     def __init__(self, morea_file, prop, version):
         self.row = urwid.Columns(
-            [('fixed', 2, urwid.Text("  ")), ('fixed', max_label_width + 2, urwid.Text(prop.name + ": ")),
-             urwid.AttrWrap(urwid.Text("[not implemented yet]"), 'duller')])
+            [('fixed', 2, urwid.Text("  ")),
+             ('fixed', max_label_width + 2, urwid.AttrWrap(urwid.Text(prop.name + ": "), 'duller')),
+             urwid.AttrWrap(urwid.Text("[not available in TUI (yet)]"), 'duller')])
 
     def get_rows(self):
         return [self.row]
