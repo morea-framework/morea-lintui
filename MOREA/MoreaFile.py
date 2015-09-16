@@ -206,6 +206,10 @@ def build_property_list(parsed_front_matter):
     # print "BUilDING PROPERTY LIST"
     for name in parsed_front_matter:
 
+        # Check that the property is for a known field
+        if name not in MoreaGrammar.property_syntaxes:
+            raise CustomException("  Uknown property '"+ name + "'")
+
         # print "NAME=", name
         # get the uncommentified name and commented_out status
         (decommentified_name, commented_out) = decommentify(name)
