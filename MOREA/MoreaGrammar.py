@@ -55,7 +55,7 @@ class MoreaGrammar(object):
                          "title": PropertySyntax(name="title", multiple_values=False, data_type=unicode,
                                                  allowed_values=None, required=True, quoted=True),
                          "published": PropertySyntax(name="published", multiple_values=False, data_type=bool,
-                                                     allowed_values=[True, False], required=False, quoted=False),
+                                                     allowed_values=[True, False], required=True, quoted=False),
                          "morea_highlight": PropertySyntax(name="morea_highlight", multiple_values=False,
                                                            data_type=bool,
                                                            allowed_values=[True, False], required=False, quoted=False),

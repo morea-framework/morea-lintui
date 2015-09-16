@@ -35,10 +35,27 @@ class Property(object):
                 return True
         return False
 
+    def get_scalar_value(self):
+
+        for version in self.versions:
+            value = version.get_scalar_value()
+            if value is not None:
+                return value
+
+    def comment_out_all_references_to_id(self, morea_id):
+
+        for version in self.versions:
+            version.comment_out_all_references_to_id(morea_id)
+        return
+
     def display(self):
         # print "Property " + self.name + ":"
         for version in self.versions:
             version.display()
+
+    def num_uncommented_versions(self):
+        return len([v for v in self.versions if not v.commented_out])
+
 
     # Useful for testing
     def flatten(self):
@@ -64,7 +81,7 @@ class PropertyVersion(object):
 
     # To be called when parsing
     def add_value(self, value):
-        #print "IN PROPERTY VERSION add_value:", name, commented_out, value
+        # print "IN PROPERTY VERSION add_value:", name, commented_out, value
 
         if type(value) != list:
             self.values = ScalarPropertyValue(self.commented_out, value)  #
@@ -84,16 +101,33 @@ class PropertyVersion(object):
 
     # Neded by the TUI
     def add_scalar_property_value(self, property_scalar_value):
-        self.values.append(property_scalar_value)
+        self.values = property_scalar_value
+#        self.values.append(property_scalar_value)
+
+    def get_scalar_value(self):
+        if not self.commented_out:
+            if type(self.values) != list:
+                if not self.values.commented_out:
+                    return self.values.value
+            else:
+                for val in self.values:
+                    if not val.commented_out:
+                        return val.value
+        return None
+
+    def comment_out_all_references_to_id(self, morea_id):
+        for scalarvalue in self.values:
+            if scalarvalue.value == morea_id:
+                scalarvalue.commented_out = True
+        return
 
     def display(self):
         print self.name + "(" + "commented_out: " + str(self.commented_out) + ")"
         if type(self.values) != list:
-            print "\t(" + str(self.values.commented_out)+", "+str(self.values.value) + ")"
+            print "\t(" + str(self.values.commented_out) + ", " + str(self.values.value) + ")"
         else:
-            print "THERE"
             for val in self.values:
-                print "\t(" + str(val.commented_out)+", "+str(val.value)+")"
+                print "\t-  (" + str(val.commented_out) + ", " + str(val.value) + ")"
         return
 
     def to_string(self):

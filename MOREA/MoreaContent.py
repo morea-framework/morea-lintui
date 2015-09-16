@@ -1,5 +1,6 @@
 import os
 import re
+import time
 
 from Toolbox import toolbox
 from Toolbox.toolbox import CustomException
@@ -216,4 +217,62 @@ class MoreaContent(object):
     def save(self):
         for f in self.files:
             f.save()
+        return
+
+    def comment_out_all_references_to_id(self, morea_id):
+        for f in self.files:
+            f.comment_out_all_references_to_id(morea_id)
+
+    # Update a file property, raising an exception with error message
+    # if there is a problem
+    def apply_property_changes(self, morea_file, putative_property_list):
+        err_msg = ""
+
+        #print "FILE PROPERTY BEFORE: "
+        #morea_file.display_properties()
+
+        ############################
+        # Generic checks and changes
+        ############################
+        for pname in putative_property_list:
+            # Check that each required property is provided
+            if MoreaGrammar.property_syntaxes[pname].required and \
+                    not putative_property_list[pname].has_uncommented_versions():
+                err_msg += "  * No (uncommented) value for required field '" + pname + "'\n"
+            # Check that only one uncommented version exists
+            if putative_property_list[pname].num_uncommented_versions() > 1:
+                err_msg += "  * Multiple (uncommented) values for field '" + pname +"'\n"
+            # Other checks???
+
+        if err_msg != "":
+            raise CustomException(err_msg)
+
+        #####################################
+        # Hard-coded morea checks and changes
+        #####################################
+
+        # Check ID change
+        if putative_property_list["morea_id"].get_scalar_value() != morea_file.get_value_of_scalar_property("morea_id"):
+            err_msg += "  * Detected a morea_id change! Not supported (yet)"
+            # TODO: In the future will have to go update all references
+
+        if err_msg != "":
+            raise CustomException(err_msg)
+
+
+        # If the file is unpublished, comment-out all references to it
+        if not putative_property_list["published"]:
+            self.comment_out_all_references_to_id(putative_property_list["morea_id"].get_scalar_value())
+
+        #######################
+        # Apply all the changes
+        #######################
+
+        for pname in putative_property_list:
+            morea_file.property_list[pname] = putative_property_list[pname]
+
+        #print "FILE PROPERTY AFTER: "
+        #morea_file.display_properties()
+
+
         return

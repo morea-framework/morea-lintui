@@ -7,6 +7,48 @@ __author__ = 'casanova'
 
 import urwid
 
+class PopUpDialog(urwid.WidgetWrap):
+    """A dialog that appears with nothing but a close button """
+    signals = ['close']
+    def __init__(self):
+        close_button = urwid.Button("that's pretty cool")
+
+        urwid.connect_signal(close_button, 'click',
+                             lambda button:self._emit("close"))
+        pile = urwid.Pile([urwid.Text(
+            "^^  I'm attached to the widget that opened me. "
+            "^^  I'm attached to the widget that opened me. "
+            "^^  I'm attached to the widget that opened me.     "
+            "Try resizing the window!\n"), close_button])
+        fill = urwid.Filler(pile)
+        stuff = urwid.LineBox(fill)
+        self.__super.__init__(urwid.AttrWrap(stuff, 'popbg'))
+
+
+class ThingWithAPopUp(urwid.PopUpLauncher):
+    def __init__(self, mainframe):
+        self.mainframe = mainframe
+        self.__super.__init__(urwid.Button("click-me"))
+        urwid.connect_signal(self.original_widget, 'click',
+                             self.mainframe.some_function, None)
+
+    def open_the_popup(self):
+        print "===> ", self.open_pop_up
+        time.sleep(10)
+        self.open_pop_up()
+
+    def create_pop_up(self):
+        pop_up = PopUpDialog()
+        urwid.connect_signal(pop_up, 'close',
+                             lambda button: self.close_pop_up())
+        return pop_up
+
+    def get_pop_up_parameters(self):
+        return {'left':0, 'top':1, 'overlay_width':32, 'overlay_height':20}
+
+
+
+
 class TUI(object):
 
     # noinspection PyDictCreation,PyDictCreation
@@ -30,9 +72,11 @@ class TUI(object):
                 ('bottom button key', 'dark red', 'dark gray', '', 'light gray', 'dark gray'),
                 ('bottom button nonkey', 'white', 'dark gray', '', 'white', 'dark gray'),
                 ('body', 'white', 'dark gray', '', 'white', 'dark gray'),
+                ('popbg', 'yellow', 'dark red'),
                 ('topframe not selected', 'white', 'dark gray', '', 'white', 'dark gray'),
                 ('topframe selected', 'yellow, standout', 'dark gray', '', 'yellow, standout', 'dark gray'),
                 ('truefalse not selected', 'white', 'dark gray', '', 'white', 'dark gray'),
+                ('popbg', 'black', 'light gray'),
                 ('truefalse selected', 'standout', 'dark gray', '', 'standout', 'dark gray'),
                 ('header', 'white, bold', 'dark gray', '', 'white, bold', 'dark gray'),
             ]
@@ -43,6 +87,7 @@ class TUI(object):
                 ('bottom button key', 'dark red', 'black', '', 'light gray', 'dark gray'),
                 ('bottom button nonkey', 'white', 'black', '', 'white', 'dark gray'),
                 ('body', 'white', 'black', '', 'white', 'dark gray'),
+                ('popbg', 'yellow', 'dark red'),
                 ('topframe not selected', 'white', 'black', '', 'white', 'dark gray'),
                 ('topframe selected', 'yellow, standout', 'black', '', 'yellow, standout', 'dark gray'),
                 ('truefalse not selected', 'white', 'dark gray', '', 'white', 'dark gray'),
@@ -77,8 +122,8 @@ class TUI(object):
         line_box = urwid.LineBox(v_padding)
 
         # Assemble the widgets into the widget layout
-        overall_layout = urwid.AttrWrap(urwid.Frame(header=menu_top, body=line_box, footer=menu_bottom), 'body')
-        self.main_loop = urwid.MainLoop(overall_layout, palette=self.palette, unhandled_input=self.handle_key_stroke)
+        self.overall_layout = urwid.AttrWrap(urwid.Frame(header=menu_top, body=line_box, footer=menu_bottom), 'body')
+        self.main_loop = urwid.MainLoop(self.overall_layout, pop_ups=True, palette=self.palette, unhandled_input=self.handle_key_stroke)
 
         screen = urwid.raw_display.Screen()
         screen.set_terminal_properties(256, True)
@@ -90,7 +135,7 @@ class TUI(object):
                                                              [("published", "publi\nshed"),
                                                               ("morea_coming_soon", "coming\nsoon"),
                                                               ("morea_highlight", "high\nlight")],
-                                                             sorting=True, focus=focus)
+                                                               sorting=True, focus=focus)
 
     def create_outcomes_top_level_frame(self):
         self.top_level_frame_dict["outcome"] = TopLevelFrame(self, ("outcome", "-- OUTCOMES  --"), [])

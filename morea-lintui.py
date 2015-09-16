@@ -88,7 +88,9 @@ def print_welcome_screen():
         print "\n"
 
         print_as_paragraph(green, "- You may have to resize your terminal window to make"
-                                  " the user interface look nice(r).")
+                                  "the user interface look nice(r). In fact, there may be"
+                                  "some glitches in the display, which are typically fixed"
+                                  "by resizing the window.")
         print "\n"
 
     raw_input(bold("Press ENTER to continue, ^C to abort --"))
@@ -193,3 +195,4 @@ if args.tui:
     if updated_morea_content is not None:
         print "---", type(updated_morea_content)
         updated_morea_content.save()
+    # Do a reset of the terminal??

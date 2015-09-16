@@ -5,6 +5,7 @@ import urwid
 import MOREA
 from MOREA.MoreaGrammar import MoreaGrammar
 from MOREA.MoreaProperty import Property, ScalarPropertyValue, PropertyVersion
+from Toolbox.toolbox import CustomException
 
 __author__ = 'casanova'
 
@@ -15,6 +16,58 @@ false_label = "[ False ]"
 
 commentedout_true_label = "#"
 commentedout_false_label = " "
+
+
+class PopUpDialog(urwid.WidgetWrap):
+    """A dialog that appears with nothing but a close button """
+    signals = ['close']
+
+    def __init__(self, msg):
+        close_button = urwid.Button("OK")
+        urwid.connect_signal(close_button, 'click',
+                             lambda button: self._emit("close"))
+        pile = urwid.Pile([urwid.Text("Can't save due to the following:\n" + msg),
+                           urwid.Columns([(10,urwid.Text(" ")), (10,urwid.AttrWrap(close_button,'truefalse not selected', 'truefalse selected'))])])
+        fill = urwid.Filler(pile)
+        self.__super.__init__(urwid.AttrWrap(fill, 'popbg'))
+
+
+class SaveButtonWithAPopup(urwid.PopUpLauncher):
+    def __init__(self, tui, viewframe, morea_file):
+        self.tui = tui
+        self.viewframe = viewframe
+        self.morea_file = morea_file
+        self.popup_message = ""
+        self.__super.__init__(urwid.Button("SAVE"))
+        # urwid.connect_signal(self.original_widget, 'click',
+        #                      self.open_the_pop_up, None)
+        urwid.connect_signal(self.original_widget, 'click',
+                             # self.viewframe.handle_viewframe_save(), None)
+                             self.open_the_pop_up)
+
+    def create_pop_up(self):
+        pop_up = PopUpDialog(self.popup_message)
+        urwid.connect_signal(pop_up, 'close',
+                             lambda button: self.close_pop_up())
+        return pop_up
+
+    def open_the_pop_up(self, button):
+
+        try:
+            self.viewframe.handle_viewframe_save()
+        except CustomException as e:
+            self.popup_message = str(e)
+            self.open_pop_up()
+            return
+
+        # Close the mainviewer frame
+        self.tui.frame_holder.set_body(
+            self.tui.top_level_frame_dict[self.morea_file.get_value_of_scalar_property("morea_type")])
+        self.tui.main_loop.draw_screen()
+
+    def get_pop_up_parameters(self):
+        return {'left': -4, 'top': -10, 'overlay_width': 70, 'overlay_height': 15}
+
 
 
 class ViewFrame(urwid.Pile):
@@ -39,27 +92,43 @@ class ViewFrame(urwid.Pile):
         self.list_of_rows.append(urwid.Columns([]))
 
         # Create the last row
-        cancel_button = urwid.Button("Cancel", on_press=self.handle_viewframe_cancel, user_data=[None])
-        save_button = urwid.Button("Save", on_press=self.handle_viewframe_save, user_data=[None])
-        last_row = urwid.Columns([(10, urwid.AttrWrap(cancel_button, 'truefalse not selected', 'truefalse selected')),
-                                  (10, urwid.AttrWrap(save_button, 'truefalse not selected', 'truefalse selected'))],
-                                 dividechars=1)
+
+        self.cancel_button = urwid.Button("Cancel", on_press=self.handle_viewframe_cancel, user_data=None)
+        self.save_button = SaveButtonWithAPopup(self.tui, self, self.morea_file)
+
+        last_row = urwid.Columns(
+            [(10, urwid.AttrWrap(self.cancel_button, 'truefalse not selected', 'truefalse selected')),
+             (10, urwid.AttrWrap(self.save_button, 'truefalse not selected', 'truefalse selected'))],
+            dividechars=1)
+
+        # last_row = urwid.Columns([self.save_button],
+        #                         dividechars=1)
+
+
         self.list_of_rows.append(last_row)
 
         # Add all the rows in the pile
         urwid.Pile.__init__(self, self.list_of_rows)
 
-    def handle_viewframe_cancel(self, button, user_data):
+    def handle_viewframe_cancel(self, button):
         # Simply show the correct toplevel_frame
         self.tui.frame_holder.set_body(
             self.tui.top_level_frame_dict[self.morea_file.get_value_of_scalar_property("morea_type")])
         self.tui.main_loop.draw_screen()
         return
 
-    def handle_viewframe_save(self, button, user_data):
+    def handle_viewframe_save(self):
+
+        # Build putative property starting with what we can get from the TUI
         putative_property_list = {}
-        for pname in self.property_tui_dict:
-            putative_property_list[pname] = self.property_tui_dict[pname].get_property()
+        for pname in MoreaGrammar.property_syntaxes:
+            if pname in self.property_tui_dict and len(self.property_tui_dict[pname].get_property().versions) != 0:
+                putative_property_list[pname] = self.property_tui_dict[pname].get_property()
+            elif pname in self.morea_file.property_list:
+                putative_property_list[pname] = self.morea_file.property_list[pname]
+            else:
+                pass
+
 
         # print "PROPERTYLIST:"
         # for pname in putative_property_list:
@@ -67,16 +136,11 @@ class ViewFrame(urwid.Pile):
         # time.sleep(1000)
 
         # At this point we have the putative property
-        # Go through the properties, and replace the
-        # TODO
-        print "SHOULD DO SOMETIHNG!!!"
-        time.sleep(2)
-
-
-        # Close this frame
-        self.tui.frame_holder.set_body(
-            self.tui.top_level_frame_dict[self.morea_file.get_value_of_scalar_property("morea_type")])
-        self.tui.main_loop.draw_screen()
+        try:
+            self.tui.content.apply_property_changes(self.morea_file, putative_property_list)
+        except CustomException as e:
+            raise e
+        return
 
 
 class PropertyTui:
@@ -158,6 +222,7 @@ class BoolanValueTui:
 
         # True/False button
         value = version.values.value
+
         if value:
             self.true_false_button = urwid.Button(true_label)
         else:
@@ -194,7 +259,7 @@ def handle_true_false_button_click(button, user_data):
     return
 
 
-# TODO MAKE IT SO THAT COMMENTING HAPPENS CORRECTLY
+# TODO MAKE IT SO THAT COMMENTING HAPPENS CORRECTLY FOR ALL PROPERTIES
 def handle_commentedout_button_click(button, user_data):
     if button.get_label() == commentedout_true_label:
         button.set_label(commentedout_false_label)

@@ -114,17 +114,8 @@ class MoreaFile(object):
         prop = self.property_list[name]
         if prop.grammar.multiple_values:
             raise CustomException("  Internal error: property "+name+" is not scalar!")
-
-        for version in prop.versions:
-            if not version.commented_out:
-                if type(version.values) != list:
-                    if not version.values.commented_out:
-                        return version.values.value
-                else:
-                    for val in version.values:
-                        if not val.commented_out:
-                            return val.value
-        return None
+        else:
+            return prop.get_scalar_value()
 
     def set_value_of_scalar_property(self, name, value):
 
@@ -164,6 +155,21 @@ class MoreaFile(object):
                         reference_list.append([pname, val.value])
         return reference_list
 
+
+    def comment_out_all_references_to_id(self, morea_id):
+        referencing_properties = ["morea_outcomes",
+                                  "morea_readings",
+                                  "morea_experiments",
+                                  "morea_assessments",
+                                  "morea_prerequisites",
+                                  "morea_outcomes_assessed",
+                                  ]
+        for referencing_property in referencing_properties:
+            self.property_list[referencing_property].comment_out_all_references_to_id(morea_id)
+
+        return
+
+
     def save(self):
 
         # Don't do anything if the object hasn't changed
@@ -185,6 +191,9 @@ class MoreaFile(object):
         f.close()
         return
 
+    def display_properties(self):
+        for p in self.property_list:
+            self.property_list[p].display()
 
 ################################################################
 #                   HELPER FUNCTIONS BELOW                     #
