@@ -115,6 +115,14 @@ class PropertyVersion(object):
                         return val.value
         return None
 
+    def get_scalar_value_even_if_commented_out(self):
+        if type(self.values) != list:
+                return self.values.value
+        else:
+            for val in self.values:
+                    return val.value
+
+
     def comment_out_all_references_to_id(self, morea_id):
         for scalarvalue in self.values:
             if scalarvalue.value == morea_id:

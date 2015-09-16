@@ -2,7 +2,6 @@ import time
 
 import urwid
 
-import MOREA
 from MOREA.MoreaGrammar import MoreaGrammar
 from MOREA.MoreaProperty import Property, ScalarPropertyValue, PropertyVersion
 from Toolbox.toolbox import CustomException
@@ -27,9 +26,10 @@ class PopUpDialog(urwid.WidgetWrap):
         urwid.connect_signal(close_button, 'click',
                              lambda button: self._emit("close"))
         pile = urwid.Pile([urwid.Text("Can't save due to the following:\n" + msg),
-                           urwid.Columns([(10,urwid.Text(" ")), (10,urwid.AttrWrap(close_button,'truefalse not selected', 'truefalse selected'))])])
+                           urwid.Columns([(10, urwid.Text(" ")), (
+                               10, urwid.AttrWrap(close_button, 'truefalse not selected', 'truefalse selected'))])])
         fill = urwid.Filler(pile)
-        self.__super.__init__(urwid.AttrWrap(fill, 'popbg'))
+        super(PopUpDialog, self).__init__(urwid.AttrWrap(fill, 'popbg'))
 
 
 class SaveButtonWithAPopup(urwid.PopUpLauncher):
@@ -38,7 +38,7 @@ class SaveButtonWithAPopup(urwid.PopUpLauncher):
         self.viewframe = viewframe
         self.morea_file = morea_file
         self.popup_message = ""
-        self.__super.__init__(urwid.Button("SAVE"))
+        super(SaveButtonWithAPopup, self).__init__(urwid.Button("SAVE"))
         # urwid.connect_signal(self.original_widget, 'click',
         #                      self.open_the_pop_up, None)
         urwid.connect_signal(self.original_widget, 'click',
@@ -67,7 +67,6 @@ class SaveButtonWithAPopup(urwid.PopUpLauncher):
 
     def get_pop_up_parameters(self):
         return {'left': -4, 'top': -10, 'overlay_width': 70, 'overlay_height': 15}
-
 
 
 class ViewFrame(urwid.Pile):
@@ -101,10 +100,6 @@ class ViewFrame(urwid.Pile):
              (10, urwid.AttrWrap(self.save_button, 'truefalse not selected', 'truefalse selected'))],
             dividechars=1)
 
-        # last_row = urwid.Columns([self.save_button],
-        #                         dividechars=1)
-
-
         self.list_of_rows.append(last_row)
 
         # Add all the rows in the pile
@@ -129,11 +124,10 @@ class ViewFrame(urwid.Pile):
             else:
                 pass
 
-
-        # print "PROPERTYLIST:"
-        # for pname in putative_property_list:
-        #    putative_property_list[pname].display()
-        # time.sleep(1000)
+        #print "PUTATIVE PROPERTYLIST:"
+        #for pname in putative_property_list:
+        #   putative_property_list[pname].display()
+        #time.sleep(1000)
 
         # At this point we have the putative property
         try:
@@ -174,8 +168,17 @@ class PropertyVersionTui:
         self.property = property
         self.version = version
 
+        # Single boolean value
         if not version.grammar.multiple_values and version.grammar.data_type == bool:
             self.instance = BoolanValueTui(morea_file, property, version)
+        elif property.name == "morea_id" or \
+                        property.name == "morea_icon_url" or \
+                        property.name == "morea_type" or \
+                        property.name == "morea_url":
+            self.instance = NonEditableTextLine(morea_file, property, version)
+        elif property.name == "title":
+            self.instance = EditableTextLine(morea_file, property, version)
+        # Not implemented yet / ignores
         else:
             self.instance = TBDValueTui(morea_file, property, version)
         return
@@ -191,13 +194,90 @@ class TBDValueTui:
     def __init__(self, morea_file, property, version):
         self.row = urwid.Columns(
             [('fixed', 2, urwid.Text("  ")), ('fixed', max_label_width + 2, urwid.Text(property.name + ": ")),
-             urwid.Text("       n/a")])
+             urwid.Text("[not implemented yet]")])
 
     def get_rows(self):
         return [self.row]
 
     def get_version(self):
         return None
+
+class NonEditableTextLine:
+    def __init__(self, morea_file, property, version):
+
+        widget_list = []
+        self.property = property
+
+        # Comment button
+        if version.commented_out:
+            self.comment_button = urwid.Button("#")
+        else:
+            self.comment_button = urwid.Button(" ")
+        widget_list.append(('fixed', 2, self.comment_button))
+        urwid.connect_signal(self.comment_button, 'click', handle_commentedout_button_click,
+                             [morea_file, property, version])
+
+        # Label
+        widget_list.append(('fixed', max_label_width + 2, urwid.Text(property.name + ": ")))
+
+        # Text
+        self.textfield = urwid.Text(version.get_scalar_value_even_if_commented_out())
+        #self.textfield = urwid.Text("HELLO")
+        widget_list.append(self.textfield)
+
+        self.row = urwid.Columns(widget_list)
+
+    def get_rows(self):
+        return [self.row]
+
+    def get_version(self):
+
+        commented_out = self.comment_button.get_label() == commentedout_true_label
+        value = self.textfield.get_text()[0]
+
+        # Create a value-less property version
+        version = PropertyVersion(self.property.name, self.property.grammar, commented_out)
+        # add a scalar value
+        version.add_scalar_property_value(ScalarPropertyValue(commented_out, value))
+        return version
+
+class EditableTextLine:
+    def __init__(self, morea_file, property, version):
+
+        widget_list = []
+        self.property = property
+
+        # Comment button
+        if version.commented_out:
+            self.comment_button = urwid.Button("#")
+        else:
+            self.comment_button = urwid.Button(" ")
+        widget_list.append(('fixed', 2, self.comment_button))
+        urwid.connect_signal(self.comment_button, 'click', handle_commentedout_button_click,
+                             [morea_file, self.property, version])
+
+        # Label
+        widget_list.append(('fixed', max_label_width + 2, urwid.Text(self.property.name + ": ")))
+
+        # Text
+        self.textfield = urwid.Edit(caption="", edit_text=version.get_scalar_value_even_if_commented_out())
+        #self.textfield = urwid.Text("HELLO")
+        widget_list.append(self.textfield)
+
+        self.row = urwid.Columns(widget_list)
+
+    def get_rows(self):
+        return [self.row]
+
+    def get_version(self):
+        commented_out = self.comment_button.get_label() == commentedout_true_label
+        value = self.textfield.get_edit_text()
+
+        # Create a value-less property version
+        version = PropertyVersion(self.property.name, self.property.grammar, commented_out)
+        # add a scalar value
+        version.add_scalar_property_value(ScalarPropertyValue(commented_out, value))
+        return version
 
 
 class BoolanValueTui:
