@@ -6,6 +6,7 @@ Required Python packages:
 
   - [urwid](http://urwid.org)
   - [PyYaml] (http://pyyaml.org)
+  - curses
 
 The content validator does:
 
