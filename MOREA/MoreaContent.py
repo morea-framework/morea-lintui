@@ -116,7 +116,7 @@ class MoreaContent(object):
 
                     morea_type = referenced_file.get_value_of_scalar_property("morea_type")
                     if not MoreaGrammar.is_valid_reference(label, morea_type):
-                        #print "label=", label, "idstring= ", idstring
+                        # print "label=", label, "idstring= ", idstring
                         err_msg += "  Error: File " + f.path + " mistakenly references id " + idstring + \
                                    ", which is of type " + \
                                    referenced_file.get_value_of_scalar_property("morea_type") + \
@@ -244,48 +244,43 @@ class MoreaContent(object):
                 err_msg += "  * No (uncommented) value for required field '" + pname + "'\n"
             # Check that only one uncommented version exists
             if putative_property_list[pname].num_uncommented_versions() > 1:
-                err_msg += "  * Multiple (uncommented) values for field '" + pname +"'\n"
-            # Other checks???
+                err_msg += "  * Multiple (uncommented) values for field '" + pname + "'\n"
+                # Other checks???
 
         if err_msg != "":
             raise CustomException(err_msg)
-
 
         #####################################
         # Hard-coded morea checks and changes
         #####################################
 
         # Check ID change
-        #print putative_property_list["morea_id"].get_scalar_value()
-        #print morea_file.get_value_of_scalar_property("morea_id")
-        if putative_property_list["morea_id"].get_scalar_value() != morea_file.get_value_of_scalar_property("morea_id"):
-            err_msg += "  * Detected a morea_id change! Not supported (yet)" + putative_property_list["morea_id"].get_scalar_value()[0] + "|" + morea_file.get_value_of_scalar_property("morea_id")
+        # print putative_property_list["morea_id"].get_scalar_value()
+        # print morea_file.get_value_of_scalar_property("morea_id")
+        if putative_property_list[
+            "morea_id"].get_first_uncommented_scalar_value() != \
+                morea_file.get_value_of_scalar_property("morea_id"):
+            err_msg += "  * Detected a morea_id change! Not supported (yet)"
             # TODO: In the future will have to go update all references
-
-        # print "*** HERE ***"
-        # time.sleep(1000)
 
         if err_msg != "":
             raise CustomException(err_msg)
 
         # If the file is unpublished, comment-out all references to it
         if not putative_property_list["published"]:
-            self.comment_out_all_references_to_id(putative_property_list["morea_id"].get_scalar_value())
-
+            self.comment_out_all_references_to_id(
+                putative_property_list["morea_id"].get_first_uncommented_scalar_value())
 
         #######################
         # Apply all the changes
         #######################
 
         for pname in putative_property_list:
-            #putative_property_list[pname].display()
+            # putative_property_list[pname].display()
             morea_file.property_list[pname] = putative_property_list[pname]
-
-
 
         # print "FILE PROPERTY AFTER: "
         # morea_file.display_properties()
         # time.sleep(1000)
-
 
         return

@@ -3,7 +3,8 @@ import time
 import urwid
 
 from MOREA.MoreaGrammar import MoreaGrammar
-from MOREA.MoreaProperty import Property, ScalarPropertyValue, PropertyVersion
+from MOREA.MoreaProperty import Property, PropertyVersion
+from MOREA.MoreaPropertyVersion import ScalarPropertyValue
 from Toolbox.toolbox import CustomException
 
 __author__ = 'casanova'
@@ -38,7 +39,7 @@ class SaveButtonWithAPopup(urwid.PopUpLauncher):
         self.viewframe = viewframe
         self.morea_file = morea_file
         self.popup_message = ""
-        super(SaveButtonWithAPopup, self).__init__(urwid.Button("SAVE"))
+        super(SaveButtonWithAPopup, self).__init__(urwid.Button("Confirm"))
         # urwid.connect_signal(self.original_widget, 'click',
         #                      self.open_the_pop_up, None)
         urwid.connect_signal(self.original_widget, 'click',
@@ -82,10 +83,11 @@ class ViewFrame(urwid.Pile):
         property_list = morea_file.property_list
 
         self.property_tui_dict = {}
-        for pname in property_list:
-            # Build a class that embodies a property
-            self.property_tui_dict[pname] = PropertyTui(morea_file, morea_file.property_list[pname])
-            self.list_of_rows += self.property_tui_dict[pname].get_rows()
+        for pname in MoreaGrammar.property_output_order:
+            if pname in property_list:
+                # Build a class that embodies a property
+                self.property_tui_dict[pname] = PropertyTui(morea_file, morea_file.property_list[pname])
+                self.list_of_rows += self.property_tui_dict[pname].get_rows()
 
         # Create an empty row
         self.list_of_rows.append(urwid.Columns([]))
@@ -96,8 +98,8 @@ class ViewFrame(urwid.Pile):
         self.save_button = SaveButtonWithAPopup(self.tui, self, self.morea_file)
 
         last_row = urwid.Columns(
-            [(10, urwid.AttrWrap(self.cancel_button, 'truefalse not selected', 'truefalse selected')),
-             (10, urwid.AttrWrap(self.save_button, 'truefalse not selected', 'truefalse selected'))],
+            [(11, urwid.AttrWrap(self.cancel_button, 'truefalse not selected', 'truefalse selected')),
+             (11, urwid.AttrWrap(self.save_button, 'truefalse not selected', 'truefalse selected'))],
             dividechars=1)
 
         self.list_of_rows.append(last_row)
@@ -124,10 +126,10 @@ class ViewFrame(urwid.Pile):
             else:
                 pass
 
-        #print "PUTATIVE PROPERTYLIST:"
-        #for pname in putative_property_list:
-        #   putative_property_list[pname].display()
-        #time.sleep(1000)
+        # print "PUTATIVE PROPERTYLIST:"
+        # for pname in putative_property_list:
+        #    putative_property_list[pname].display()
+        # time.sleep(1000)
 
         # At this point we have the putative property
         try:
@@ -138,13 +140,13 @@ class ViewFrame(urwid.Pile):
 
 
 class PropertyTui:
-    def __init__(self, morea_file, property):
+    def __init__(self, morea_file, prop):
         self.morea_file = morea_file
-        self.property = property
+        self.prop = prop
         self.version_tuis = []
 
-        for v in self.property.versions:
-            self.version_tuis.append(PropertyVersionTui(morea_file, property, v))
+        for v in self.prop.versions:
+            self.version_tuis.append(PropertyVersionTui(morea_file, prop, v))
         return
 
     def get_rows(self):
@@ -154,33 +156,33 @@ class PropertyTui:
         return row_list
 
     def get_property(self):
-        p = Property(self.property.name)
+        p = Property(self.prop.name)
         for vt in self.version_tuis:
             version = vt.get_version()
             if version is not None:
-                p.add_property_version(version)
+                p.add_version(version)
         return p
 
 
 class PropertyVersionTui:
-    def __init__(self, morea_file, property, version):
+    def __init__(self, morea_file, prop, version):
         self.morea_file = morea_file
-        self.property = property
+        self.property = prop
         self.version = version
 
         # Single boolean value
         if not version.grammar.multiple_values and version.grammar.data_type == bool:
-            self.instance = BoolanValueTui(morea_file, property, version)
-        elif property.name == "morea_id" or \
-                        property.name == "morea_icon_url" or \
-                        property.name == "morea_type" or \
-                        property.name == "morea_url":
-            self.instance = NonEditableTextLine(morea_file, property, version)
-        elif property.name == "title":
-            self.instance = EditableTextLine(morea_file, property, version)
+            self.instance = BoolanValueTui(morea_file, prop, version)
+        elif prop.name == "morea_id" or \
+                        prop.name == "morea_icon_url" or \
+                        prop.name == "morea_type" or \
+                        prop.name == "morea_url":
+            self.instance = NonEditableTextLine(morea_file, prop, version)
+        elif prop.name == "title":
+            self.instance = EditableTextLine(morea_file, prop, version)
         # Not implemented yet / ignores
         else:
-            self.instance = TBDValueTui(morea_file, property, version)
+            self.instance = TBDValueTui(morea_file, prop, version)
         return
 
     def get_rows(self):
@@ -191,10 +193,10 @@ class PropertyVersionTui:
 
 
 class TBDValueTui:
-    def __init__(self, morea_file, property, version):
+    def __init__(self, morea_file, prop, version):
         self.row = urwid.Columns(
-            [('fixed', 2, urwid.Text("  ")), ('fixed', max_label_width + 2, urwid.Text(property.name + ": ")),
-             urwid.Text("[not implemented yet]")])
+            [('fixed', 2, urwid.Text("  ")), ('fixed', max_label_width + 2, urwid.Text(prop.name + ": ")),
+             urwid.AttrWrap(urwid.Text("[not implemented yet]"), 'duller')])
 
     def get_rows(self):
         return [self.row]
@@ -202,28 +204,30 @@ class TBDValueTui:
     def get_version(self):
         return None
 
+
 class NonEditableTextLine:
-    def __init__(self, morea_file, property, version):
+    def __init__(self, morea_file, prop, version):
 
         widget_list = []
-        self.property = property
+        self.property = prop
 
         # Comment button
         if version.commented_out:
             self.comment_button = urwid.Button("#")
         else:
             self.comment_button = urwid.Button(" ")
-        widget_list.append(('fixed', 2, self.comment_button))
+        widget_list.append(('fixed', 2, urwid.AttrWrap(self.comment_button, 'commentout button')))
         urwid.connect_signal(self.comment_button, 'click', handle_commentedout_button_click,
-                             [morea_file, property, version])
+                             [morea_file, prop, version])
 
         # Label
-        widget_list.append(('fixed', max_label_width + 2, urwid.Text(property.name + ": ")))
+        widget_list.append(('fixed', max_label_width + 2, urwid.Text(prop.name + ": ")))
 
         # Text
         self.textfield = urwid.Text(version.get_scalar_value_even_if_commented_out())
-        #self.textfield = urwid.Text("HELLO")
-        widget_list.append(self.textfield)
+
+        # self.textfield = urwid.Text("HELLO")
+        widget_list.append(urwid.AttrWrap(self.textfield, 'dull'))
 
         self.row = urwid.Columns(widget_list)
 
@@ -238,21 +242,22 @@ class NonEditableTextLine:
         # Create a value-less property version
         version = PropertyVersion(self.property.name, self.property.grammar, commented_out)
         # add a scalar value
-        version.add_scalar_property_value(ScalarPropertyValue(commented_out, value))
+        version.set_value(ScalarPropertyValue(commented_out, value))
         return version
 
+
 class EditableTextLine:
-    def __init__(self, morea_file, property, version):
+    def __init__(self, morea_file, prop, version):
 
         widget_list = []
-        self.property = property
+        self.property = prop
 
         # Comment button
         if version.commented_out:
             self.comment_button = urwid.Button("#")
         else:
             self.comment_button = urwid.Button(" ")
-        widget_list.append(('fixed', 2, self.comment_button))
+        widget_list.append(('fixed', 2, urwid.AttrWrap(self.comment_button, 'commentout button')))
         urwid.connect_signal(self.comment_button, 'click', handle_commentedout_button_click,
                              [morea_file, self.property, version])
 
@@ -261,7 +266,7 @@ class EditableTextLine:
 
         # Text
         self.textfield = urwid.Edit(caption="", edit_text=version.get_scalar_value_even_if_commented_out())
-        #self.textfield = urwid.Text("HELLO")
+        # self.textfield = urwid.Text("HELLO")
         widget_list.append(self.textfield)
 
         self.row = urwid.Columns(widget_list)
@@ -276,14 +281,14 @@ class EditableTextLine:
         # Create a value-less property version
         version = PropertyVersion(self.property.name, self.property.grammar, commented_out)
         # add a scalar value
-        version.add_scalar_property_value(ScalarPropertyValue(commented_out, value))
+        version.set_value(ScalarPropertyValue(commented_out, value))
         return version
 
 
 class BoolanValueTui:
-    def __init__(self, morea_file, property, version):
+    def __init__(self, morea_file, prop, version):
         self.morea_file = morea_file
-        self.property = property
+        self.property = prop
         self.version = version
 
         widget_list = []
@@ -293,12 +298,12 @@ class BoolanValueTui:
             self.comment_button = urwid.Button("#")
         else:
             self.comment_button = urwid.Button(" ")
-        widget_list.append(('fixed', 2, self.comment_button))
+        widget_list.append(('fixed', 2, urwid.AttrWrap(self.comment_button, 'commentout button')))
         urwid.connect_signal(self.comment_button, 'click', handle_commentedout_button_click,
-                             [morea_file, property, version])
+                             [morea_file, prop, version])
 
         # Label
-        widget_list.append(('fixed', max_label_width + 2, urwid.Text(property.name + ": ")))
+        widget_list.append(('fixed', max_label_width + 2, urwid.Text(prop.name + ": ")))
 
         # True/False button
         value = version.values.value
@@ -309,7 +314,7 @@ class BoolanValueTui:
             self.true_false_button = urwid.Button(false_label)
 
         urwid.connect_signal(self.true_false_button, 'click', handle_true_false_button_click,
-                             [morea_file, property, version])
+                             [morea_file, prop, version])
         self.true_false_button = urwid.AttrWrap(self.true_false_button, 'truefalse not selected', 'truefalse selected')
 
         widget_list.append(('fixed', 15, self.true_false_button))
@@ -326,7 +331,7 @@ class BoolanValueTui:
         # Create a value-less property version
         version = PropertyVersion(self.property.name, self.property.grammar, commented_out)
         # add a scalar value
-        version.add_scalar_property_value(ScalarPropertyValue(commented_out, value))
+        version.set_value(ScalarPropertyValue(commented_out, value))
 
         return version
 

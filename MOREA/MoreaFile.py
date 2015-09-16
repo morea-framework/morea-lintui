@@ -113,16 +113,16 @@ class MoreaFile(object):
 
         prop = self.property_list[name]
         if prop.grammar.multiple_values:
-            raise CustomException("  Internal error: property "+name+" is not scalar!")
+            raise CustomException("  Internal error: property " + name + " is not scalar!")
         else:
-            return prop.get_scalar_value()
+            return prop.get_first_uncommented_scalar_value()
 
     def set_value_of_scalar_property(self, name, value):
 
         try:
             prop = self.property_list[name]
             if prop.grammar.multiple_values:
-                raise CustomException("  Internal error: property "+name+" is not scalar!")
+                raise CustomException("  Internal error: property " + name + " is not scalar!")
             for version in prop.versions:
                 if not version.commented_out:
                     if type(version.values) != list:
@@ -155,7 +155,6 @@ class MoreaFile(object):
                         reference_list.append([pname, val.value])
         return reference_list
 
-
     def comment_out_all_references_to_id(self, morea_id):
         referencing_properties = ["morea_outcomes",
                                   "morea_readings",
@@ -168,7 +167,6 @@ class MoreaFile(object):
             self.property_list[referencing_property].comment_out_all_references_to_id(morea_id)
 
         return
-
 
     def save(self):
 
@@ -194,6 +192,7 @@ class MoreaFile(object):
     def display_properties(self):
         for p in self.property_list:
             self.property_list[p].display()
+
 
 ################################################################
 #                   HELPER FUNCTIONS BELOW                     #
@@ -225,7 +224,7 @@ def build_property_list(parsed_front_matter):
         # Add the version
         # print "ADDING A VERSION"
         try:
-            property_list[decommentified_name].add_version(commented_out, value)
+            property_list[decommentified_name].create_and_add_version(commented_out, value)
         except CustomException as e:
             # print "FAILED!!!"
             raise e

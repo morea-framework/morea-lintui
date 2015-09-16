@@ -15,7 +15,7 @@ The content validator does:
   - Type-checking of references
   - Checking for value collisions
   - Issue warnings for potentially dangerous behavior
-
+  
 
 The content editor does:
 

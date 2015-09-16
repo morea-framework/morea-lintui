@@ -2,6 +2,7 @@ import urwid
 
 __author__ = 'casanova'
 
+
 class TopLevelFrame(urwid.Pile):
     def __init__(self, _tui,
                  morea_type_key_and_nickname,
@@ -45,7 +46,6 @@ class TopLevelFrame(urwid.Pile):
             # Create the morea_id button
             button_label = u"\u25BA " + f.get_value_of_scalar_property("morea_id") + "\n"
             if f.get_value_of_scalar_property("title") != "":
-
                 button_label += '   "' + f.get_value_of_scalar_property("title") + '"'
 
             button = urwid.Button(button_label,
@@ -103,4 +103,3 @@ class TopLevelFrame(urwid.Pile):
 
         if focus is not None:
             self._set_focus_position(focus_row + 1)
-
