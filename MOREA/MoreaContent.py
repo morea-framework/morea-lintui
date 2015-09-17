@@ -387,8 +387,9 @@ class MoreaContent(object):
                 continue
             else:
                 sanitized_sorted_list.append(sorted_list[i])
-        if sorted_list[len(sorted_list) - 1].get_value_of_scalar_property("morea_type") != "module":
-            sanitized_sorted_list.append(sorted_list[len(sorted_list) - 1])
+        if len(sorted_list) > 0:
+            if sorted_list[len(sorted_list) - 1].get_value_of_scalar_property("morea_type") != "module":
+                sanitized_sorted_list.append(sorted_list[len(sorted_list) - 1])
 
         # Add the unreferenced files
         if len(unreferenced) > 0:

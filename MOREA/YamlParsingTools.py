@@ -309,7 +309,7 @@ def decommentify(string):
 
 
 
-def check_for_duplicate_entries(front_matter):
+def check_for_duplicate_entries(front_matter, parse_comments):
 
     entries = []
     err_msg = ""
@@ -317,8 +317,12 @@ def check_for_duplicate_entries(front_matter):
     for l in front_matter.splitlines():
         linecount += 1
         (key, count) = re.subn(r'(?P<id>^[^\s][^\'\"]*):.*', r'\g<id>', l)
-        if re.search("^__COMMENTEDOUT__", key) is not None:
-            continue
+        if parse_comments:
+            if re.search("^__COMMENTEDOUT__", key) is not None:
+                continue
+        else:
+            if re.search("^\s*#.*", key) is not None:
+                continue
         if count == 1:
             if key in entries:
                 err_msg += "  Duplicate entry '" + key + "' at line " + str(linecount) + "\n"
