@@ -56,12 +56,22 @@ class MoreaContent(object):
 
     def perform_hardcoded_checks(self):
         err_msg = ""
+
+        # check that each module as a morea_sort_order field
         try:
             self.check_file_type_has_property("module", "morea_sort_order")
         except CustomException as e:
             err_msg += str(e)
+
+        # check that each outcome has a morea_sort_order field
         try:
             self.check_file_type_has_property("outcome", "morea_sort_order")
+        except CustomException as e:
+            err_msg += str(e)
+
+        # check that outcome_assessed is only in an outcome file
+        try:
+            self.check_only_file_type_has_property("assessment", "morea_outcomes_assessed")
         except CustomException as e:
             err_msg += str(e)
 
@@ -77,6 +87,18 @@ class MoreaContent(object):
                 if f.get_value_of_scalar_property(morea_property) is None:
                     err_msg += "  Error: file " + f.path + " should have a '" + morea_property + "' field\n"
 
+        if err_msg != "":
+            raise CustomException(err_msg)
+        return
+
+    def check_only_file_type_has_property(self, morea_type, morea_property):
+        err_msg = ""
+        for f in self.files:
+            if f.get_value_of_scalar_property("morea_type") == morea_type:
+                continue
+            if morea_property in f.property_list:
+                err_msg += "  Error: file " + f.path + " has a '" + morea_property + \
+                           "' field but is of type '" + f.get_value_of_scalar_property("morea_type") + "'\n"
         if err_msg != "":
             raise CustomException(err_msg)
         return
@@ -312,3 +334,65 @@ class MoreaContent(object):
         # time.sleep(1000)
 
         return
+
+    def get_referencing_modules(self, f):
+        module_list = self.get_filelist_for_type("module")
+        morea_type = f.get_value_of_scalar_property("morea_type")
+        morea_id = f.get_value_of_scalar_property("morea_id")
+        referencing_modules = []
+        for module in module_list:
+            try:
+                property = module.property_list[MoreaGrammar.get_reference(morea_type)]
+            except KeyError:
+                continue
+            for version in property.versions:
+                if type(version.values) != list:
+                    if version.values.value == morea_id:
+                        referencing_modules.append(module)
+                else:
+                    for val in version.values:
+                        if val.value == morea_id:
+                            referencing_modules.append(module)
+        return referencing_modules
+
+    def get_sorted_files_by_referencing_module(self, morea_type):
+
+        reference_list = []
+        for f in self.get_filelist_for_type(morea_type):
+            reference_list.append((f, self.get_referencing_modules(f)))
+
+        # Get sorted list of module
+        module_list = self.get_filelist_for_type("module")
+        module_list.sort(key=lambda xx: xx.get_value_of_scalar_property("morea_sort_order"), reverse=False)
+
+        sorted_list = []
+        unreferenced = []
+        for module in module_list:
+            sorted_list.append(module)
+            for (f, list_of_referencing_modules) in reference_list:
+                if len(list_of_referencing_modules) == 0:
+                    unreferenced.append(f)
+                elif module in list_of_referencing_modules:
+                    sorted_list.append(f)
+                else:
+                    pass
+
+        unreferenced = list(set(unreferenced))
+
+        # Sort of ugly
+        sanitized_sorted_list = []
+        for i in xrange(0, len(sorted_list) - 1):
+            if sorted_list[i].get_value_of_scalar_property("morea_type") == "module" and \
+                            sorted_list[i + 1].get_value_of_scalar_property("morea_type") == "module":
+                continue
+            else:
+                sanitized_sorted_list.append(sorted_list[i])
+        if sorted_list[len(sorted_list) - 1].get_value_of_scalar_property("morea_type") != "module":
+            sanitized_sorted_list.append(sorted_list[len(sorted_list) - 1])
+
+        # Add the unreferenced files
+        if len(unreferenced) > 0:
+            sanitized_sorted_list += [None]
+            sanitized_sorted_list += unreferenced
+
+        return sanitized_sorted_list

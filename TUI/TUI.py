@@ -107,13 +107,13 @@ class TUI(object):
         self.top_level_frame_dict["outcome"] = TopLevelFrame(self, ("outcome", "-- OUTCOMES  --"), [], sorting=True, focus=focus)
 
     def create_readings_top_level_frame(self):
-        self.top_level_frame_dict["reading"] = TopLevelFrame(self, ("reading", "-- READINGS --"), [])
+        self.top_level_frame_dict["reading"] = TopLevelFrame(self, ("reading", "-- READINGS --"), [], sort_by_module_reference=True)
 
     def create_experiences_top_level_frame(self):
-        self.top_level_frame_dict["experience"] = TopLevelFrame(self, ("experience", "-- EXPERIENCES --"), [])
+        self.top_level_frame_dict["experience"] = TopLevelFrame(self, ("experience", "-- EXPERIENCES --"), [], sort_by_module_reference=True)
 
     def create_assessments_top_level_frame(self):
-        self.top_level_frame_dict["assessment"] = TopLevelFrame(self, ("assessment", "-- ASSESSMENTS --"), [])
+        self.top_level_frame_dict["assessment"] = TopLevelFrame(self, ("assessment", "-- ASSESSMENTS --"), [], sort_by_module_reference=True)
 
     def handle_key_stroke(self, key):
         if key == 'M' or key == 'm':

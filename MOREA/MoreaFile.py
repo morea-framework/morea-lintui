@@ -39,7 +39,7 @@ class MoreaFile(object):
             err_msg += offset_string(str(e), 4)
             raise CustomException(err_msg)
 
-        # print "COMENTIFIED_YAML = ", commentified_front_matter
+        # print "COMMENTIFIED_YAML = ", commentified_front_matter
 
         # Check for duplicate properties
         try:
@@ -66,6 +66,8 @@ class MoreaFile(object):
         # Convert every string to unicode
         parsed_front_matter = convert_to_unicode(parsed_front_matter)
 
+        #print "PARSED_FRONT_MATTER:", parsed_front_matter
+        # Build property list
         try:
             self.property_list = build_property_list(parsed_front_matter)
         except CustomException as e:
@@ -74,9 +76,10 @@ class MoreaFile(object):
             raise CustomException(err_msg)
 
         # OUTPUT FOR SHOW
-        # print "Parsed content for file " + path + ":"
+        # print "PROPERTY LIST content for file " + path + ":"
         # for p in self.property_list:
-        #    self.property_list[p].display()
+        #     print "PROPERTY"
+        #     self.property_list[p].display()
 
         return
 
@@ -93,7 +96,6 @@ class MoreaFile(object):
                 err_msg += "  Error: missing required property '" + name + "' (only commented out)\n"
         if err_msg != "":
             raise CustomException(err_msg)
-
         # Check that each property is correct
         for name in self.property_list:
 
@@ -106,6 +108,14 @@ class MoreaFile(object):
             raise CustomException(err_msg)
 
         return
+
+    # def has_uncommented_property(self, pname):
+    #     if pname not in self.property_list:
+    #         return False
+    #     for version in self.property_list[pname].versions:
+    #         if version.commented_out is False:
+    #             return True
+    #     return False
 
     def get_value_of_scalar_property(self, name):
         if name not in self.property_list:
@@ -201,7 +211,7 @@ class MoreaFile(object):
 
 def build_property_list(parsed_front_matter):
     property_list = {}
-    #print "PARSED = ", parsed_front_matter
+    # print "PARSED = ", parsed_front_matter
 
     # print "BUilDING PROPERTY LIST"
     for name in parsed_front_matter:
@@ -212,7 +222,7 @@ def build_property_list(parsed_front_matter):
 
         # Check that the property is for a known field
         if decommentified_name not in MoreaGrammar.property_syntaxes:
-            raise CustomException("  Uknown property '"+ name + "'")
+            raise CustomException("  Uknown property '" + name + "'")
 
         # print "DECOMMENTIFIED NAME--> ", decommentified_name, ",",  commented_out
 
@@ -223,18 +233,21 @@ def build_property_list(parsed_front_matter):
 
         # Create the property object if not already created
         if decommentified_name not in property_list:
+            #print "CREATING A NEW PROPERTY FOR", decommentified_name
             property_list[decommentified_name] = Property(decommentified_name)
 
         # Add the version
         # print "ADDING A VERSION"
         try:
+            #print "ADDING A VERSION TO PROPERTY ", decommentified_name
             property_list[decommentified_name].create_and_add_version(commented_out, value)
         except CustomException as e:
             raise e
 
-    # print "PROPERTY LIST="
+    # print "\n********************\nPROPERTY LIST="
     # for p in property_list:
-    #    property_list[p].display()
+    #     print "PROPERTY:"
+    #     property_list[p].display()
 
     return property_list
 

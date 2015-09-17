@@ -189,7 +189,8 @@ class PropertyVersionTui:
                 prop.name == "morea_outcomes" or \
                 prop.name == "morea_assessments" or \
                 prop.name == "morea_experiences" or \
-                prop.name == "morea_labels":
+                prop.name == "morea_labels" or \
+                prop.name == "morea_outcomes_assessed":
             self.instance = NonEditableMultiValues(morea_file, prop, version)
         # Not implemented yet / ignores
         else:
@@ -208,7 +209,7 @@ class TBDValueTui:
         self.row = urwid.Columns(
             [('fixed', 2, urwid.Text("  ")),
              ('fixed', max_label_width + 2, urwid.AttrWrap(urwid.Text(prop.name + ": "), 'duller')),
-             urwid.AttrWrap(urwid.Text("[not available in TUI (yet)]"), 'duller')])
+             urwid.AttrWrap(urwid.Text("[not viewable in TUI]"), 'duller')])
 
     def get_rows(self):
         return [self.row]

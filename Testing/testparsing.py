@@ -230,6 +230,18 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_7(MoreaTestRejectingInva
                   "---\n"
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_7, self).runMoreaTest(content)
 
+# noinspection PyPep8Naming,PyPep8Naming
+class MoreaTestRejectingInvalidFilesWithNoComments_Test_8(MoreaTestRejectingInvalidFilesWithNoComments):
+    def shortDescription(self):
+        return super(MoreaTestRejectingInvalidFilesWithNoComments_Test_8, self).shortDescription() + "duplicate entry."
+
+    def runTest(self):
+        content = "---\n" \
+                  "title: title1\n" \
+                  "title: title2\n" \
+                  "---\n"
+        super(MoreaTestRejectingInvalidFilesWithNoComments_Test_8, self).runMoreaTest(content)
+
 
 class MoreaTestParsingValidFiles(MoreaParsingTestCase):
     def shortDescription(self):

@@ -127,12 +127,20 @@ class MoreaGrammar(object):
 
     @staticmethod
     def is_valid_reference(label, morea_id):
-        if [label, morea_id] in [["morea_outcomes", "outcome"],
-                                 ["morea_readings", "reading"],
-                                 ["morea_experiences", "experience"],
-                                 ["morea_assessments", "assessment"]]:
-            return True
-        return False
+        return label == MoreaGrammar.get_reference(morea_id)
+
+    @staticmethod
+    def get_reference(morea_type):
+        if morea_type == "outcome":
+            return "morea_outcomes"
+        elif morea_type == "reading":
+            return "morea_readings"
+        elif morea_type == "experience":
+            return "morea_experiences"
+        elif morea_type == "assessment":
+            return "morea_assessments"
+        else:
+            return None
 
     @staticmethod
     def validate_property(name, versions):
@@ -151,6 +159,23 @@ class MoreaGrammar(object):
             except CustomException as e:
                 err_msg += unicode(e)
 
+        # Detect missing required property
+        if syntax.required:
+            provided = False
+            for version in versions:
+                # list-if a single values, temporarily
+                if type(version.values) != list:
+                    value_list = [version.values]
+                else:
+                    value_list = version.values
+                for v in value_list:
+                    if v.commented_out is False and v.value is not None:
+                        provided = True
+                    else:
+                        pass
+            if not provided:
+                err_msg += "  Error: missing required property " + syntax.name + "\n"
+
         if err_msg != "":
             raise CustomException(err_msg)
 
@@ -160,6 +185,7 @@ class MoreaGrammar(object):
     def validate_version(syntax, version):
         err_msg = ""
 
+        #version.display()
         # check for multiple vs. single value
         if version.num_of_uncommented_values() > 1 and not syntax.multiple_values:
             err_msg += "  Error: property " + syntax.name + " can have only one value" + "\n"
@@ -169,15 +195,6 @@ class MoreaGrammar(object):
             value_list = [version.values]
         else:
             value_list = version.values
-
-        # check that value is provided for required property
-        if syntax.required:
-            provided = False
-            for v in value_list:
-                if v.commented_out is False and v.value is not None:
-                    provided = True
-            if not provided:
-                err_msg += "  Error: no value provided for required property " + syntax.name + "\n"
 
         # Check for value types
         for v in value_list:
