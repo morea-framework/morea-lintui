@@ -88,6 +88,8 @@ class ViewFrame(urwid.Pile):
                 # Build a class that embodies a property
                 self.property_tui_dict[pname] = PropertyTui(morea_file, morea_file.property_list[pname])
                 self.list_of_rows += self.property_tui_dict[pname].get_rows()
+                self.list_of_rows.append(
+                    urwid.Columns([urwid.Text("-----------------------------------------------------------")]))
 
         # Create an empty row
         self.list_of_rows.append(urwid.Columns([]))
@@ -173,13 +175,22 @@ class PropertyVersionTui:
         # Single boolean value
         if not version.grammar.multiple_values and version.grammar.data_type == bool:
             self.instance = BoolanValueTui(morea_file, prop, version)
-        elif prop.name == "morea_id" or \
-                        prop.name == "morea_icon_url" or \
-                        prop.name == "morea_type" or \
+        elif prop.name == "morea_icon_url" or \
                         prop.name == "morea_url":
             self.instance = NonEditableTextLine(morea_file, prop, version)
-        elif prop.name == "title":
+        elif prop.name == "title" or \
+                prop.name == "morea_summary":
             self.instance = EditableTextLine(morea_file, prop, version)
+        elif prop.name == "morea_sort_order" or \
+                prop.name == "morea_id" or \
+                prop.name == "morea_type":
+            self.instance = DisplayOnlyLine(morea_file, prop, version)
+        elif prop.name == "morea_readings" or \
+                prop.name == "morea_outcomes" or \
+                prop.name == "morea_assessments" or \
+                prop.name == "morea_experiences" or \
+                prop.name == "morea_labels":
+            self.instance = NonEditableMultiValues(morea_file, prop, version)
         # Not implemented yet / ignores
         else:
             self.instance = TBDValueTui(morea_file, prop, version)
@@ -218,7 +229,7 @@ class NonEditableTextLine:
         else:
             self.comment_button = urwid.Button(" ")
         widget_list.append(('fixed', 2, urwid.AttrWrap(self.comment_button, 'commentout button')))
-        urwid.connect_signal(self.comment_button, 'click', handle_commentedout_button_click,
+        urwid.connect_signal(self.comment_button, 'click', handle_simple_commentout_button_click,
                              [morea_file, prop, version])
 
         # Label
@@ -247,6 +258,115 @@ class NonEditableTextLine:
         return version
 
 
+class DisplayOnlyLine:
+    def __init__(self, morea_file, prop, version):
+
+        widget_list = []
+        self.property = prop
+
+        if version.commented_out:
+            widget_list.append(('fixed', 2, urwid.AttrWrap(urwid.Text("#"), 'dull')))
+        else:
+            widget_list.append(('fixed', 2, urwid.Text(" ")))
+
+        # Label
+        widget_list.append(('fixed', max_label_width + 2, urwid.AttrWrap(urwid.Text(prop.name + ": "), 'dull')))
+
+        # number
+        self.textfield = urwid.Text(str(version.get_scalar_value_even_if_commented_out()))
+
+        # self.textfield = urwid.Text("HELLO")
+        widget_list.append(urwid.AttrWrap(self.textfield, 'dull'))
+
+        self.row = urwid.Columns(widget_list)
+
+    def get_rows(self):
+        return [self.row]
+
+    def get_version(self):
+        return None
+
+
+class NonEditableMultiValues:
+    def __init__(self, morea_file, prop, version):
+
+        widget_list = []
+        self.property = prop
+        self.rows = []
+
+        # Sanity check
+        if not MoreaGrammar.property_syntaxes[prop.name].multiple_values:
+            raise CustomException("  In NonEditableMultiValues: non multi value property!!")
+
+        ################### TOP ROW ####################
+
+        # Comment button
+        if version.commented_out:
+            self.comment_button = urwid.Button("#")
+        else:
+            self.comment_button = urwid.Button(" ")
+        widget_list.append(('fixed', 2, urwid.AttrWrap(self.comment_button, 'commentout button')))
+
+
+        # Label
+        widget_list.append(('fixed', max_label_width + 2, urwid.Text(prop.name + ": ")))
+
+        toprow = urwid.Columns(widget_list)
+        self.rows.append(toprow)
+
+        ##################### OTHER ROWS #####################
+
+        self.contents = []
+        # At this point I know that version.values is a list
+        for v in version.values:
+            widget_list = []
+
+            # blank offset
+            widget_list.append(('fixed', 5, urwid.Text("     ")))
+
+            # comment button
+            commented_out = v.commented_out
+            value = v.value
+            if commented_out:
+                comment_button = urwid.Button("#")
+            else:
+                comment_button = urwid.Button(" ")
+            widget_list.append(('fixed', 2, urwid.AttrWrap(comment_button, 'commentout button')))
+            urwid.connect_signal(comment_button, 'click', handle_multi_value_item_commentedout_button_click,
+                                 self.comment_button)
+            # dash
+            widget_list.append(('fixed', 3, urwid.Text(" - ")))
+
+            # field
+            value_text = str(value)
+            widget_list.append(urwid.Text(value_text))
+
+            self.contents.append((comment_button, value_text))
+            self.rows.append(urwid.Columns(widget_list))
+
+        #########################
+        # Signal for top button
+        urwid.connect_signal(self.comment_button, 'click', handle_multi_value_top_commentedout_button_click,
+                             self.contents)
+
+    def get_rows(self):
+        return self.rows
+
+    def get_version(self):
+
+        commented_out = self.comment_button.get_label() == commentedout_true_label
+        version = PropertyVersion(self.property.name, self.property.grammar, commented_out)
+
+        values = []
+        for (cbutton, vtext) in self.contents:
+            commented_out = cbutton.get_label() == "#"
+            value = vtext
+            values.append(ScalarPropertyValue(commented_out, value))
+
+        version.set_value(values)
+        return version
+
+
 class EditableTextLine:
     def __init__(self, morea_file, prop, version):
 
@@ -259,7 +379,7 @@ class EditableTextLine:
         else:
             self.comment_button = urwid.Button(" ")
         widget_list.append(('fixed', 2, urwid.AttrWrap(self.comment_button, 'commentout button')))
-        urwid.connect_signal(self.comment_button, 'click', handle_commentedout_button_click,
+        urwid.connect_signal(self.comment_button, 'click', handle_simple_commentout_button_click,
                              [morea_file, self.property, version])
 
         # Label
@@ -300,7 +420,7 @@ class BoolanValueTui:
         else:
             self.comment_button = urwid.Button(" ")
         widget_list.append(('fixed', 2, urwid.AttrWrap(self.comment_button, 'commentout button')))
-        urwid.connect_signal(self.comment_button, 'click', handle_commentedout_button_click,
+        urwid.connect_signal(self.comment_button, 'click', handle_simple_commentout_button_click,
                              [morea_file, prop, version])
 
         # Label
@@ -345,10 +465,34 @@ def handle_true_false_button_click(button, user_data):
     return
 
 
-# TODO MAKE IT SO THAT COMMENTING HAPPENS CORRECTLY FOR ALL PROPERTIES
-def handle_commentedout_button_click(button, user_data):
+def handle_simple_commentout_button_click(button, user_data):
     if button.get_label() == commentedout_true_label:
         button.set_label(commentedout_false_label)
     else:
         button.set_label(commentedout_true_label)
     return
+
+
+def handle_multi_value_top_commentedout_button_click(button, user_data):
+    contents = user_data
+    if button.get_label() == commentedout_true_label:
+        # print "LABLE IS TRUE< SETTING TO FALSE"
+        # time.sleep(10)
+        button.set_label(commentedout_false_label)
+    else:
+        # print "LABLE IS FALSE< SETTING TO TRUE"
+        # time.sleep(10)
+
+        button.set_label(commentedout_true_label)
+        for (b, t) in contents:
+            b.set_label(commentedout_true_label)
+    return
+
+
+def handle_multi_value_item_commentedout_button_click(button, user_data):
+    top_button = user_data
+    if button.get_label() == commentedout_true_label:
+        button.set_label(commentedout_false_label)
+        top_button.set_label(commentedout_false_label)
+    else:
+        button.set_label(commentedout_true_label)

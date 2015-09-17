@@ -1,4 +1,5 @@
 import urwid
+from Toolbox.toolbox import bound_string
 
 __author__ = 'casanova'
 
@@ -46,7 +47,7 @@ class TopLevelFrame(urwid.Pile):
             # Create the morea_id button
             button_label = u"\u25BA " + f.get_value_of_scalar_property("morea_id") + "\n"
             if f.get_value_of_scalar_property("title") != "":
-                button_label += '   "' + f.get_value_of_scalar_property("title") + '"'
+                button_label += '   "' + bound_string(f.get_value_of_scalar_property("title"), 40) + '"'
 
             button = urwid.Button(button_label,
                                   on_press=self.tui.handle_moreaid_button_press,

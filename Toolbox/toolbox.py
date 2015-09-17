@@ -64,6 +64,11 @@ def offset_string(s, offset):
         news += " " * offset + l + "\n"
     return news
 
+def bound_string(s, bound):
+    if len(s) > bound:
+        return s[0:(bound-1)] + "..."
+    else:
+        return s
 
 class CustomException(Exception):
     pass

@@ -45,12 +45,40 @@ class MoreaContent(object):
 
     def check(self):
         try:
+            self.perform_hardcoded_checks()
             self.type_check()
             self.reference_check()
             self.check_for_sort_order_collisions("module")
             self.check_for_sort_order_collisions("outcome")
         except CustomException as e:
             raise e
+        return
+
+    def perform_hardcoded_checks(self):
+        err_msg = ""
+        try:
+            self.check_file_type_has_property("module", "morea_sort_order")
+        except CustomException as e:
+            err_msg += str(e)
+        try:
+            self.check_file_type_has_property("outcome", "morea_sort_order")
+        except CustomException as e:
+            err_msg += str(e)
+
+        if err_msg != "":
+            raise CustomException(err_msg)
+
+        return
+
+    def check_file_type_has_property(self, morea_type, morea_property):
+        err_msg = ""
+        for f in self.files:
+            if f.get_value_of_scalar_property("morea_type") == morea_type:
+                if f.get_value_of_scalar_property(morea_property) is None:
+                    err_msg += "  Error: file " + f.path + " should have a '" + morea_property + "' field\n"
+
+        if err_msg != "":
+            raise CustomException(err_msg)
         return
 
     def type_check(self):

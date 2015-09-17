@@ -206,7 +206,6 @@ def build_property_list(parsed_front_matter):
     # print "BUilDING PROPERTY LIST"
     for name in parsed_front_matter:
 
-
         # print "NAME=", name
         # get the uncommentified name and commented_out status
         (decommentified_name, commented_out) = decommentify(name)
@@ -231,7 +230,6 @@ def build_property_list(parsed_front_matter):
         try:
             property_list[decommentified_name].create_and_add_version(commented_out, value)
         except CustomException as e:
-            exit(1)
             raise e
 
     # print "PROPERTY LIST="

@@ -75,7 +75,7 @@ class TUI(object):
 
         # Create all top-level frames
         self.top_level_frame_dict = {}
-        self.create_module_top_level_frame()
+        self.create_modules_top_level_frame()
         self.create_outcomes_top_level_frame()
         self.create_readings_top_level_frame()
         self.create_experiences_top_level_frame()
@@ -96,15 +96,15 @@ class TUI(object):
 
         return
 
-    def create_module_top_level_frame(self, focus=None):
+    def create_modules_top_level_frame(self, focus=None):
         self.top_level_frame_dict["module"] = TopLevelFrame(self, ("module", "-- MODULES --"),
                                                             [("published", "publi\nshed"),
                                                              ("morea_coming_soon", "coming\nsoon"),
                                                              ("morea_highlight", "high\nlight")],
                                                             sorting=True, focus=focus)
 
-    def create_outcomes_top_level_frame(self):
-        self.top_level_frame_dict["outcome"] = TopLevelFrame(self, ("outcome", "-- OUTCOMES  --"), [])
+    def create_outcomes_top_level_frame(self, focus=None):
+        self.top_level_frame_dict["outcome"] = TopLevelFrame(self, ("outcome", "-- OUTCOMES  --"), [], sorting=True, focus=focus)
 
     def create_readings_top_level_frame(self):
         self.top_level_frame_dict["reading"] = TopLevelFrame(self, ("reading", "-- READINGS --"), [])
@@ -148,11 +148,19 @@ class TUI(object):
     # noinspection PyUnusedLocal
     def handle_module_sorting_button_press(self, button, user_data):
         (direction, f) = user_data
+
         self.content.update_file_sort_order(f, direction)
 
-        # Regenerate the module frame, with the correct focus
-        self.create_module_top_level_frame(focus=("sorting", direction, f))
-        self.frame_holder.set_body(self.top_level_frame_dict["module"])
+        if self.frame_holder.get_body() == self.top_level_frame_dict["module"]:
+            # Regenerate the module frame, with the correct focus
+            self.create_modules_top_level_frame(focus=("sorting", direction, f))
+            self.frame_holder.set_body(self.top_level_frame_dict["module"])
+        elif self.frame_holder.get_body() == self.top_level_frame_dict["outcome"]:
+            print "HERE"
+            # Regenerate the outcome frame, with the correct focus
+            self.create_outcomes_top_level_frame(focus=("sorting", direction, f))
+            self.frame_holder.set_body(self.top_level_frame_dict["outcome"])
+
         self.main_loop.draw_screen()
         return
 

@@ -28,21 +28,32 @@ class PropertyVersion(object):
         return
 
     def create_value_from_commentified_md_data(self, value):
-        # print "IN PROPERTY VERSION add_value:", name, commented_out, value
+        #print "IN PROPERTY VERSION add_value:", self.name, self.commented_out, value
+
+        # Deal with single values
+        if not self.grammar.multiple_values:
+            if type(value) == list:
+                if len(value) > 1:
+                   raise CustomException("  Expecting single value for property '"+self.name+"' but got multiple")
+                else:
+                    self.values = ScalarPropertyValue(self.commented_out, value[0])
+            else:
+                self.values = ScalarPropertyValue(self.commented_out, value)
+            return
 
         if type(value) != list:
-            self.values = ScalarPropertyValue(self.commented_out, value)  #
-        else:
-            self.values = []
-            for val in value:
-                if val is not None:
-                    # print "IN PROPERTYVERSION DECOMMENTIFYING: ", val
-                    (decommentified_value, value_commented_out) = decommentify(val)
-                    # print "    ---> ", decommentified_value, value_commented_out
-                    if self.commented_out is True and value_commented_out is False:
-                        raise CustomException("  Fishy commenting for (commented out) " +
-                                              self.name + " field" + "\n" + "\n")
-                    self.values.append(ScalarPropertyValue(value_commented_out, decommentified_value))
+            value = [value]
+
+        self.values = []
+        for val in value:
+            if val is not None:
+                # print "IN PROPERTYVERSION DECOMMENTIFYING: ", val
+                (decommentified_value, value_commented_out) = decommentify(val)
+                # print "    ---> ", decommentified_value, value_commented_out
+                if self.commented_out is True and value_commented_out is False:
+                    raise CustomException("  Fishy commenting for (commented out) " +
+                                          self.name + " field" + "\n" + "\n")
+                self.values.append(ScalarPropertyValue(value_commented_out, decommentified_value))
 
         return
 
