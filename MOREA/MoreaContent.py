@@ -174,7 +174,6 @@ class MoreaContent(object):
 
         if err_msg != "":
             raise CustomException(err_msg)
-
         return
 
     def check_for_sort_order_collisions(self, filetype):
@@ -342,6 +341,7 @@ class MoreaContent(object):
         referencing_modules = []
         for module in module_list:
             try:
+                # WARNING: DOES NOT DEAL WITH MOREA_ASSESSED_OUTCOMES
                 property = module.property_list[MoreaGrammar.get_reference(morea_type)]
             except KeyError:
                 continue

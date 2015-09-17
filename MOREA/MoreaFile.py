@@ -97,7 +97,8 @@ class MoreaFile(object):
                 err_msg += "  Error: missing required property '" + name + "' (only commented out)\n"
         if err_msg != "":
             raise CustomException(err_msg)
-        # Check that each property is correct
+
+        # Check that each property is correctly specified
         for name in self.property_list:
 
             try:
@@ -154,7 +155,9 @@ class MoreaFile(object):
         for pname in self.property_list:
             if pname not in MoreaGrammar.morea_references:
                 continue
+
             for version in self.property_list[pname].versions:
+                #version.display()
                 if version.commented_out:
                     continue
                 if type(version.values) != list:

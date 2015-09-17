@@ -23,7 +23,7 @@ class MoreaGrammar(object):
                    "overview_assessments", "overview_experiences", "overview_outcomes",
                    "overview_modules", "overview_readings", "prerequisite"]
 
-    morea_references = ["morea_outcomes", "morea_readings", "morea_experiences", "morea_assessments"]
+    morea_references = ["morea_outcomes", "morea_readings", "morea_experiences", "morea_assessments", "morea_outcomes_assessed"]
 
     property_output_order = ["morea_id",
                              "morea_type",
@@ -127,10 +127,28 @@ class MoreaGrammar(object):
 
     @staticmethod
     def is_valid_reference(label, morea_id):
-        return label == MoreaGrammar.get_reference(morea_id)
+        if label == "morea_outcomes":
+            if morea_id != "outcome":
+                return False
+        elif label == "morea_outcomes_assessed":
+            if morea_id != "outcome":
+                return False
+        elif label == "morea_readings":
+            if morea_id != "reading":
+                return False
+        elif label == "morea_experiences":
+            if morea_id != "experience":
+                return False
+        elif label == "morea_assessments":
+            if morea_id != "assessment":
+                return False
+        else:
+            raise CustomException("Internal Error: Unknown label")
+        return True
 
     @staticmethod
     def get_reference(morea_type):
+        # WARNING: DOES NOT DEAL WITH MOREA_ASSESSED_OUTCOMES
         if morea_type == "outcome":
             return "morea_outcomes"
         elif morea_type == "reading":
@@ -145,6 +163,7 @@ class MoreaGrammar(object):
     @staticmethod
     def validate_property(name, versions):
         err_msg = ""
+
         # Try to find the syntax
         try:
             syntax = MoreaGrammar.property_syntaxes[name]
