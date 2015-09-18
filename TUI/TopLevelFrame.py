@@ -76,8 +76,8 @@ class TopLevelFrame(urwid.Pile):
         # Create the pile
         urwid.Pile.__init__(self, list_of_rows)
 
-        # Set the focus
-        if focus_memory is not None:
+        # Set the focus if there are focus rows and if there is a focus memory
+        if len(file_to_row_index_mapping) > 0 and focus_memory is not None:
             [f, focus_row_index, focus_column_index] = focus_memory
             if sorting:  # Overwrite the focus_row_index
                 focus_row_index = file_to_row_index_mapping[f]
