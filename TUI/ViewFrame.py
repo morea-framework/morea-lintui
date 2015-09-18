@@ -138,6 +138,9 @@ class ViewFrame(urwid.Pile):
             self.tui.content.apply_property_changes(self.morea_file, putative_property_list)
         except CustomException as e:
             raise e
+
+        # At this point. we brute-force re-generate all top-level frames
+        self.tui.generate_all_top_level_frames()
         return
 
 

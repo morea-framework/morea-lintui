@@ -1,7 +1,7 @@
 import time
 from ViewFrame import ViewFrame
-from Toolbox.toolbox import num_term_colors
-from TopLevelFrame import TopLevelFrame
+from Toolbox.toolbox import num_term_colors, CustomException
+from TopLevelFrame import TopLevelFrame, FocusRememberingButton, FocusRememberingCheckBox
 
 __author__ = 'casanova'
 
@@ -75,11 +75,7 @@ class TUI(object):
 
         # Create all top-level frames
         self.top_level_frame_dict = {}
-        self.create_modules_top_level_frame()
-        self.create_outcomes_top_level_frame()
-        self.create_readings_top_level_frame()
-        self.create_experiences_top_level_frame()
-        self.create_assessments_top_level_frame()
+        self.generate_all_top_level_frames()
 
         # Set up the main view
         self.frame_holder = urwid.Filler(self.top_level_frame_dict["module"], valign='top', top=1, bottom=1)
@@ -96,24 +92,58 @@ class TUI(object):
 
         return
 
-    def create_modules_top_level_frame(self, focus=None):
+    def generate_all_top_level_frames(self):
+        self.create_modules_top_level_frame()
+        self.create_outcomes_top_level_frame()
+        self.create_readings_top_level_frame()
+        self.create_experiences_top_level_frame()
+        self.create_assessments_top_level_frame()
+
+    def create_modules_top_level_frame(self):
+
+        if "module" in self.top_level_frame_dict:
+            focus_memory = get_focus_memory(self.top_level_frame_dict["module"].get_focus_widgets()[-1])
+        else:
+            focus_memory = None
         self.top_level_frame_dict["module"] = TopLevelFrame(self, ("module", "-- MODULES --"),
                                                             [("published", "publi\nshed"),
                                                              ("morea_coming_soon", "coming\nsoon"),
                                                              ("morea_highlight", "high\nlight")],
-                                                            sorting=True, focus=focus)
+                                                            sorting=True, focus_memory=focus_memory)
 
-    def create_outcomes_top_level_frame(self, focus=None):
-        self.top_level_frame_dict["outcome"] = TopLevelFrame(self, ("outcome", "-- OUTCOMES  --"), [], sorting=True, focus=focus)
+    def create_outcomes_top_level_frame(self):
+        if "outcome" in self.top_level_frame_dict:
+            focus_memory = get_focus_memory(self.top_level_frame_dict["outcome"].get_focus_widgets()[-1])
+        else:
+            focus_memory = None
+        self.top_level_frame_dict["outcome"] = TopLevelFrame(self, ("outcome", "-- OUTCOMES  --"), [], sorting=True,
+                                                             focus_memory=focus_memory)
 
     def create_readings_top_level_frame(self):
-        self.top_level_frame_dict["reading"] = TopLevelFrame(self, ("reading", "-- READINGS --"), [], sort_by_module_reference=True)
+        if "reading" in self.top_level_frame_dict:
+            focus_memory = get_focus_memory(self.top_level_frame_dict["reading"].get_focus_widgets()[-1])
+        else:
+            focus_memory = None
+        self.top_level_frame_dict["reading"] = TopLevelFrame(self, ("reading", "-- READINGS --"), [],
+                                                             sort_by_module_reference=True, focus_memory=focus_memory)
 
     def create_experiences_top_level_frame(self):
-        self.top_level_frame_dict["experience"] = TopLevelFrame(self, ("experience", "-- EXPERIENCES --"), [], sort_by_module_reference=True)
+        if "experience" in self.top_level_frame_dict:
+            focus_memory = get_focus_memory(self.top_level_frame_dict["experience"].get_focus_widgets()[-1])
+        else:
+            focus_memory = None
+        self.top_level_frame_dict["experience"] = TopLevelFrame(self, ("experience", "-- EXPERIENCES --"), [],
+                                                                sort_by_module_reference=True,
+                                                                focus_memory=focus_memory)
 
     def create_assessments_top_level_frame(self):
-        self.top_level_frame_dict["assessment"] = TopLevelFrame(self, ("assessment", "-- ASSESSMENTS --"), [], sort_by_module_reference=True)
+        if "assessment" in self.top_level_frame_dict:
+            focus_memory = get_focus_memory(self.top_level_frame_dict["assessment"].get_focus_widgets()[-1])
+        else:
+            focus_memory = None
+        self.top_level_frame_dict["assessment"] = TopLevelFrame(self, ("assessment", "-- ASSESSMENTS --"), [],
+                                                                sort_by_module_reference=True,
+                                                                focus_memory=focus_memory)
 
     def handle_key_stroke(self, key):
         if key == 'M' or key == 'm':
@@ -153,12 +183,12 @@ class TUI(object):
 
         if self.frame_holder.get_body() == self.top_level_frame_dict["module"]:
             # Regenerate the module frame, with the correct focus
-            self.create_modules_top_level_frame(focus=("sorting", direction, f))
+            self.create_modules_top_level_frame()
             self.frame_holder.set_body(self.top_level_frame_dict["module"])
         elif self.frame_holder.get_body() == self.top_level_frame_dict["outcome"]:
             print "HERE"
             # Regenerate the outcome frame, with the correct focus
-            self.create_outcomes_top_level_frame(focus=("sorting", direction, f))
+            self.create_outcomes_top_level_frame()
             self.frame_holder.set_body(self.top_level_frame_dict["outcome"])
 
         self.main_loop.draw_screen()
@@ -176,3 +206,13 @@ class TUI(object):
             return self.content
         else:
             return None
+
+def get_focus_memory(widget):
+    if type(widget) == FocusRememberingButton:
+        return widget.focus_memory
+    elif type(widget) == FocusRememberingCheckBox:
+        return widget.focus_memory
+    elif type(widget) == urwid.Padding:
+        return widget.original_widget.focus_memory
+    else:
+        raise CustomException("Internal Error: can't figure out focus memory for type: " + str(type(widget)))
