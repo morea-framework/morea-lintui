@@ -179,8 +179,8 @@ class PropertyVersionTui:
         if not version.grammar.multiple_values and version.grammar.data_type == bool:
             self.instance = BoolanValueTui(morea_file, prop, version)
         elif prop.name == "morea_icon_url" or \
-                        prop.name == "morea_url" or \
-                        prop.name == "morea_icon_url":
+                prop.name == "morea_url" or \
+                prop.name == "morea_icon_url":
             self.instance = NonEditableTextLine(morea_file, prop, version)
         elif prop.name == "title" or \
                 prop.name == "morea_summary" or \
@@ -222,6 +222,7 @@ class TBDValueTui:
     def get_rows(self):
         return [self.row]
 
+    # noinspection PyMethodMayBeStatic
     def get_version(self):
         return None
 
@@ -292,6 +293,7 @@ class DisplayOnlyLine:
     def get_rows(self):
         return [self.row]
 
+    # noinspection PyMethodMayBeStatic
     def get_version(self):
         return None
 
@@ -307,7 +309,7 @@ class NonEditableMultiValues:
         if not MoreaGrammar.property_syntaxes[prop.name].multiple_values:
             raise CustomException("  In NonEditableMultiValues: non multi value property!!")
 
-        ################### TOP ROW ####################
+        # ################## TOP ROW ####################
 
         # Comment button
         if version.commented_out:
@@ -316,14 +318,13 @@ class NonEditableMultiValues:
             self.comment_button = urwid.Button(" ")
         widget_list.append(('fixed', 2, urwid.AttrWrap(self.comment_button, 'commentout button')))
 
-
         # Label
         widget_list.append(('fixed', max_label_width + 2, urwid.Text(prop.name + ": ")))
 
         toprow = urwid.Columns(widget_list)
         self.rows.append(toprow)
 
-        ##################### OTHER ROWS #####################
+        # #################### OTHER ROWS #####################
 
         self.contents = []
         # At this point I know that version.values is a list
@@ -375,6 +376,7 @@ class NonEditableMultiValues:
         version.set_value(values)
         return version
 
+
 class EditableMultiValues:
     def __init__(self, morea_file, prop, version):
 
@@ -386,7 +388,7 @@ class EditableMultiValues:
         if not MoreaGrammar.property_syntaxes[prop.name].multiple_values:
             raise CustomException("  In NonEditableMultiValues: non multi value property!!")
 
-        ################### TOP ROW ####################
+        # ################## TOP ROW ####################
 
         # Comment button
         if version.commented_out:
@@ -395,14 +397,13 @@ class EditableMultiValues:
             self.comment_button = urwid.Button(" ")
         widget_list.append(('fixed', 2, urwid.AttrWrap(self.comment_button, 'commentout button')))
 
-
         # Label
         widget_list.append(('fixed', max_label_width + 2, urwid.Text(prop.name + ": ")))
 
         toprow = urwid.Columns(widget_list)
         self.rows.append(toprow)
 
-        ##################### OTHER ROWS #####################
+        # #################### OTHER ROWS #####################
 
         self.contents = []
         # At this point I know that version.values is a list

@@ -383,7 +383,7 @@ class MoreaContent(object):
         sanitized_sorted_list = []
         for i in xrange(0, len(sorted_list) - 1):
             if sorted_list[i].get_value_of_scalar_property("morea_type") == "module" and \
-                            sorted_list[i + 1].get_value_of_scalar_property("morea_type") == "module":
+                    sorted_list[i + 1].get_value_of_scalar_property("morea_type") == "module":
                 continue
             else:
                 sanitized_sorted_list.append(sorted_list[i])

@@ -206,6 +206,7 @@ class TUI(object):
         else:
             return None
 
+
 def get_focus_memory(widget):
     if type(widget) == FocusRememberingButton:
         return widget.focus_memory
