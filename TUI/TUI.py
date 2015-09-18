@@ -1,4 +1,5 @@
 import time
+from PopupDialog import HiddenPopupLauncher
 from ViewFrame import ViewFrame
 from Toolbox.toolbox import num_term_colors, CustomException
 from TopLevelFrame import TopLevelFrame, FocusRememberingButton, FocusRememberingCheckBox
@@ -13,6 +14,8 @@ class TUI(object):
     def __init__(self, morea_content):
         self.save = False
         self.content = morea_content
+
+        self.a_pop_up_is_opened = False
 
         # URWID customizations (could break in future versions of URWID)
         urwid.Button.button_right = urwid.Text("")
@@ -30,7 +33,7 @@ class TUI(object):
                 ('bottom button key', 'dark red', 'black', '', 'light gray', 'black'),
                 ('bottom button nonkey', 'white', 'black', '', 'white', 'black'),
                 ('body', 'white', 'black', '', 'white', 'black'),
-                ('popbg', 'yellow', 'dark red'),
+                ('error', 'dark red', 'light gray'),
                 ('dull', 'dark blue', 'black'),
                 ('duller', 'dark green', 'black'),
                 ('commentout button', 'dark red', 'black'),
@@ -48,8 +51,7 @@ class TUI(object):
                 ('bottom button key', 'dark red', 'black', '', 'light gray', 'black'),
                 ('bottom button nonkey', 'white', 'black', '', 'white', 'black'),
                 ('body', 'white', 'black', '', 'white', 'black'),
-                ('popbg', 'yellow', 'dark red'),
-                ('popbg', 'yellow', 'dark red', 'yellow', 'dark red'),
+                ('error', 'dark red', 'light gray'),
                 ('dull', 'dark blue', 'black'),
                 ('duller', 'dark green', 'black'),
                 ('commentout button', 'dark red', 'black'),
@@ -61,17 +63,23 @@ class TUI(object):
             ]
 
         # Create the top menu
-        menu_top = urwid.Text([
+        self.menu_top = urwid.Text([
             u' ', ('top button key', u'M'), ('top button nonkey', u'odules'), ' |',
             u' ', ('top button key', u'O'), u'utcomes |',
             u' ', ('top button key', u'R'), u'eadings |',
             u' ', ('top button key', u'E'), u'xperiences |',
             u' ', ('top button key', u'A'), u'ssessments'])
 
+        self.menu_top_empty = urwid.Text("")
+
         # Create the bottom menu
-        menu_bottom = urwid.Text([
+        self.menu_bottom_toplevel = urwid.Text([
             u' ', ('bottom button key', u'Q'), ('bottom button nonkey', u'uit & save |'),
             ('bottom button nonkey', u' e'), ('bottom button key', u'X'), ('bottom button nonkey', u'it')])
+
+        self.menu_bottom_viewframe = urwid.Text([
+            u' ', ('bottom button key', u'C'), ('bottom button nonkey', u'ancel |'),
+            u' ', ('bottom button key', u'S'), ('bottom button nonkey', u'ave')])
 
         # Create all top-level frames
         self.top_level_frame_dict = {}
@@ -83,7 +91,8 @@ class TUI(object):
         line_box = urwid.LineBox(v_padding)
 
         # Assemble the widgets into the widget layout
-        self.overall_layout = urwid.AttrWrap(urwid.Frame(header=menu_top, body=line_box, footer=menu_bottom), 'body')
+        self.main_frame = urwid.Frame(header=self.menu_top, body=line_box, footer=self.menu_bottom_toplevel)
+        self.overall_layout = urwid.AttrWrap(self.main_frame, 'body')
         self.main_loop = urwid.MainLoop(self.overall_layout, pop_ups=True, palette=self.palette,
                                         unhandled_input=self.handle_key_stroke)
 
@@ -146,32 +155,69 @@ class TUI(object):
                                                                 focus_memory=focus_memory)
 
     def handle_key_stroke(self, key):
-        if key == 'M' or key == 'm':
-            self.frame_holder.set_body(self.top_level_frame_dict["module"])
-            self.main_loop.draw_screen()
-        elif key == 'O' or key == 'o':
-            self.frame_holder.set_body(self.top_level_frame_dict["outcome"])
-            self.main_loop.draw_screen()
-        elif key == 'R' or key == 'r':
-            self.frame_holder.set_body(self.top_level_frame_dict["reading"])
-            self.main_loop.draw_screen()
-        elif key == 'E' or key == 'e':
-            self.frame_holder.set_body(self.top_level_frame_dict["experience"])
-            self.main_loop.draw_screen()
-        elif key == 'A' or key == 'a':
-            self.frame_holder.set_body(self.top_level_frame_dict["assessment"])
-            self.main_loop.draw_screen()
-        elif key == 'X' or key == 'x':
-            self.save = False
-            raise urwid.ExitMainLoop()
-        elif key == 'Q' or key == 'q':
-            self.save = True
-            raise urwid.ExitMainLoop()
+
+        if self.a_pop_up_is_opened:
+            return
+
+        if type(self.frame_holder.get_body()) == TopLevelFrame:
+            if key == 'M' or key == 'm':
+                self.frame_holder.set_body(self.top_level_frame_dict["module"])
+                self.main_frame.set_footer(self.menu_bottom_toplevel)
+                self.main_loop.draw_screen()
+            elif key == 'O' or key == 'o':
+                self.frame_holder.set_body(self.top_level_frame_dict["outcome"])
+                self.main_frame.set_footer(self.menu_bottom_toplevel)
+                self.main_loop.draw_screen()
+            elif key == 'R' or key == 'r':
+                self.frame_holder.set_body(self.top_level_frame_dict["reading"])
+                self.main_frame.set_footer(self.menu_bottom_toplevel)
+                self.main_loop.draw_screen()
+            elif key == 'E' or key == 'e':
+                self.frame_holder.set_body(self.top_level_frame_dict["experience"])
+                self.main_frame.set_footer(self.menu_bottom_toplevel)
+                self.main_loop.draw_screen()
+            elif key == 'A' or key == 'a':
+                self.frame_holder.set_body(self.top_level_frame_dict["assessment"])
+                self.main_frame.set_footer(self.menu_bottom_toplevel)
+                self.main_loop.draw_screen()
+            elif key == 'X' or key == 'x':
+                self.save = False
+                raise urwid.ExitMainLoop()
+            elif key == 'Q' or key == 'q':
+                self.save = True
+                raise urwid.ExitMainLoop()
+            else:
+                return
+        elif type(self.frame_holder.get_body()) == ViewFrame:
+            view_frame = self.frame_holder.get_body()
+            if key == 'C' or key == 'c':
+                self.frame_holder.set_body(self.top_level_frame_dict[view_frame.morea_file.get_value_of_scalar_property("morea_type")])
+                self.main_frame.set_footer(self.menu_bottom_toplevel)
+                self.main_frame.set_header(self.menu_top)
+                self.main_loop.draw_screen()
+                return
+            elif key == 'S' or key == 's':
+                try:
+                    view_frame.save_content()
+                except CustomException as e:
+                    view_frame.popup_launcher.open_the_pop_up(None)
+                    return
+                # We brute-force re-generate all top-level frames
+                self.generate_all_top_level_frames()
+                self.frame_holder.set_body(self.top_level_frame_dict[view_frame.morea_file.get_value_of_scalar_property("morea_type")])
+                self.main_frame.set_footer(self.menu_bottom_toplevel)
+                self.main_frame.set_header(self.menu_top)
+                self.main_loop.draw_screen()
+                return
+            else:
+                return
 
     # noinspection PyMethodMayBeStatic
     def handle_moreaid_button_press(self, button, user_data):
         f = user_data
         self.frame_holder.set_body(ViewFrame(self, f))
+        self.main_frame.set_footer(self.menu_bottom_viewframe)
+        self.main_frame.set_header(self.menu_top_empty)
         self.main_loop.draw_screen()
         return
 

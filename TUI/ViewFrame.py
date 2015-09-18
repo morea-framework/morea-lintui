@@ -5,6 +5,7 @@ import urwid
 from MOREA.MoreaGrammar import MoreaGrammar
 from MOREA.MoreaProperty import Property, PropertyVersion
 from MOREA.MoreaPropertyVersion import ScalarPropertyValue
+from PopupDialog import HiddenPopupLauncher
 from Toolbox.toolbox import CustomException
 
 __author__ = 'casanova'
@@ -18,62 +19,11 @@ commentedout_true_label = "#"
 commentedout_false_label = " "
 
 
-class PopUpDialog(urwid.WidgetWrap):
-    """A dialog that appears with nothing but a close button """
-    signals = ['close']
-
-    def __init__(self, msg):
-        close_button = urwid.Button("OK")
-        urwid.connect_signal(close_button, 'click',
-                             lambda button: self._emit("close"))
-        pile = urwid.Pile([urwid.Text("Can't save due to the following:\n" + msg),
-                           urwid.Columns([(10, urwid.Text(" ")), (
-                               10, urwid.AttrWrap(close_button, 'truefalse not selected', 'truefalse selected'))])])
-        fill = urwid.Filler(pile)
-        super(PopUpDialog, self).__init__(urwid.AttrWrap(fill, 'popbg'))
-
-
-class SaveButtonWithAPopup(urwid.PopUpLauncher):
-    def __init__(self, tui, viewframe, morea_file):
-        self.tui = tui
-        self.viewframe = viewframe
-        self.morea_file = morea_file
-        self.popup_message = ""
-        super(SaveButtonWithAPopup, self).__init__(urwid.Button("CONFIRM"))
-        # urwid.connect_signal(self.original_widget, 'click',
-        #                      self.open_the_pop_up, None)
-        urwid.connect_signal(self.original_widget, 'click',
-                             # self.viewframe.handle_viewframe_save(), None)
-                             self.open_the_pop_up)
-
-    def create_pop_up(self):
-        pop_up = PopUpDialog(self.popup_message)
-        urwid.connect_signal(pop_up, 'close',
-                             lambda button: self.close_pop_up())
-        return pop_up
-
-    def open_the_pop_up(self, button):
-
-        try:
-            self.viewframe.handle_viewframe_save()
-        except CustomException as e:
-            self.popup_message = str(e)
-            self.open_pop_up()
-            return
-
-        # Close the mainviewer frame
-        self.tui.frame_holder.set_body(
-            self.tui.top_level_frame_dict[self.morea_file.get_value_of_scalar_property("morea_type")])
-        self.tui.main_loop.draw_screen()
-
-    def get_pop_up_parameters(self):
-        return {'left': -4, 'top': -10, 'overlay_width': 70, 'overlay_height': 15}
-
-
 class ViewFrame(urwid.Pile):
-    def __init__(self, _tui, morea_file):
-        self.tui = _tui
+    def __init__(self, tui, morea_file):
+        self.tui = tui
         self.morea_file = morea_file
+        self.popup_launcher = HiddenPopupLauncher(tui, self)
 
         # Compute the max width of field labels
 
@@ -92,31 +42,12 @@ class ViewFrame(urwid.Pile):
                     urwid.Columns([urwid.Text("-----------------------------------------------------------")]))
 
         # Create an empty row
-        self.list_of_rows.append(urwid.Columns([]))
-
-        # Create the last row
-
-        self.cancel_button = urwid.Button("CANCEL", on_press=self.handle_viewframe_cancel, user_data=None)
-        self.save_button = SaveButtonWithAPopup(self.tui, self, self.morea_file)
-
-        last_row = urwid.Columns(
-            [(11, urwid.AttrWrap(self.cancel_button, 'truefalse not selected', 'truefalse selected')),
-             (11, urwid.AttrWrap(self.save_button, 'truefalse not selected', 'truefalse selected'))],
-            dividechars=1)
-
-        self.list_of_rows.append(last_row)
+        self.list_of_rows.append(urwid.Columns([self.popup_launcher]))
 
         # Add all the rows in the pile
         urwid.Pile.__init__(self, self.list_of_rows)
 
-    def handle_viewframe_cancel(self, button):
-        # Simply show the correct toplevel_frame
-        self.tui.frame_holder.set_body(
-            self.tui.top_level_frame_dict[self.morea_file.get_value_of_scalar_property("morea_type")])
-        self.tui.main_loop.draw_screen()
-        return
-
-    def handle_viewframe_save(self):
+    def save_content(self):
 
         # Build putative property starting with what we can get from the TUI
         putative_property_list = {}
@@ -133,14 +64,14 @@ class ViewFrame(urwid.Pile):
         #    putative_property_list[pname].display()
         # time.sleep(1000)
 
-        # At this point we have the putative property
+        # At this point we have the putative property and we try to apply changes
+        # to the Morea content
         try:
             self.tui.content.apply_property_changes(self.morea_file, putative_property_list)
         except CustomException as e:
             raise e
 
-        # At this point. we brute-force re-generate all top-level frames
-        self.tui.generate_all_top_level_frames()
+
         return
 
 
