@@ -280,7 +280,7 @@ class NonEditableMultiValues:
 
             # field
             value_text = str(value)
-            widget_list.append(urwid.Text(value_text))
+            widget_list.append(urwid.AttrWrap(urwid.Text(value_text), 'dull'))
 
             self.contents.append((comment_button, value_text))
             self.rows.append(urwid.Columns(widget_list))
