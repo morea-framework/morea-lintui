@@ -1,11 +1,16 @@
 Next feature to add:
     - Ability to re-order items under morea_readings, morea_experiences, etc. labels with up/down buttons
+      (feasible, but really tedious since all values need to be saved, restored, etc. with non-trivial focus memory)
 
+Testing:
+    - Split the test suites into multiple files as it's becoming unwieldy?
+    - Add type checking tests to the test suite
 
-Things to do/improve upon:
+Things to improve upon:
     - The fact that outcomes can occur under two headings (outcome_assessed, outcomes) breaks the initial
       assumption that there is a one-to-one mapping between a morea_type and a morea_types label... leads
       to very corner cases (noted as WARNING in the code) that will
 
     -  The Property that's either a list of a value is really lame and leads to a lot of "if type(xxx) == list",
        yay for hacking polymorphism by hand...
+
