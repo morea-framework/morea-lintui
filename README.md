@@ -25,8 +25,8 @@ The content editor does:
 
 Here are some screenshots of the content editor TUI:
 
-<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot1.jpg">
+<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot1.tiff">
 
-<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot2.jpg">
+<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot2.tiff">
 
-<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot3.jpg">
+<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot3.tiff">
