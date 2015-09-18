@@ -23,7 +23,8 @@ class MoreaGrammar(object):
                    "overview_assessments", "overview_experiences", "overview_outcomes",
                    "overview_modules", "overview_readings", "prerequisite"]
 
-    morea_references = ["morea_outcomes", "morea_readings", "morea_experiences", "morea_assessments", "morea_outcomes_assessed"]
+    morea_references = ["morea_outcomes", "morea_readings", "morea_experiences", "morea_assessments",
+                        "morea_outcomes_assessed"]
 
     property_output_order = ["morea_id",
                              "morea_type",
@@ -204,7 +205,7 @@ class MoreaGrammar(object):
     def validate_version(syntax, version):
         err_msg = ""
 
-        #version.display()
+        # version.display()
         # check for multiple vs. single value
         if version.num_of_uncommented_values() > 1 and not syntax.multiple_values:
             err_msg += "  Error: property " + syntax.name + " can have only one value" + "\n"

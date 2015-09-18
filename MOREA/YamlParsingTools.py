@@ -308,7 +308,6 @@ def decommentify(string):
     return [new, count >= 1]
 
 
-
 def check_for_duplicate_entries(front_matter, parse_comments):
 
     entries = []

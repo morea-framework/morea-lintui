@@ -1,7 +1,6 @@
 import copy
 import unittest
 import shlex
-import subprocess
 import argparse
 
 from MOREA.MoreaContent import MoreaContent
@@ -10,6 +9,16 @@ from Toolbox.toolbox import *
 from TUI.TUI import TUI
 
 __author__ = 'casanova'
+
+
+def reset_terminal():
+    # Do a reset of the terminal, just in case
+    from subprocess import call
+    import os
+
+    call(["reset", os.environ['TERM']])
+    return
+
 
 """
 This function invokes jekyll to make sure that everything "compiles".
@@ -114,7 +123,6 @@ parser.add_argument('--no-splash', help="don't display initial warning screen",
 
 args = parser.parse_args()
 
-
 if args.test:
     print green("Running test suite:")
     dirname, filename = os.path.split(os.path.abspath(__file__))
@@ -193,6 +201,5 @@ if args.tui:
     tui = TUI(content_copy)
     updated_morea_content = tui.launch()
     if updated_morea_content is not None:
-        print "---", type(updated_morea_content)
         updated_morea_content.save()
-    # Do a reset of the terminal??
+    reset_terminal()

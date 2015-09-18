@@ -186,7 +186,6 @@ class TUI(object):
             self.create_modules_top_level_frame()
             self.frame_holder.set_body(self.top_level_frame_dict["module"])
         elif self.frame_holder.get_body() == self.top_level_frame_dict["outcome"]:
-            print "HERE"
             # Regenerate the outcome frame, with the correct focus
             self.create_outcomes_top_level_frame()
             self.frame_holder.set_body(self.top_level_frame_dict["outcome"])

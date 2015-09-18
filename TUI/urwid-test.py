@@ -36,7 +36,6 @@ class ThingWithAPopUp(urwid.PopUpLauncher):
                              self.mainframe.some_function, None)
 
     def open_the_popup(self):
-        print "===> ", self.open_pop_up
         time.sleep(10)
         self.open_pop_up()
 

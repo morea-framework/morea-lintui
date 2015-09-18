@@ -1,3 +1,4 @@
+import time
 from YamlParsingTools import *
 from MoreaProperty import Property
 from MoreaGrammar import MoreaGrammar
@@ -39,7 +40,7 @@ class MoreaFile(object):
             err_msg += offset_string(str(e), 4)
             raise CustomException(err_msg)
 
-        #print "COMMENTIFIED_YAML = ", commentified_front_matter
+        # print "COMMENTIFIED_YAML = ", commentified_front_matter
 
         # Check for duplicate properties
         try:
@@ -67,7 +68,7 @@ class MoreaFile(object):
         # Convert every string to unicode
         parsed_front_matter = convert_to_unicode(parsed_front_matter)
 
-        #print "PARSED_FRONT_MATTER:", parsed_front_matter
+        # print "PARSED_FRONT_MATTER:", parsed_front_matter
         # Build property list
         try:
             self.property_list = build_property_list(parsed_front_matter)
@@ -157,7 +158,6 @@ class MoreaFile(object):
                 continue
 
             for version in self.property_list[pname].versions:
-                #version.display()
                 if version.commented_out:
                     continue
                 if type(version.values) != list:
@@ -178,8 +178,10 @@ class MoreaFile(object):
                                   "morea_outcomes_assessed",
                                   ]
         for referencing_property in referencing_properties:
-            self.property_list[referencing_property].comment_out_all_references_to_id(morea_id)
-
+            try:
+                self.property_list[referencing_property].comment_out_all_references_to_id(morea_id)
+            except KeyError:
+                pass
         return
 
     def save(self):
@@ -237,13 +239,13 @@ def build_property_list(parsed_front_matter):
 
         # Create the property object if not already created
         if decommentified_name not in property_list:
-            #print "CREATING A NEW PROPERTY FOR", decommentified_name
+            # print "CREATING A NEW PROPERTY FOR", decommentified_name
             property_list[decommentified_name] = Property(decommentified_name)
 
         # Add the version
         # print "ADDING A VERSION"
         try:
-            #print "ADDING A VERSION TO PROPERTY ", decommentified_name
+            # print "ADDING A VERSION TO PROPERTY ", decommentified_name
             property_list[decommentified_name].create_and_add_version(commented_out, value)
         except CustomException as e:
             raise e

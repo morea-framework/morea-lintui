@@ -230,6 +230,7 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_7(MoreaTestRejectingInva
                   "---\n"
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_7, self).runMoreaTest(content)
 
+
 # noinspection PyPep8Naming,PyPep8Naming
 class MoreaTestRejectingInvalidFilesWithNoComments_Test_8(MoreaTestRejectingInvalidFilesWithNoComments):
     def shortDescription(self):

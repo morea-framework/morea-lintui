@@ -70,7 +70,8 @@ class TopLevelFrame(urwid.Pile):
             list_of_rows.append(urwid.AttrWrap(row, 'topframe not selected', 'topframe selected'))
 
         # Create a blank row
-        list_of_rows.append(urwid.Columns([FocusRememberingButton("", focus_memory=[f, len(list_of_rows), 0])], dividechars=1))
+        list_of_rows.append(
+            urwid.Columns([FocusRememberingButton("", focus_memory=[None, len(list_of_rows), 0])], dividechars=1))
 
         # Create the pile
         urwid.Pile.__init__(self, list_of_rows)
@@ -78,29 +79,10 @@ class TopLevelFrame(urwid.Pile):
         # Set the focus
         if focus_memory is not None:
             [f, focus_row_index, focus_column_index] = focus_memory
-            if not sorting:
-                # print "SETTING FOCUS to ",focus_row_index, focus_column_index
-                # time.sleep(1)
-                list_of_rows[focus_row_index].set_focus_column(focus_column_index)
-                self.set_focus(focus_row_index)
-            else:
-                # TODO: Determine the focus row
+            if sorting:  # Overwrite the focus_row_index
                 focus_row_index = file_to_row_index_mapping[f]
-                list_of_rows[focus_row_index].set_focus_column(focus_column_index)
-                self.set_focus(focus_row_index)
-
-                # if focus is not None:
-                #     (label, direction, focus_file) = focus
-                #     if focus_file == f:
-                #         focus_row = row_count
-                #         if direction == +1:
-                #             # print "SETTING FOCUS!!!"
-                #             row.set_focus_column(len(widget_list) - 1)
-                #         else:
-                #             # print "SETTING FOCUS"
-                #             row.set_focus_column(len(widget_list) - 2)
-                #         if focus is not None:
-                #             self._set_focus_position(focus_row + 1)
+            list_of_rows[focus_row_index].set_focus_column(focus_column_index)
+            self.set_focus(focus_row_index)
 
     def create_row(self, row_count, f, list_of_check_box_property_keys_and_nicknames, sorting):
         widget_list = []

@@ -316,7 +316,7 @@ class MoreaContent(object):
             raise CustomException(err_msg)
 
         # If the file is unpublished, comment-out all references to it
-        if not putative_property_list["published"]:
+        if not putative_property_list["published"].get_first_uncommented_scalar_value():
             self.comment_out_all_references_to_id(
                 putative_property_list["morea_id"].get_first_uncommented_scalar_value())
 
@@ -342,10 +342,10 @@ class MoreaContent(object):
         for module in module_list:
             try:
                 # WARNING: DOES NOT DEAL WITH MOREA_ASSESSED_OUTCOMES
-                property = module.property_list[MoreaGrammar.get_reference(morea_type)]
+                prop = module.property_list[MoreaGrammar.get_reference(morea_type)]
             except KeyError:
                 continue
-            for version in property.versions:
+            for version in prop.versions:
                 if type(version.values) != list:
                     if version.values.value == morea_id:
                         referencing_modules.append(module)

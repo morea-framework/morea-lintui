@@ -28,13 +28,13 @@ class PropertyVersion(object):
         return
 
     def create_value_from_commentified_md_data(self, value):
-        #print "IN PROPERTY VERSION add_value:", self.name, self.commented_out, value
+        # print "IN PROPERTY VERSION add_value:", self.name, self.commented_out, value
 
         # Deal with single values
         if not self.grammar.multiple_values:
             if type(value) == list:
                 if len(value) > 1:
-                   raise CustomException("  Expecting single value for property '"+self.name+"' but got multiple")
+                    raise CustomException("  Expecting single value for property '" + self.name + "' but got multiple")
                 else:
                     self.values = ScalarPropertyValue(self.commented_out, value[0])
             else:
