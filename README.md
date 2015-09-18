@@ -23,6 +23,10 @@ The content editor does:
   - Provide a simple way to edit parts of the Morea content
 
 
-Here is a screenshot of the content editor TUI:
+Here are some screenshots of the content editor TUI:
 
-<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/morea_lintui.jpg">
+<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot1.jpg">
+
+<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot2.jpg">
+
+<img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot3.jpg">
