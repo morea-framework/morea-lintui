@@ -1,0 +1,7 @@
+Things to do/improve upon:
+    - The fact that outcomes can occur under two headings (outcome_assessed, outcomes) breaks the initial
+      assumption that there is a one-to-one mapping between a morea_type and a morea_types label... leads
+      to very corner cases (noted as WARNING in the code) that will
+
+    -  The Property that's either a list of a value is really lame and leads to a lot of "if type(xxx) == list",
+       yay for hacking polymorphism by hand...

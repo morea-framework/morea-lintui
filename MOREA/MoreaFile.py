@@ -40,14 +40,13 @@ class MoreaFile(object):
             err_msg += offset_string(str(e), 4)
             raise CustomException(err_msg)
 
-        # print "COMMENTIFIED_YAML = ", commentified_front_matter
+        #print "COMMENTIFIED_YAML = ", commentified_front_matter
 
         # Check for duplicate properties
         try:
             check_for_duplicate_entries(commentified_front_matter, parse_comments)
         except CustomException as e:
             err_msg = "  Error: duplicate entry error in file  " + self.path + "\n" + offset_string(str(e), 4)
-            exit(1)
             raise CustomException(err_msg)
 
         # Parse the YAML

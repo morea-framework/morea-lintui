@@ -126,7 +126,7 @@ class MoreaContent(object):
             print "  Checking for duplicate ids..."
             self.check_for_duplicate_ids()
 
-            print "  Checking for dangling references..."
+            print "  Checking for dangling/invalid references..."
             self.check_for_invalid_references()
 
         except CustomException as e:
@@ -383,7 +383,7 @@ class MoreaContent(object):
         sanitized_sorted_list = []
         for i in xrange(0, len(sorted_list) - 1):
             if sorted_list[i].get_value_of_scalar_property("morea_type") == "module" and \
-                    sorted_list[i + 1].get_value_of_scalar_property("morea_type") == "module":
+                            sorted_list[i + 1].get_value_of_scalar_property("morea_type") == "module":
                 continue
             else:
                 sanitized_sorted_list.append(sorted_list[i])

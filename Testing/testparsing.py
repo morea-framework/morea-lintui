@@ -1,4 +1,6 @@
 # coding=utf-8
+import time
+
 __author__ = 'casanova'
 
 import unittest
@@ -140,7 +142,6 @@ class MoreaTestRejectingInvalidFiles(MoreaParsingTestCase):
         except CustomException:
             self.assertTrue(True)
             return
-
         self.fail("  Failed to detect error for:\n\n" + offset_string(red(content), 10))
 
 
@@ -242,7 +243,6 @@ class MoreaTestRejectingInvalidFilesWithNoComments_Test_8(MoreaTestRejectingInva
                   "title: title2\n" \
                   "---\n"
         super(MoreaTestRejectingInvalidFilesWithNoComments_Test_8, self).runMoreaTest(content)
-
 
 class MoreaTestParsingValidFiles(MoreaParsingTestCase):
     def shortDescription(self):
