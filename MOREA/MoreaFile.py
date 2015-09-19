@@ -55,8 +55,8 @@ class MoreaFile(object):
         except Exception as e:
             err_msg = "  Error: unable to parse the pre-processed YAML content in file " + self.path + "\n"
             err_msg += offset_string(str(e), 4)
-            err_msg += "\n\n" + get_raw_front_matter(self.path)
-            err_msg += "\n\n" + commentified_front_matter
+            # err_msg += "\n\n" + get_raw_front_matter(self.path)
+            # err_msg += "\n\n" + commentified_front_matter
             raise CustomException(err_msg)
 
         if parsed_front_matter is None:
