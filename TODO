@@ -1,8 +1,5 @@
-Next feature to add:
-    - Ability to re-order items under morea_readings, morea_experiences, etc. labels with up/down buttons
-      (feasible, but really tedious since all values need to be saved, restored, etc. with non-trivial focus memory)
 
-Testing:
+Things to add to Testing:
     - Split the test suites into multiple files as it's becoming unwieldy?
     - Add type checking tests to the test suite
 

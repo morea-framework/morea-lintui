@@ -36,7 +36,7 @@ class ViewFrame(urwid.Pile):
         for pname in MoreaGrammar.property_output_order:
             if pname in property_list:
                 # Build a class that embodies a property
-                self.property_tui_dict[pname] = PropertyTui(morea_file, morea_file.property_list[pname])
+                self.property_tui_dict[pname] = PropertyTui(self, morea_file, morea_file.property_list[pname])
                 self.list_of_rows += self.property_tui_dict[pname].get_rows()
                 self.list_of_rows.append(
                     urwid.Columns([urwid.Text("-----------------------------------------------------------")]))
@@ -71,18 +71,18 @@ class ViewFrame(urwid.Pile):
         except CustomException as e:
             raise e
 
-
         return
 
 
 class PropertyTui:
-    def __init__(self, morea_file, prop):
+    def __init__(self, viewframe, morea_file, prop):
+        self.viewframe = viewframe
         self.morea_file = morea_file
         self.prop = prop
         self.version_tuis = []
 
         for v in self.prop.versions:
-            self.version_tuis.append(PropertyVersionTui(morea_file, prop, v))
+            self.version_tuis.append(PropertyVersionTui(self.viewframe, morea_file, prop, v))
         return
 
     def get_rows(self):
@@ -101,7 +101,8 @@ class PropertyTui:
 
 
 class PropertyVersionTui:
-    def __init__(self, morea_file, prop, version):
+    def __init__(self, viewframe, morea_file, prop, version):
+        self.viewframe = viewframe
         self.morea_file = morea_file
         self.property = prop
         self.version = version
@@ -110,25 +111,25 @@ class PropertyVersionTui:
         if not version.grammar.multiple_values and version.grammar.data_type == bool:
             self.instance = BoolanValueTui(morea_file, prop, version)
         elif prop.name == "morea_icon_url" or \
-                prop.name == "morea_url" or \
-                prop.name == "morea_icon_url":
+                        prop.name == "morea_url" or \
+                        prop.name == "morea_icon_url":
             self.instance = NonEditableTextLine(morea_file, prop, version)
         elif prop.name == "title" or \
-                prop.name == "morea_summary" or \
-                prop.name == "morea_start_date" or \
-                prop.name == "morea_end_date":
+                        prop.name == "morea_summary" or \
+                        prop.name == "morea_start_date" or \
+                        prop.name == "morea_end_date":
             self.instance = EditableTextLine(morea_file, prop, version)
         elif prop.name == "morea_sort_order" or \
-                prop.name == "morea_id" or \
-                prop.name == "morea_type":
+                        prop.name == "morea_id" or \
+                        prop.name == "morea_type":
             self.instance = DisplayOnlyLine(morea_file, prop, version)
         elif prop.name == "morea_readings" or \
-                prop.name == "morea_outcomes" or \
-                prop.name == "morea_assessments" or \
-                prop.name == "morea_experiences" or \
-                prop.name == "morea_outcomes_assessed" or \
-                prop.name == "morea_prerequisites":
-            self.instance = NonEditableMultiValues(morea_file, prop, version)
+                        prop.name == "morea_outcomes" or \
+                        prop.name == "morea_assessments" or \
+                        prop.name == "morea_experiences" or \
+                        prop.name == "morea_outcomes_assessed" or \
+                        prop.name == "morea_prerequisites":
+            self.instance = NonEditableMultiValues(viewframe, morea_file, prop, version)
         elif prop.name == "morea_labels":
             self.instance = EditableMultiValues(morea_file, prop, version)
         # Not implemented yet or ignored
@@ -230,17 +231,20 @@ class DisplayOnlyLine:
 
 
 class NonEditableMultiValues:
-    def __init__(self, morea_file, prop, version):
+    def __init__(self, viewframe, morea_file, prop, version):
 
-        widget_list = []
+        self.viewframe = viewframe
         self.property = prop
-        self.rows = []
+        self.private_rows = []
+        self.pile = None
 
         # Sanity check
         if not MoreaGrammar.property_syntaxes[prop.name].multiple_values:
             raise CustomException("  In NonEditableMultiValues: non multi value property!!")
 
         # ################## TOP ROW ####################
+
+        widget_list = []
 
         # Comment button
         if version.commented_out:
@@ -253,11 +257,17 @@ class NonEditableMultiValues:
         widget_list.append(('fixed', max_label_width + 2, urwid.Text(prop.name + ": ")))
 
         toprow = urwid.Columns(widget_list)
-        self.rows.append(toprow)
+        self.private_rows.append(toprow)
+
+        list_of_text_widths = [len(str(v.value)) for v in version.values]
+        if len(list_of_text_widths) > 0:
+            max_text_width = max(list_of_text_widths) + 2
+        else:
+            max_text_width = 2
 
         # #################### OTHER ROWS #####################
 
-        self.contents = []
+        self.value_comment_buttons = []
         # At this point I know that version.values is a list
         for v in version.values:
             widget_list = []
@@ -273,6 +283,8 @@ class NonEditableMultiValues:
             else:
                 comment_button = urwid.Button(" ")
             widget_list.append(('fixed', 2, urwid.AttrWrap(comment_button, 'commentout button')))
+            self.value_comment_buttons.append(comment_button)
+
             urwid.connect_signal(comment_button, 'click', handle_multi_value_item_commentedout_button_click,
                                  self.comment_button)
             # dash
@@ -280,18 +292,73 @@ class NonEditableMultiValues:
 
             # field
             value_text = str(value)
-            widget_list.append(urwid.AttrWrap(urwid.Text(value_text), 'dull'))
+            widget_list.append(('fixed', max_text_width, urwid.AttrWrap(urwid.Text(value_text), 'dull')))
 
-            self.contents.append((comment_button, value_text))
-            self.rows.append(urwid.Columns(widget_list))
+            # up button
+            up_button = urwid.Button(u'\u25B2', on_press=self.handle_up_down_button_click,
+                                     user_data=[-1, value_text])
+            widget_list.append(('fixed', 2, up_button))
+
+            widget_list.append(('fixed', 1, urwid.Text('')))
+
+            # down button
+            down_button = urwid.Button(u'\u25bC', on_press=self.handle_up_down_button_click,
+                                       user_data=[+1, value_text])
+            widget_list.append(('fixed', 2, down_button))
+
+            self.private_rows.append(urwid.Columns(widget_list))
 
         #########################
         # Signal for top button
         urwid.connect_signal(self.comment_button, 'click', handle_multi_value_top_commentedout_button_click,
-                             self.contents)
+                             self.value_comment_buttons)
+
+        self.pile = urwid.Pile(self.private_rows)
+
+    def handle_up_down_button_click(self, button, user_data):
+        [direction, text_value] = user_data
+
+        # Identify the row with that text value
+        src_private_row_index = -1
+        for index in xrange(1, len(self.private_rows)):
+            if text_value == self.private_rows[index].contents[3][0].original_widget.get_text()[0]:
+                src_private_row_index = index
+                # print "FOUND IT!!"
+                break
+
+        if src_private_row_index == -1:
+            raise CustomException("Internal error: couldn't find the private row!")
+
+        # No-op
+        if src_private_row_index == 1 and direction == -1:
+            return
+        if src_private_row_index == len(self.private_rows) - 1 and direction == 1:
+            return
+
+        dst_private_row_index = src_private_row_index + direction
+
+        tmp = self.private_rows[dst_private_row_index]
+        self.private_rows[dst_private_row_index] = self.private_rows[src_private_row_index]
+        self.private_rows[src_private_row_index] = tmp
+
+        newpile = urwid.Pile(self.private_rows)
+        for index in xrange(0, len(self.viewframe.contents)):
+            (widget, prop) = self.viewframe.contents[index]
+            if widget is self.pile:
+                # update the viewframe
+                self.viewframe.contents[index] = (newpile, prop)
+                # set the focus to this pile
+                self.viewframe.set_focus(index)
+                self.viewframe.contents[index][0].set_focus(dst_private_row_index)
+                focus_column = 5 + direction
+                self.viewframe.contents[index][0].contents[dst_private_row_index][0].set_focus_column(focus_column)
+        self.pile = newpile
+        self.viewframe.tui.main_loop.draw_screen()
+
+        return
 
     def get_rows(self):
-        return self.rows
+        return [self.pile]
 
     def get_version(self):
 
@@ -299,9 +366,10 @@ class NonEditableMultiValues:
         version = PropertyVersion(self.property.name, self.property.grammar, commented_out)
 
         values = []
-        for (cbutton, vtext) in self.contents:
-            commented_out = cbutton.get_label() == "#"
-            value = vtext
+        for index in xrange(1, len(self.private_rows)):
+            button_label = self.private_rows[index].contents[1][0].original_widget.get_label()[0]
+            commented_out = button_label == "#"
+            value = self.private_rows[index].contents[3][0].original_widget.get_text()[0]
             values.append(ScalarPropertyValue(commented_out, value))
 
         version.set_value(values)
@@ -367,7 +435,7 @@ class EditableMultiValues:
         #########################
         # Signal for top button
         urwid.connect_signal(self.comment_button, 'click', handle_multi_value_top_commentedout_button_click,
-                             self.contents)
+                             [b for (b, c) in self.contents])
 
     def get_rows(self):
         return self.rows
@@ -385,6 +453,7 @@ class EditableMultiValues:
 
         version.set_value(values)
         return version
+
 
 class EditableTextLine:
     def __init__(self, morea_file, prop, version):
@@ -493,17 +562,12 @@ def handle_simple_commentout_button_click(button, user_data):
 
 
 def handle_multi_value_top_commentedout_button_click(button, user_data):
-    contents = user_data
+    value_comment_buttons = user_data
     if button.get_label() == commentedout_true_label:
-        # print "LABLE IS TRUE< SETTING TO FALSE"
-        # time.sleep(10)
         button.set_label(commentedout_false_label)
     else:
-        # print "LABLE IS FALSE< SETTING TO TRUE"
-        # time.sleep(10)
-
         button.set_label(commentedout_true_label)
-        for (b, t) in contents:
+        for b in value_comment_buttons:
             b.set_label(commentedout_true_label)
     return
 

@@ -191,7 +191,8 @@ class TUI(object):
         elif type(self.frame_holder.get_body()) == ViewFrame:
             view_frame = self.frame_holder.get_body()
             if key == 'C' or key == 'c':
-                self.frame_holder.set_body(self.top_level_frame_dict[view_frame.morea_file.get_value_of_scalar_property("morea_type")])
+                self.frame_holder.set_body(self.top_level_frame_dict[
+                                               view_frame.morea_file.get_value_of_scalar_property("morea_type")])
                 self.main_frame.set_footer(self.menu_bottom_toplevel)
                 self.main_frame.set_header(self.menu_top)
                 self.main_loop.draw_screen()
@@ -199,12 +200,13 @@ class TUI(object):
             elif key == 'S' or key == 's':
                 try:
                     view_frame.save_content()
-                except CustomException as e:
+                except CustomException:
                     view_frame.popup_launcher.open_the_pop_up(None)
                     return
                 # We brute-force re-generate all top-level frames
                 self.generate_all_top_level_frames()
-                self.frame_holder.set_body(self.top_level_frame_dict[view_frame.morea_file.get_value_of_scalar_property("morea_type")])
+                self.frame_holder.set_body(self.top_level_frame_dict[
+                                               view_frame.morea_file.get_value_of_scalar_property("morea_type")])
                 self.main_frame.set_footer(self.menu_bottom_toplevel)
                 self.main_frame.set_header(self.menu_top)
                 self.main_loop.draw_screen()
