@@ -46,6 +46,7 @@ All the above executions first display some information and warnings, which can 
 
 <tt>morea-lintui.py --help</tt> lists all command-line options. 
   
+The use of the Text User Interface is intuitive. Use the direction arrows to navigate, <space> or <enter> to select, and the hot keys listed at the top and bottom of the interface to change view, save, cancel, quit, etc.
 
 ## Screenshot
 
