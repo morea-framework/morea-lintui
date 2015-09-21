@@ -44,7 +44,7 @@ def pre_validate_site(morea_root):
     err_msg = ""
 
     print "  Using jekyll to generate tmp site..."
-    tmp_site = "/tmp/morea-lintui.py-site/"
+    tmp_site = "/tmp/morealintui.py-site/"
     command = "jekyll build --source " + morea_root + "/.. --destination " + tmp_site
 
     # Check that we can run jekyll with a zero exit code
