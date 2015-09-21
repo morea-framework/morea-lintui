@@ -1,5 +1,3 @@
-__author__ = 'casanova'
-
 from setuptools import setup
 
 setup(name='morea-lintui',
@@ -8,7 +6,6 @@ setup(name='morea-lintui',
       url='https://github.com/morea-framework/morea-lintui',
       author='Henri Casanova',
       author_email='henricasanova@gmail.com',
-      license='GPL 2',
-      packages=['morea-lintui'],
+      license='GPL 2', packages=['morea-lintui'],
       zip_safe=False,
       install_requires=['urwid', 'PyYaml'])
