@@ -152,7 +152,7 @@ else:
 if not args.no_splash:
     print_welcome_screen()
 
-# Make sure that MOREA content is not broken
+# Make sure that MOREA content is not broken using Jekyll (if --run-jekyll is specified)
 if args.run_jekyll:
     print green("Pre-validating site content with jekyll...")
     try:

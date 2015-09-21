@@ -25,6 +25,10 @@ class MoreaContent(object):
         self.files = []
         for path, subs, files in os.walk(root):
             for f in files:
+                # ignore hidden files
+                if re.match("\..*", f) is not None:
+                    continue
+                # process .md files
                 if re.match(".*.md$", f) is not None:
                     try:
                         f = MoreaFile(path + "/" + f, warnings=True, parse_comments=parse_comments)
