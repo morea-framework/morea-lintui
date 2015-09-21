@@ -44,7 +44,7 @@ def pre_validate_site(morea_root):
     err_msg = ""
 
     print "  Using jekyll to generate tmp site..."
-    tmp_site = "/tmp/morea-lintui-site/"
+    tmp_site = "/tmp/morea-lintui.py-site/"
     command = "jekyll build --source " + morea_root + "/.. --destination " + tmp_site
 
     # Check that we can run jekyll with a zero exit code
@@ -79,7 +79,7 @@ def pre_validate_site(morea_root):
 """
 
 
-def print_welcome_screen():
+def print_welcome_screen(args):
     print(chr(27) + "[2J")
     print_as_paragraph(green, "- This script is picky about .md syntax, so you "
                               "can expect many errors and warnings that you'll have to fix "
@@ -110,98 +110,98 @@ def print_welcome_screen():
 ######################################################################################
 ######################################################################################
 
-# Parse command-line arguments
-parser = argparse.ArgumentParser(description='MOREA content management interface.')
-parser.add_argument('--tui', help='launch the TUI after validating MORE content',
-                    action='store_true')
-parser.add_argument('--run-jekyll', help='run jekyll as a first validation step',
-                    action='store_true')
-parser.add_argument('--test', help='only run the test suite',
-                    action='store_true')
-parser.add_argument('--parse-comments', help='parse/handle commented-out content',
-                    action='store_true')
-parser.add_argument('--no-splash', help="don't display initial warning screen",
-                    action='store_true')
+def main():
 
-args = parser.parse_args()
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description='MOREA content management interface.')
+    parser.add_argument('--tui', help='launch the TUI after validating MORE content',
+                        action='store_true')
+    parser.add_argument('--run-jekyll', help='run jekyll as a first validation step',
+                        action='store_true')
+    parser.add_argument('--test', help='only run the test suite',
+                        action='store_true')
+    parser.add_argument('--parse-comments', help='parse/handle commented-out content',
+                        action='store_true')
+    parser.add_argument('--no-splash', help="don't display initial warning screen",
+                        action='store_true')
 
-if args.test:
-    print green("Running test suite:")
-    dirname, filename = os.path.split(os.path.abspath(__file__))
-    suite = unittest.TestLoader().discover(dirname)
-    if suite.countTestCases() == 0:
-        print "  Not detecting any unit tests... aborting\n"
-        exit(1)
+    args = parser.parse_args()
+
+    if args.test:
+        print green("Running test suite:")
+        dirname, filename = os.path.split(os.path.abspath(__file__))
+        suite = unittest.TestLoader().discover(dirname)
+        if suite.countTestCases() == 0:
+            print "  Not detecting any unit tests... aborting\n"
+            exit(1)
+        else:
+            CustomTestRunner().run(suite)
+        exit(0)
+
+    # Determine where the morea content is
+    root = ""
+    if os.path.isdir("./master/src/morea/"):
+        root = "./master/src/morea/"
+    elif os.path.isdir("./src/morea/"):
+        root = "./src/morea/"
     else:
-        CustomTestRunner().run(suite)
-    exit(0)
+        print_as_paragraph(red, "\nCouldn't find ./master/src/morea/ or ./src/morea/ directory... Aborting")
+        exit(1)
 
+    # Print warning/disclaimer screen
+    if not args.no_splash:
+        print_welcome_screen(args)
 
-# Determine where the morea content is
-root = ""
-if os.path.isdir("./master/src/morea/"):
-    root = "./master/src/morea/"
-elif os.path.isdir("./src/morea/"):
-    root = "./src/morea/"
-else:
-    print_as_paragraph(red, "\nCouldn't find ./master/src/morea/ or ./src/morea/ directory... Aborting")
-    exit(1)
+    # Make sure that MOREA content is not broken using Jekyll (if --run-jekyll is specified)
+    if args.run_jekyll:
+        print green("Pre-validating site content with jekyll...")
+        try:
+            pre_validate_site(root)
+        except CustomException as e:
+            print yellow(str(e))
+            print_as_paragraph(red, "MOREA site seems broken based on running morea-run-local.sh. "
+                                    "Fix the above error(s) and re-run this script."
+                                    "(run morea-run-local.sh for possibly more detailed error reports)")
+            exit(1)
 
+    # Create a morea content object
+    morea_content = MoreaContent()
 
-# Print warning/disclaimer screen
-if not args.no_splash:
-    print_welcome_screen()
-
-# Make sure that MOREA content is not broken using Jekyll (if --run-jekyll is specified)
-if args.run_jekyll:
-    print green("Pre-validating site content with jekyll...")
+    # Acquire and further validate MOREA content
+    print green("Acquiring MOREA content...")
     try:
-        pre_validate_site(root)
+        morea_content.acquire_all_content(root, args.parse_comments)
     except CustomException as e:
         print yellow(str(e))
-        print_as_paragraph(red, "MOREA site seems broken based on running morea-run-local.sh. "
-                                "Fix the above error(s) and re-run this script."
-                                "(run morea-run-local.sh for possibly more detailed error reports)")
+        print_as_paragraph(red, "MOREA .md files seem to have YAML issues. "
+                                "Fix the above error(s) and re-run this script "
+                                "  (which is not as lenient as jekyll, for good reasons).")
         exit(1)
 
-# Create a morea content object
-morea_content = MoreaContent()
+    # Checking MOREA content
+    print green("\nValidating MOREA content...")
+    try:
+        morea_content.check()
+    except CustomException as e:
+        print yellow(unicode(e))
+        print_as_paragraph(red, "MOREA .md files seem to have issues. Fix the above error(s) "
+                                "and re-run this script (which is not as lenient as jekyll, "
+                                "for good reasons).")
+        exit(1)
 
-# Acquire and further validate MOREA content
-print green("Acquiring MOREA content...")
-try:
-    morea_content.acquire_all_content(root, args.parse_comments)
-except CustomException as e:
-    print yellow(str(e))
-    print_as_paragraph(red, "MOREA .md files seem to have YAML issues. "
-                            "Fix the above error(s) and re-run this script "
-                            "  (which is not as lenient as jekyll, for good reasons).")
-    exit(1)
+    if not args.tui:
+        print(bold("\n-- MOREA content validated --\n"))
+        exit(0)
 
-# Checking MOREA content
-print green("\nValidating MOREA content...")
-try:
-    morea_content.check()
-except CustomException as e:
-    print yellow(unicode(e))
-    print_as_paragraph(red, "MOREA .md files seem to have issues. Fix the above error(s) "
-                            "and re-run this script (which is not as lenient as jekyll, "
-                            "for good reasons).")
-    exit(1)
+    raw_input(bold("\n\nPress ENTER to launch the interface, ^C to abort --"))
+    print(chr(27) + "[2J")
 
-if not args.tui:
-    print(bold("\n-- MOREA content validated --\n"))
-    exit(0)
-
-raw_input(bold("\n\nPress ENTER to launch the interface, ^C to abort --"))
-print(chr(27) + "[2J")
-
-# Launch the TUI
-if args.tui:
-    content_copy = copy.deepcopy(morea_content)
-    content_copy.take_pickles()
-    tui = TUI(content_copy)
-    updated_morea_content = tui.launch()
-    if updated_morea_content is not None:
-        updated_morea_content.save()
-    reset_terminal()
+    # Launch the TUI
+    if args.tui:
+        content_copy = copy.deepcopy(morea_content)
+        content_copy.take_pickles()
+        tui = TUI(content_copy)
+        updated_morea_content = tui.launch()
+        if updated_morea_content is not None:
+            updated_morea_content.save()
+        reset_terminal()
