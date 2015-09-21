@@ -24,8 +24,8 @@ The content editor does:
 Lintui (for now) requires Python 2.7.  A Python 3 version is forthcoming.
 
   - Install Python 2.7, if not already installed on your system (which comes with the pip package manager since Python 2.7.9)
-  - Install the [urwid](http://urwid.org) package (command: <tt>pip-2.7 install urwid</tt>)
-  - Install the [PyYaml] (http://pyyaml.org) package (command: <tt>pip-2.7 install PyYaml</tt>)
+  - Install the [urwid](http://urwid.org) package (command: <tt>sudo pip-2.7 install urwid</tt>)
+  - Install the [PyYaml] (http://pyyaml.org) package (command: <tt>sudo pip-2.7 install PyYaml</tt>)
   - Download this package and make <tt>morea-lintui.py</tt> (top directory) executable and have your path point to it
   
 ## User guide
