@@ -1,1 +1,3 @@
 include README.md
+include morea-lintui/LICENSE
+include morea-lintui/morea-lintui
