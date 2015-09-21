@@ -6,7 +6,7 @@ setup(name='morea-lintui.py',
       url='https://github.com/morea-framework/morea-lintui.py',
       author='Henri Casanova',
       entry_points={
-            'main script': ['morea-lintui.py=morea-lintui.py/morea-lintui.py.py:main']
+            'console_scripts': ['morea-lintui.py=morea-lintui.py/morea-lintui.py.py:main']
       },
       author_email='henricasanova@gmail.com',
       license='GPL 2',
