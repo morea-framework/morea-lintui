@@ -6,7 +6,7 @@ setup(name='morealintui',
       url='https://github.com/morea-framework/morea-lintui',
       author='Henri Casanova',
       entry_points={
-          'console_scripts': ['morealintui = morealintui.morealintui:main'],
+          'console_scripts': ['morea-lintui = morealintui.morealintui:main'],
       },
       author_email='henricasanova@gmail.com',
       license='GPL 2',
