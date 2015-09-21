@@ -10,4 +10,5 @@ setup(name='morea-lintui',
       author_email='henricasanova@gmail.com',
       license='GPL 2',
       packages=['morea-lintui'],
-      zip_safe=False)
+      zip_safe=False,
+      install_requires=['urwid', 'PyYaml'])
