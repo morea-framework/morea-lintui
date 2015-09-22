@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Morea-lintui : ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Morea-lintui</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/morea-framework/morea-lintui">View on GitHub</a>
+
+          <h1 id="project_title">Morea-lintui</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/morea-framework/morea-lintui/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/morea-framework/morea-lintui/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="morea-lintui" class="anchor" href="#morea-lintui" aria-hidden="true"><span class="octicon octicon-link"></span></a>morea-lintui</h1>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>morea-lintui is a Morea content validator (like lint for C) and Morea content editor (via a Text User Interface, or tui).</p>
+
+<p>The content validator does:</p>
+
+<ul>
+<li>Check YAML syntax (more precisely than jekyll)</li>
+<li>Check that every reference to a Morea id is valid</li>
+<li>Perform ype-checking of references</li>
+<li>Check for value collisions</li>
+<li>Issue warnings for potentially dangerous behavior</li>
+</ul>
+
+<p>The content editor does:</p>
+
+<ul>
+<li>Provide a simple way to view Morea content</li>
+<li>Provide a simple way to edit parts of the Morea content</li>
+</ul>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Lintui (for now) requires Python 2.7.  A Python 3 version is forthcoming.</p>
+
+<ul>
+<li>Install Python 2.7, if not already installed on your system</li>
+<li>Download this package, and execute: <tt>sudo python setup.py install</tt> in the package's top directory
+
+<ul>
+<li>This will install the urwid and the PyYaml package which are requiredf for morea-lintui</li>
+</ul>
+</li>
+</ul>
+
+<p>Once the installation is done, you should be able to use the <tt>morea-lintui</tt> command
+as explained hereafter</p>
+
+<h2>
+<a id="user-guide" class="anchor" href="#user-guide" aria-hidden="true"><span class="octicon octicon-link"></span></a>User guide</h2>
+
+<p><tt>morea-lintui</tt> should be invoked from a Morea root directory (i.e., from a location in which either 
+    the <tt>master/src/morea/</tt> or the <tt>src/morea</tt> directory is visible)</p>
+
+<p>Here are typical invocations:</p>
+
+<ul>
+<li>
+<tt>morea-lintui</tt>
+
+<ul>
+<li>Validates the Morea content, printing error and warning messages</li>
+</ul>
+</li>
+<li>
+<tt>morea-lintui --parse-comments</tt>
+
+<ul>
+<li>Same as above, but also validates commented-out Yaml content</li>
+</ul>
+</li>
+<li>
+<tt>morea-lintui --parse-comments --tui</tt>
+
+<ul>
+<li>Validate content and launch the Text User Interface</li>
+</ul>
+</li>
+</ul>
+
+<p>All the above executions first display some information and warnings, which can be avoided via the <tt>--no-splash</tt> command-line option.</p>
+
+<p><tt>morea-lintui --help</tt> lists all command-line options. </p>
+
+<p>The use of the Text User Interface is intuitive. Use the direction arrows to navigate,  or  to select, and the hot keys listed at the top and bottom of the interface to change view, save, cancel, quit, etc.</p>
+
+<h2>
+<a id="screenshot" class="anchor" href="#screenshot" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshot</h2>
+
+<p>Here are some screenshots of the content editor TUI:</p>
+
+<p><img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot1.jpg"></p>
+
+<p><img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot2.jpg"></p>
+
+<p><img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot3.jpg"></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Morea-lintui maintained by <a href="https://github.com/morea-framework">morea-framework</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
