@@ -206,5 +206,6 @@ def main():
             updated_morea_content.save()
         reset_terminal()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
