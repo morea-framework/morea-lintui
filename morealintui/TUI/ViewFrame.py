@@ -1,10 +1,10 @@
 import urwid
 
-from MOREA.MoreaGrammar import MoreaGrammar
-from MOREA.MoreaProperty import Property, PropertyVersion
-from MOREA.MoreaPropertyVersion import ScalarPropertyValue
-from PopupDialog import HiddenPopupLauncher
-from Toolbox.toolbox import CustomException
+from morealintui.MOREA.MoreaGrammar import MoreaGrammar
+from morealintui.MOREA.MoreaProperty import Property, PropertyVersion
+from morealintui.MOREA.MoreaPropertyVersion import ScalarPropertyValue
+from morealintui.TUI.PopupDialog import HiddenPopupLauncher
+from morealintui.Toolbox.toolbox import CustomException
 
 __author__ = 'casanova'
 

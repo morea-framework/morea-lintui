@@ -1,6 +1,6 @@
 import re
 
-from Toolbox.toolbox import bold, CustomException
+from morealintui.Toolbox.toolbox import bold, CustomException
 
 __author__ = 'casanova'
 

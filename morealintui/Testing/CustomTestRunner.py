@@ -1,4 +1,4 @@
-from Toolbox.toolbox import red, green
+from morealintui.Toolbox.toolbox import red, green
 
 __author__ = 'casanova'
 

@@ -1,4 +1,4 @@
-from Toolbox.toolbox import CustomException, my_str
+from morealintui.Toolbox.toolbox import CustomException, my_str
 
 __author__ = 'casanova'
 

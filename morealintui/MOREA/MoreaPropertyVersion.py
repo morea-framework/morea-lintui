@@ -1,5 +1,5 @@
-from Toolbox.toolbox import CustomException, add_quotes
-from YamlParsingTools import decommentify
+from morealintui.Toolbox.toolbox import CustomException, add_quotes
+from morealintui.MOREA.YamlParsingTools import decommentify
 
 __author__ = 'casanova'
 

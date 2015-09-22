@@ -1,7 +1,7 @@
-from YamlParsingTools import *
-from MoreaProperty import Property
-from MoreaGrammar import MoreaGrammar
-from Toolbox.toolbox import offset_string, morea_file_monitor
+from morealintui.MOREA.YamlParsingTools import *
+from morealintui.MOREA.MoreaProperty import Property
+from morealintui.MOREA.MoreaGrammar import MoreaGrammar
+from morealintui.Toolbox.toolbox import offset_string, morea_file_monitor
 
 __author__ = 'casanova'
 

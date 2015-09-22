@@ -1,10 +1,10 @@
 import os
 import re
 
-from Toolbox import toolbox
-from Toolbox.toolbox import CustomException
-from MoreaFile import MoreaFile
-from MoreaGrammar import MoreaGrammar
+from morealintui.Toolbox import toolbox
+from morealintui.Toolbox.toolbox import CustomException
+from morealintui.MOREA.MoreaFile import MoreaFile
+from morealintui.MOREA.MoreaGrammar import MoreaGrammar
 
 __author__ = 'casanova'
 

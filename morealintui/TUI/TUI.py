@@ -1,6 +1,6 @@
-from ViewFrame import ViewFrame
-from Toolbox.toolbox import num_term_colors, CustomException
-from TopLevelFrame import TopLevelFrame, FocusRememberingButton, FocusRememberingCheckBox
+from morealintui.TUI.ViewFrame import ViewFrame
+from morealintui.Toolbox.toolbox import num_term_colors, CustomException
+from morealintui.TUI.TopLevelFrame import TopLevelFrame, FocusRememberingButton, FocusRememberingCheckBox
 
 __author__ = 'casanova'
 

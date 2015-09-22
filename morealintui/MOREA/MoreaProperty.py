@@ -1,6 +1,6 @@
-from MOREA import MoreaGrammar
-from MOREA.MoreaPropertyVersion import PropertyVersion
-from Toolbox.toolbox import CustomException
+from morealintui.MOREA import MoreaGrammar
+from morealintui.MOREA.MoreaPropertyVersion import PropertyVersion
+from morealintui.Toolbox.toolbox import CustomException
 
 __author__ = 'casanova'
 

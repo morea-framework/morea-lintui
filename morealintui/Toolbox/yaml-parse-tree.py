@@ -1,4 +1,4 @@
-from MOREA.YamlParsingTools import get_raw_front_matter
+from morealintui.MOREA.YamlParsingTools import get_raw_front_matter
 
 __author__ = 'casanova'
 

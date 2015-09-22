@@ -1,6 +1,6 @@
 import urwid
 
-from Toolbox.toolbox import bound_string
+from morealintui.Toolbox.toolbox import bound_string
 
 __author__ = 'casanova'
 

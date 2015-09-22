@@ -205,3 +205,6 @@ def main():
         if updated_morea_content is not None:
             updated_morea_content.save()
         reset_terminal()
+
+if __name__ == '__main__':
+    main()

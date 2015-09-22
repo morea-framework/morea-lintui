@@ -1,6 +1,6 @@
 import urwid
 
-from Toolbox.toolbox import CustomException
+from morealintui.Toolbox.toolbox import CustomException
 
 __author__ = 'casanova'
 

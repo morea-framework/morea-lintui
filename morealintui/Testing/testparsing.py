@@ -5,9 +5,9 @@ __author__ = 'casanova'
 import unittest
 import shutil
 
-from MOREA.MoreaFile import MoreaFile, flattened_property_list
-from Toolbox.toolbox import *
-from MOREA.MoreaProperty import *
+from morealintui.MOREA.MoreaFile import MoreaFile, flattened_property_list
+from morealintui.Toolbox.toolbox import *
+from morealintui.MOREA.MoreaProperty import *
 
 testpath = "/tmp/morea-ncursed-test"
 
