@@ -31,29 +31,23 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>
-<a id="morea-lintui" class="anchor" href="#morea-lintui" aria-hidden="true"><span class="octicon octicon-link"></span></a>morea-lintui</h1>
+        <p>morea-lintui is a Morea content validator (like lint for C) and Morea content editor (via a Text User Interface, or tui).</p>
 
-<h2>
-<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h2>
-
-<p>morea-lintui is a Morea content validator (like lint for C) and Morea content editor (via a Text User Interface, or tui).</p>
-
-<p>The content validator does:</p>
+<p>The content validator:</p>
 
 <ul>
-<li>Check YAML syntax (more precisely than jekyll)</li>
-<li>Check that every reference to a Morea id is valid</li>
-<li>Perform ype-checking of references</li>
-<li>Check for value collisions</li>
-<li>Issue warnings for potentially dangerous behavior</li>
+<li>Checks YAML syntax (more precisely than jekyll)</li>
+<li>Checks that every reference to a Morea id is valid</li>
+<li>Performs ype-checking of references</li>
+<li>Checks for value collisions</li>
+<li>Issues warnings for potentially dangerous behavior</li>
 </ul>
 
-<p>The content editor does:</p>
+<p>The content editor:</p>
 
 <ul>
-<li>Provide a simple way to view Morea content</li>
-<li>Provide a simple way to edit parts of the Morea content</li>
+<li>Provides a simple way to view Morea content</li>
+<li>Provides a simple way to edit parts of the Morea content</li>
 </ul>
 
 <h2>
@@ -62,20 +56,14 @@
 <p>Lintui (for now) requires Python 2.7.  A Python 3 version is forthcoming.</p>
 
 <ul>
-<li>Install Python 2.7, if not already installed on your system</li>
-<li>Download this package, and execute: <tt>sudo python setup.py install</tt> in the package's top directory
-
-<ul>
-<li>This will install the urwid and the PyYaml package which are requiredf for morea-lintui</li>
-</ul>
-</li>
+<li><p>Install Python 2.7, if not already installed on your system</p></li>
+<li><p>Download this entire repo as a zip file, unzip, and execute: <tt>sudo python setup.py install</tt> in the package's top directory.  In addition to installing this system, the installer will also install the urwid and the PyYaml packages.</p></li>
 </ul>
 
-<p>Once the installation is done, you should be able to use the <tt>morea-lintui</tt> command
-as explained hereafter</p>
+<p>Once the installation is done, <tt>morea-lintui</tt> should be available on your PATH as a command.</p>
 
 <h2>
-<a id="user-guide" class="anchor" href="#user-guide" aria-hidden="true"><span class="octicon octicon-link"></span></a>User guide</h2>
+<a id="invocation" class="anchor" href="#invocation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Invocation</h2>
 
 <p><tt>morea-lintui</tt> should be invoked from a Morea root directory (i.e., from a location in which either 
     the <tt>master/src/morea/</tt> or the <tt>src/morea</tt> directory is visible)</p>
@@ -84,21 +72,21 @@ as explained hereafter</p>
 
 <ul>
 <li>
-<tt>morea-lintui</tt>
+<p><tt>morea-lintui</tt></p>
 
 <ul>
 <li>Validates the Morea content, printing error and warning messages</li>
 </ul>
 </li>
 <li>
-<tt>morea-lintui --parse-comments</tt>
+<p><tt>morea-lintui --parse-comments</tt></p>
 
 <ul>
 <li>Same as above, but also validates commented-out Yaml content</li>
 </ul>
 </li>
 <li>
-<tt>morea-lintui --parse-comments --tui</tt>
+<p><tt>morea-lintui --parse-comments --tui</tt></p>
 
 <ul>
 <li>Validate content and launch the Text User Interface</li>
@@ -110,18 +98,31 @@ as explained hereafter</p>
 
 <p><tt>morea-lintui --help</tt> lists all command-line options. </p>
 
+<h2>
+<a id="tui-usage" class="anchor" href="#tui-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>TUI usage</h2>
+
 <p>The use of the Text User Interface is intuitive. Use the direction arrows to navigate,  or  to select, and the hot keys listed at the top and bottom of the interface to change view, save, cancel, quit, etc.</p>
 
-<h2>
-<a id="screenshot" class="anchor" href="#screenshot" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshot</h2>
+<h3>
+<a id="manage-module-level-structure" class="anchor" href="#manage-module-level-structure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Manage module-level structure</h3>
 
-<p>Here are some screenshots of the content editor TUI:</p>
+<p>The Modules page lists all the Modules in your site and allows you to manipulate various properties (Published, Coming Soon, hightlight), and change the order in which they appear in the published site:</p>
 
-<p><img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot1.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/morea-framework/morea-lintui/master/morealintui/docs/screenshot1.jpg" alt=""></p>
 
-<p><img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot2.jpg"></p>
+<h3>
+<a id="manage-module-specification" class="anchor" href="#manage-module-specification" aria-hidden="true"><span class="octicon octicon-link"></span></a>Manage module specification</h3>
 
-<p><img src="https://github.com/morea-framework/morea-lintui/blob/master/docs/screenshot3.jpg"></p>
+<p>You can edit an individual Module specification and comment or uncomment module components. Limited editing of fields is also supported:</p>
+
+<p><img src="https://raw.githubusercontent.com/morea-framework/morea-lintui/master/morealintui/docs/screenshot2.jpg" alt=""></p>
+
+<h3>
+<a id="manage-references" class="anchor" href="#manage-references" aria-hidden="true"><span class="octicon octicon-link"></span></a>Manage references</h3>
+
+<p>Finally, you can see where Morea pages are referenced and remove the references if you wish:</p>
+
+<p><img src="https://raw.githubusercontent.com/morea-framework/morea-lintui/master/morealintui/docs/screenshot3.jpg" alt=""></p>
       </section>
     </div>
 
