@@ -5,6 +5,7 @@ setup(name='morealintui',
       description='A Morea content validator and editor',
       url='https://github.com/morea-framework/morea-lintui',
       author='Henri Casanova',
+#      py_modules = ['morealintui.morealintui'],
       entry_points={
           'console_scripts': ['morea-lintui = morealintui.morealintui:main'],
       },
