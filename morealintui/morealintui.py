@@ -5,10 +5,10 @@ import unittest
 import shlex
 import argparse
 
-from morealintui.MOREA.MoreaContent import MoreaContent
-from morealintui.Testing.CustomTestRunner import CustomTestRunner
-from morealintui.Toolbox.toolbox import *
-from morealintui.TUI.TUI import TUI
+from MOREA.MoreaContent import MoreaContent
+from Testing.CustomTestRunner import CustomTestRunner
+from Toolbox.toolbox import *
+from TUI.TUI import TUI
 
 __author__ = 'casanova'
 
