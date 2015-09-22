@@ -23,15 +23,16 @@ The content editor does:
 
 Lintui (for now) requires Python 2.7.  A Python 3 version is forthcoming.
 
-  - Install Python 2.7, if not already installed on your system (which comes with the pip package manager since Python 2.7.9)
-    - If you don't have pip: <tt>sudo apt-get install python-pip</tt>
-  - Install the [urwid](http://urwid.org) package (command: <tt>sudo pip-2.7 install urwid</tt>)
-  - Install the [PyYaml] (http://pyyaml.org) package (command: <tt>sudo pip-2.7 install PyYaml</tt>)
-  - Download this package and make <tt>morea-lintui.py</tt> (top directory) executable and have your path point to it
+  - Install Python 2.7, if not already installed on your system
+  - Download this package, and execute: <tt>sudo python setup.py install</tt> in the package's top directory
+    - This will install the urwid and the PyYaml package which are requiredf for morea-lintui
+    
+Once the installation is done, you should be able to use the <tt>morea-lintui</tt> command
+as explained hereafter
   
 ## User guide
 
-<tt>morea-lintui.py</tt> should be invoked from a Morea root directory (i.e., from a location in which either 
+<tt>morea-lintui</tt> should be invoked from a Morea root directory (i.e., from a location in which either 
     the <tt>master/src/morea/</tt> or the <tt>src/morea</tt> directory is visible)
     
 Here are typical invocations:
@@ -41,7 +42,7 @@ Here are typical invocations:
   - <tt>morea-lintui.py --parse-comments</tt>
     - Same as above, but also validates commented-out Yaml content
   - <tt>morea-lintui.py --parse-comments --tui</tt>
-    - Validate content and launch the Text User Inferface
+    - Validate content and launch the Text User Interface
 
 All the above executions first display some information and warnings, which can be avoided via the <tt>--no-splash</tt> command-line option.
 
