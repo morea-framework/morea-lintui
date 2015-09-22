@@ -37,16 +37,16 @@ as explained hereafter
     
 Here are typical invocations:
 
-  - <tt>morea-lintui.py</tt>
+  - <tt>morea-lintui</tt>
     - Validates the Morea content, printing error and warning messages
-  - <tt>morea-lintui.py --parse-comments</tt>
+  - <tt>morea-lintui --parse-comments</tt>
     - Same as above, but also validates commented-out Yaml content
-  - <tt>morea-lintui.py --parse-comments --tui</tt>
+  - <tt>morea-lintui --parse-comments --tui</tt>
     - Validate content and launch the Text User Interface
 
 All the above executions first display some information and warnings, which can be avoided via the <tt>--no-splash</tt> command-line option.
 
-<tt>morea-lintui.py --help</tt> lists all command-line options. 
+<tt>morea-lintui --help</tt> lists all command-line options. 
   
 The use of the Text User Interface is intuitive. Use the direction arrows to navigate, <space> or <enter> to select, and the hot keys listed at the top and bottom of the interface to change view, save, cancel, quit, etc.
 
