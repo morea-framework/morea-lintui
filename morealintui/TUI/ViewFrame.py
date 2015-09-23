@@ -452,7 +452,6 @@ class EditableMultiValues:
         version.set_value(values)
         return version
 
-
 class EditableTextLine:
     def __init__(self, morea_file, prop, version):
 
