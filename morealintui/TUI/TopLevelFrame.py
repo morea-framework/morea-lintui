@@ -60,7 +60,7 @@ class TopLevelFrame(urwid.Pile):
             if sort_by_module_reference and f is None:
                 row = urwid.Columns([urwid.AttrWrap(urwid.Text("\nUNREFERENCED BY ANY MODULE:"), 'dull')])
             elif sort_by_module_reference and f.get_value_of_scalar_property("morea_type") == "module":
-                row = urwid.Columns([urwid.AttrWrap(urwid.Text("\nREFERENCE BY MODULE '" +
+                row = urwid.Columns([urwid.AttrWrap(urwid.Text("\nREFERENCED BY MODULE '" +
                                                                f.get_value_of_scalar_property("morea_id") + "':"),
                                                     'dull')])
             else:
