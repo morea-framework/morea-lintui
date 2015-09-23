@@ -1,3 +1,4 @@
+import time
 from morealintui.MOREA.YamlParsingTools import *
 from morealintui.MOREA.MoreaProperty import Property
 from morealintui.MOREA.MoreaGrammar import MoreaGrammar
@@ -14,6 +15,7 @@ class MoreaFile(object):
     def __init__(self, path, warnings, parse_comments):
 
         self.path = path
+        # print "* PATH=", path
 
         # Check that the .md file has 2 yaml documents in it and that the YAML can be parsed
         try:
@@ -80,6 +82,7 @@ class MoreaFile(object):
         # for p in self.property_list:
         #     print "PROPERTY"
         #     self.property_list[p].display()
+        # time.sleep(1)
 
         return
 

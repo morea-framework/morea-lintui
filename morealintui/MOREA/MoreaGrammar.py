@@ -37,7 +37,7 @@ class MoreaGrammar(object):
                              "morea_summary",
                              "morea_outcomes",
                              "morea_readings",
-                             "morea_experiments",
+                             "morea_experiences",
                              "morea_assessments",
                              "morea_sort_order",
                              "morea_url",

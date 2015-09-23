@@ -1,3 +1,4 @@
+import time
 import urwid
 
 from morealintui.MOREA.MoreaGrammar import MoreaGrammar
@@ -81,6 +82,7 @@ class PropertyTui:
 
         for v in self.prop.versions:
             self.version_tuis.append(PropertyVersionTui(self.viewframe, morea_file, prop, v))
+
         return
 
     def get_rows(self):
