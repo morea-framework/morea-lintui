@@ -56,15 +56,16 @@ The Modules page lists all the Modules in your site and allows you to manipulate
 
 ![](https://raw.githubusercontent.com/morea-framework/morea-lintui/master/morealintui/docs/screenshot1.jpg)
 
-### Manage module specification
+### Manage all content
 
-You can edit an individual Module specification and comment or uncomment module components. Limited editing of fields is also supported:
+You can view all other Morea content, structured by referencing module
 
 ![](https://raw.githubusercontent.com/morea-framework/morea-lintui/master/morealintui/docs/screenshot2.jpg)
 
-### Manage references
 
-Finally, you can see where Morea pages are referenced and remove the references if you wish:
+### Manage file content
+
+Each Morea .md file can be viewed/edited  (modify ordering in lists, commenting/uncommenting, simple tex editing of some fields):
 
 ![](https://raw.githubusercontent.com/morea-framework/morea-lintui/master/morealintui/docs/screenshot3.jpg)
 
