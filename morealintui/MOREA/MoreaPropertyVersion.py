@@ -1,3 +1,4 @@
+import re
 from morealintui.Toolbox.toolbox import CustomException, add_quotes
 from morealintui.MOREA.YamlParsingTools import decommentify
 
@@ -116,10 +117,14 @@ class PropertyVersion(object):
             else:
                 # noinspection PyUnresolvedReferences
                 value = self.values.value
-            string += add_quotes(self.grammar.quoted, str(value)) + "\n"
+            string += add_quotes(self.grammar.quoted, str(value))
+            # Add a \n if needed
+            if re.search(".*\n$", string) is None:
+                string += "\n"
             return string
 
         string += "\n"
+
         if type(self.values) != list:
             value_list = [self.values]
         else:
@@ -129,9 +134,12 @@ class PropertyVersion(object):
                 string += "\n"
                 continue
             if self.commented_out or v.commented_out:
-                string += "#  - " + add_quotes(self.grammar.quoted, str(v.value)) + "\n"
+                string += "#  - " + add_quotes(self.grammar.quoted, str(v.value))
             else:
-                string += "  - " + add_quotes(self.grammar.quoted, str(v.value)) + "\n"
+                string += "  - " + add_quotes(self.grammar.quoted, str(v.value))
+            # Add a \n if necessary
+            if re.search(".*\n$", string) is None:
+                string += "\n"
         return string
 
     def flatten(self):

@@ -200,6 +200,8 @@ class MoreaFile(object):
         string += "---\n"
         string += self.non_yaml_contents
 
+        print "STRING = ", string
+        exit(0)
         # Saving the file
         f = open(self.path, 'w')
         f.write(string)
