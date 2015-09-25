@@ -4,8 +4,8 @@ from morealintui.Toolbox.toolbox import bold, CustomException
 
 __author__ = 'casanova'
 
-
-def get_contents_at_dash_marker(path, start):
+# Passing end=-1 means "everything after
+def get_contents_at_dash_marker(path, start, end):
     contents = ""
     f = open(path, "r")
     separator_seen = 0
@@ -15,7 +15,7 @@ def get_contents_at_dash_marker(path, start):
             continue
         if separator_seen == start:
             contents += line
-        elif separator_seen > start:
+        elif separator_seen == end:
             break
     f.close()
     return contents
@@ -32,11 +32,11 @@ def validate_basic_file_structure(path):
 
 
 def get_non_yaml_contents(path):
-    return get_contents_at_dash_marker(path, 2)
+    return get_contents_at_dash_marker(path, 2, -1)
 
 
 def get_raw_front_matter(path):
-    return get_contents_at_dash_marker(path, 1)
+    return get_contents_at_dash_marker(path, 1, 2)
 
 
 def commentify(string, parse_comments):

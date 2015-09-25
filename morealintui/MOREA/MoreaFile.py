@@ -68,7 +68,7 @@ class MoreaFile(object):
         # Convert every string to unicode
         parsed_front_matter = convert_to_unicode(parsed_front_matter)
 
-        # print "PARSED_FRONT_MATTER:", parsed_front_matter
+        #print "PARSED_FRONT_MATTER:", parsed_front_matter
         # Build property list
         try:
             self.property_list = build_property_list(parsed_front_matter)
@@ -173,7 +173,7 @@ class MoreaFile(object):
     def comment_out_all_references_to_id(self, morea_id):
         referencing_properties = ["morea_outcomes",
                                   "morea_readings",
-                                  "morea_experiments",
+                                  "morea_experiences",
                                   "morea_assessments",
                                   "morea_prerequisites",
                                   "morea_outcomes_assessed",
@@ -200,8 +200,6 @@ class MoreaFile(object):
         string += "---\n"
         string += self.non_yaml_contents
 
-        print "STRING = ", string
-        exit(0)
         # Saving the file
         f = open(self.path, 'w')
         f.write(string)
@@ -225,7 +223,6 @@ def build_property_list(parsed_front_matter):
     # print "BUilDING PROPERTY LIST"
     for name in parsed_front_matter:
 
-        # print "NAME=", name
         # get the uncommentified name and commented_out status
         (decommentified_name, commented_out) = decommentify(name)
 
@@ -246,7 +243,6 @@ def build_property_list(parsed_front_matter):
             property_list[decommentified_name] = Property(decommentified_name)
 
         # Add the version
-        # print "ADDING A VERSION"
         try:
             # print "ADDING A VERSION TO PROPERTY ", decommentified_name
             property_list[decommentified_name].create_and_add_version(commented_out, value)
