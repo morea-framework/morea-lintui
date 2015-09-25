@@ -12,11 +12,15 @@ def get_contents_at_dash_marker(path, start, end):
     for line in f:
         if re.match("\s*---.*", line) is not None:
             separator_seen += 1
-            continue
-        if separator_seen == start:
+            if separator_seen > start and (separator_seen < end or end == -1):
+                contents += "---\n"
+            if separator_seen == end:
+                break
+            else:
+                continue
+
+        elif separator_seen >= start:
             contents += line
-        elif separator_seen == end:
-            break
     f.close()
     return contents
 
