@@ -192,7 +192,7 @@ class MoreaContent(object):
         module_files.sort(key=lambda x: x.get_value_of_scalar_property("morea_sort_order"), reverse=False)
         for i in xrange(1, len(module_files)):
             current = module_files[i].get_value_of_scalar_property("morea_sort_order")
-            previous = module_files[i - 2].get_value_of_scalar_property("morea_sort_order")
+            previous = module_files[i - 1].get_value_of_scalar_property("morea_sort_order")
             if previous is not None and current == previous:
                 err_msg += "  Error: Files " + module_files[i].path + " and " + \
                            module_files[i - 1].path + " have identical morea_sort_order values (" + str(current) + ")\n"
