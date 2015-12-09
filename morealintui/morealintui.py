@@ -129,14 +129,26 @@ def main():
 
     args = parser.parse_args()
 
+    cfgFileName = os.path.expanduser("~") + '/.morea-lintui.rc'
     config = ConfigParser.RawConfigParser(allow_no_value=True)
-    config.read(os.path.expanduser("~") + '/.morea-lintui')
-    if config.get("lintui", "test"):
+    if not os.path.exists(cfgFileName):
+        config.add_section('lintui')
+        config.set('lintui', 'test', False)
+        config.set('lintui', 'no_splash', False)
+        config.set('lintui', 'run_jekyll', False)
+        config.set('lintui', 'tui', False)
+        with open(cfgFileName, 'wb') as configfile:
+            config.write(configfile)
+    else:
+        config.read(cfgFileName)
+    if config.get("lintui", "test") and config.get('lintui', 'test') == 'True':
         args.test = True
-    if config.get("lintui", "no_splash"):
+    if config.get("lintui", "no_splash") and config.get('lintui', 'no_splash') == 'True':
         args.no_splash = True
-    if config.get("lintui", "run_jekyll"):
+    if config.get("lintui", "run_jekyll") and config.get('lintui', 'run_jekyll') == 'True':
         args.run_jekyll = True
+    if config.get('lintui', 'tui') and config.get('lintui', 'tui') == 'True':
+        args.tui = True
 
     if args.test:
         print green("Running test suite:")
