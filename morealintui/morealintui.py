@@ -4,6 +4,8 @@ import copy
 import unittest
 import shlex
 import argparse
+import ConfigParser
+import os
 
 from MOREA.MoreaContent import MoreaContent
 from Testing.CustomTestRunner import CustomTestRunner
@@ -126,6 +128,15 @@ def main():
                         action='store_true')
 
     args = parser.parse_args()
+
+    config = ConfigParser.RawConfigParser(allow_no_value=True)
+    config.read(os.path.expanduser("~") + '/.morea-lintui')
+    if config.get("lintui", "test"):
+        args.test = True
+    if config.get("lintui", "no_splash"):
+        args.no_splash = True
+    if config.get("lintui", "run_jekyll"):
+        args.run_jekyll = True
 
     if args.test:
         print green("Running test suite:")
