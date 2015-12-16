@@ -215,19 +215,19 @@ class MoreaContent(object):
                 filelist.append(f)
         return filelist
 
+
     def update_file_sort_order(self, morea_file, direction):
 
         if morea_file.get_value_of_scalar_property("morea_sort_order") is None:
             return
 
-        # This is a TOTAL HACK!!!!
 
-        # Build a sorted list
+        # Build a sorted list of all the files of that type
         sorted_list = sorted(self.get_filelist_for_type(morea_file.get_value_of_scalar_property("morea_type")),
                              key=lambda x: x.get_value_of_scalar_property("morea_sort_order"),
                              reverse=False)
 
-        # Decide whether there is anything to do
+        # Return if there is nothing to do (i.e., file is at the beginning/end already)
         if direction == -1:
             index = sorted_list.index(morea_file)
             if (index == 0) or (sorted_list[index - 1].get_value_of_scalar_property("morea_sort_order") is None):
@@ -239,10 +239,11 @@ class MoreaContent(object):
                 return
 
         # Multiply all the sort_orders by 2, to create space
-        for f in self.files:
+        for f in sorted_list:
             sort_order = f.get_value_of_scalar_property("morea_sort_order")
             if sort_order is not None:
                 f.set_value_of_scalar_property("morea_sort_order", 2 * sort_order)
+
 
         # Udpate
         index = sorted_list.index(morea_file)

@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/morea-lintui.iml" filepath="$PROJECT_DIR$/.idea/morea-lintui.iml" />
-      <module fileurl="file://$PROJECT_DIR$/morealintui.iml" filepath="$PROJECT_DIR$/morealintui.iml" />
     </modules>
   </component>
 </project>
