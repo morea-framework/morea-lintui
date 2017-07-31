@@ -24,7 +24,7 @@ class MoreaContent(object):
         self.files = []
         for path, subs, files in os.walk(root):
             # Skipping _ignore content
-            if re.search(r".*\/_ignore$", path) is not None:
+            if re.search(r".*\/_ignore", path) is not None:
                 continue
             for f in files:
                 # ignore hidden files
